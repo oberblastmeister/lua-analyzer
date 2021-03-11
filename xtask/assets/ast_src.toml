@@ -50,9 +50,10 @@ literals = [
 tokens = [
     "Error",
     "Ident",
-    "Whitespace",
-    "Comment",
     "Shebang",
 ]
 
-nodes = []
+trivia = [
+    "Comment",
+    "Whitespace",
+]

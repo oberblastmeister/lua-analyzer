@@ -8,6 +8,19 @@ pub(crate) struct AstSrc {
     pub(crate) enums: Vec<AstEnumSrc>,
 }
 
+impl AstSrc {
+    pub fn lower(grammar: &Grammar) -> AstSrc {
+        lower(grammar)
+    }
+
+    pub fn names(&self) -> impl Iterator<Item = &str> {
+        self.nodes
+            .iter()
+            .map(|node| &*node.name)
+            .chain(self.enums.iter().map(|enoom| &*enoom.name))
+    }
+}
+
 #[derive(Debug)]
 pub(crate) struct AstNodeSrc {
     pub(crate) doc: Vec<String>,
@@ -139,6 +152,7 @@ fn lower_rule(acc: &mut Vec<Field>, grammar: &Grammar, label: Option<&String>, r
         }
         Rule::Labeled { label: l, rule } => {
             assert!(label.is_none());
+
             // let manually_implemented = matches!(
             //     l.as_str(),
             //     "lhs"
