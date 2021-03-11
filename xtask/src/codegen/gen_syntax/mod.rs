@@ -67,12 +67,12 @@ fn gen_syntax_kinds(kinds_src: &KindsSrc, ast_src: &AstSrc) -> Result<String> {
     let literal_matches: Vec<_> = kinds_src
         .literals
         .iter()
-        .map(|literal| format_ident!("{}", literal))
+        .map(|literal| format_ident!("{}", literal.to_snake_case()))
         .collect();
     let literals: Vec<_> = kinds_src
         .literals
         .iter()
-        .map(|literal| format_ident!("{}Lit", literal.to_camel_case()))
+        .map(|literal| format_ident!("{}", literal.to_camel_case()))
         .collect();
 
     let token_matches: Vec<_> = kinds_src
@@ -187,7 +187,7 @@ fn gen_tokens(kinds_src: &KindsSrc) -> Result<String> {
                 }
             }
             impl AstToken for #name {
-                fn can_cast(kind: SyntaxKind) -> bool { kind == #kind }
+                fn can_cast(kind: SyntaxKind) -> bool { kind == SyntaxKind::#kind }
                 fn cast(syntax: SyntaxToken) -> Option<Self> {
                     if Self::can_cast(syntax.kind()) { Some(Self { syntax }) } else { None }
                 }
@@ -199,7 +199,7 @@ fn gen_tokens(kinds_src: &KindsSrc) -> Result<String> {
     let pretty = utils::reformat(
         #[allow(dead_code)]
         &quote! {
-            use crate::{SyntaxKind::{self, *}, SyntaxToken, ast::AstToken};
+            use crate::{SyntaxKind, SyntaxToken, ast::AstToken};
             #(#tokens)*
         }
         .to_string(),
