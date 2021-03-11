@@ -2,7 +2,7 @@ mod ast_src;
 mod kinds_src;
 
 use crate::utils;
-use ast_src::AstSrc;
+use ast_src::{AstSrc, Field};
 use kinds_src::KindsSrc;
 
 use std::fs;
@@ -175,7 +175,7 @@ fn gen_tokens(kinds_src: &KindsSrc) -> Result<String> {
 
     let tokens = all_tokens.map(|token| {
         let name = format_ident!("{}", token);
-        let kind = format_ident!("{}", token.to_snake_case());
+        let kind = format_ident!("{}", token.to_camel_case());
         quote! {
             #[derive(Debug, Clone, PartialEq, Eq, Hash)]
             pub struct #name {
@@ -215,41 +215,45 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
         .iter()
         .map(|node| {
             let name = format_ident!("{}", node.name);
-            let kind = format_ident!("{}", node.name.to_snake_case());
+            let kind = format_ident!("{}", node.name.to_camel_case());
             // let traits = node.traits.iter().map(|trait_name| {
             //     let trait_name = format_ident!("{}", trait_name);
             //     quote!(impl ast::#trait_name for #name {})
             // });
 
-            let methods = node.fields.iter().map(|field| {
-                let method_name = field.method_name(&kinds.punct);
-                let ty = field.ty();
+            let methods = node
+                .fields
+                .iter()
+                .filter(|field| !matches!(field, Field::Token(s) if s == ",")) // filter out comma fields
+                .map(|field| {
+                    let method_name = field.method_name(&kinds.punct);
+                    let ty = field.ty();
 
-                if field.is_many() {
-                    quote! {
-                        pub fn #method_name(&self) -> AstChildren<#ty> {
-                            support::children(&self.syntax)
-                        }
-                    }
-                } else {
-                    if let Some(token_kind) = field.token_kind() {
+                    if field.is_many() {
                         quote! {
-                            pub fn #method_name(&self) -> Option<#ty> {
-                                support::token(&self.syntax, #token_kind)
+                            pub fn #method_name(&self) -> AstChildren<#ty> {
+                                support::children(&self.syntax)
                             }
                         }
                     } else {
-                        quote! {
-                            pub fn #method_name(&self) -> Option<#ty> {
-                                support::child(&self.syntax)
+                        if let Some(token_kind) = field.token_kind() {
+                            quote! {
+                                pub fn #method_name(&self) -> Option<#ty> {
+                                    support::token(&self.syntax, #token_kind)
+                                }
+                            }
+                        } else {
+                            quote! {
+                                pub fn #method_name(&self) -> Option<#ty> {
+                                    support::child(&self.syntax)
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
             (
                 quote! {
-                    #[pretty_doc_comment_placeholder_workaround]
+                    // #[pretty_doc_comment_placeholder_workaround]
                     #[derive(Debug, Clone, PartialEq, Eq, Hash)]
                     pub struct #name {
                         pub(crate) syntax: SyntaxNode,
@@ -283,19 +287,20 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
             let variants: Vec<_> = en
                 .variants
                 .iter()
-                .map(|var| format_ident!("{}", var))
+                .map(|var| format_ident!("{}", var.to_camel_case()))
                 .collect();
             let name = format_ident!("{}", en.name);
             let kinds: Vec<_> = variants
                 .iter()
-                .map(|name| format_ident!("{}", name.to_string().to_snake_case()))
+                .map(|name| format_ident!("{}", name.to_string().to_camel_case()))
                 .collect();
             // let traits = en.traits.iter().map(|trait_name| {
             //     let trait_name = format_ident!("{}", trait_name);
             //     quote!(impl ast::#trait_name for #name {})
             // });
 
-            let ast_node = if en.name == "Stmt" {
+            // let ast_node = if en.name == "Stmt" {
+            let ast_node = if false {
                 quote! {}
             } else {
                 quote! {
@@ -328,7 +333,7 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
 
             (
                 quote! {
-                    #[pretty_doc_comment_placeholder_workaround]
+                    // #[pretty_doc_comment_placeholder_workaround]
                     #[derive(Debug, Clone, PartialEq, Eq, Hash)]
                     pub enum #name {
                         #(#variants(#variants),)*
@@ -393,13 +398,13 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
 
     let ast = ast.to_string().replace("T ! [", "T![");
 
-    let mut res = String::with_capacity(ast.len() * 2);
+    // let mut res = String::with_capacity(ast.len() * 2);
 
-    let mut docs = grammar
-        .nodes
-        .iter()
-        .map(|it| &it.doc)
-        .chain(grammar.enums.iter().map(|it| &it.doc));
+    // let mut docs = grammar
+    //     .nodes
+    //     .iter()
+    //     .map(|it| &it.doc)
+    //     .chain(grammar.enums.iter().map(|it| &it.doc));
 
     // for chunk in ast.split("# [pretty_doc_comment_placeholder_workaround] ") {
     //     res.push_str(chunk);
@@ -408,6 +413,6 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
     //     }
     // }
 
-    let pretty = utils::reformat(&res)?;
+    let pretty = utils::reformat(&ast)?;
     Ok(pretty)
 }

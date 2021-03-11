@@ -75,8 +75,16 @@ impl Field {
     pub fn method_name(&self, punct_map: &PunctMap) -> proc_macro2::Ident {
         match self {
             Field::Token(name) => {
-                let name = punct_map.get(name.as_str()).unwrap_or(name);
-                format_ident!("{}_token", name)
+                let name = match &**name {
+                    "'{'" => "l_curly",
+                    "'}'" => "r_curly",
+                    "'('" => "l_paren",
+                    "')'" => "r_paren",
+                    "'['" => "l_brack",
+                    "']'" => "r_brack",
+                    _ => punct_map.get(name.as_str()).unwrap_or(name),
+                };
+                format_ident!("{}_token", name.to_snake_case())
             }
             Field::Node { name, .. } => {
                 format_ident!("{}", name)

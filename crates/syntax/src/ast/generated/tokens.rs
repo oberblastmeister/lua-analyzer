@@ -17,7 +17,7 @@ impl std::fmt::Display for Error {
 }
 impl AstToken for Error {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == error
+        kind == Error
     }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -42,7 +42,7 @@ impl std::fmt::Display for Ident {
 }
 impl AstToken for Ident {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == ident
+        kind == Ident
     }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -67,7 +67,7 @@ impl std::fmt::Display for Shebang {
 }
 impl AstToken for Shebang {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == shebang
+        kind == Shebang
     }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -92,7 +92,7 @@ impl std::fmt::Display for Number {
 }
 impl AstToken for Number {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == number
+        kind == Number
     }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -107,17 +107,17 @@ impl AstToken for Number {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct String {
+pub struct Str {
     pub(crate) syntax: SyntaxToken,
 }
-impl std::fmt::Display for String {
+impl std::fmt::Display for Str {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(&self.syntax, f)
     }
 }
-impl AstToken for String {
+impl AstToken for Str {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == string
+        kind == Str
     }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -142,7 +142,7 @@ impl std::fmt::Display for Comment {
 }
 impl AstToken for Comment {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == comment
+        kind == Comment
     }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -167,7 +167,7 @@ impl std::fmt::Display for Whitespace {
 }
 impl AstToken for Whitespace {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == whitespace
+        kind == Whitespace
     }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {

@@ -1,3 +1,5 @@
+mod generated;
+
 use std::marker::PhantomData;
 
 use crate::{SyntaxNode, SyntaxKind, SyntaxToken, SyntaxNodeChildren};

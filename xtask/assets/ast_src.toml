@@ -10,6 +10,7 @@ keywords = [
 
     "while",
     "for",
+    "in",
     "break",
     "do",
     "goto",
@@ -17,12 +18,13 @@ keywords = [
     "and",
     "or",
 
-    "return"
+    "return",
+    "end",
 ]
 
 literals = [
     "Number",
-    "String",
+    "Str",
 ]
 
 tokens = [
@@ -58,3 +60,5 @@ trivia = [
 "-" = "Minus"
 "*" = "Asterisk"
 "/" = "Slash"
+
+"!" = "Bang"
