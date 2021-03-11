@@ -1,5 +1,8 @@
 use heck::SnakeCase;
+use quote::{format_ident, quote};
 use ungrammar::{Grammar, Rule};
+
+use super::kinds_src::PunctMap;
 
 #[derive(Default, Debug)]
 pub(crate) struct AstSrc {
@@ -36,6 +39,57 @@ pub(crate) enum Field {
         ty: String,
         cardinality: Cardinality,
     },
+}
+
+impl Field {
+    pub fn is_many(&self) -> bool {
+        matches!(
+            self,
+            Field::Node {
+                cardinality: Cardinality::Many,
+                ..
+            }
+        )
+    }
+
+    pub fn is_many_trailing(&self) -> bool {
+        matches!(
+            self,
+            Field::Node {
+                cardinality: Cardinality::ManyTrailing,
+                ..
+            }
+        )
+    }
+
+    pub fn token_kind(&self) -> Option<proc_macro2::TokenStream> {
+        match self {
+            Field::Token(token) => {
+                let token: proc_macro2::TokenStream = token.parse().unwrap();
+                Some(quote! { T![#token] })
+            }
+            _ => None,
+        }
+    }
+
+    pub fn method_name(&self, punct_map: &PunctMap) -> proc_macro2::Ident {
+        match self {
+            Field::Token(name) => {
+                let name = punct_map.get(name.as_str()).unwrap_or(name);
+                format_ident!("{}_token", name)
+            }
+            Field::Node { name, .. } => {
+                format_ident!("{}", name)
+            }
+        }
+    }
+
+    pub fn ty(&self) -> proc_macro2::Ident {
+        match self {
+            Field::Token(_) => format_ident!("SyntaxToken"),
+            Field::Node { ty, .. } => format_ident!("{}", ty),
+        }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq)]

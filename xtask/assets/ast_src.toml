@@ -1,25 +1,3 @@
-punct = [
-    ["==", "EqEq"],
-    ["~=", "NotEq"],
-
-    ["(", "LParen"],
-    [")", "RParen"],
-    ["{", "LBrace"],
-    ["}", "RBrace"],
-    ["[", "LBracket"],
-    ["]", "RBracket"],
-
-    [",", "Comma"],
-    [".", "Dot"],
-    [";", "Semicolon"],
-    [":", "Colon"],
-
-    ["+", "Plus"],
-    ["-", "Minus"],
-    ["*", "Asterisk"],
-    ["/", "Slash"],
-]
-
 keywords = [
     "function",
     "local",
@@ -57,3 +35,26 @@ trivia = [
     "Comment",
     "Whitespace",
 ]
+
+[punct]
+"==" = "EqEq"
+"~=" = "NotEq"
+
+"=" = "Eq"
+
+"(" = "LParen"
+")" = "RParen"
+"{" = "LBrace"
+"}" = "RBrace"
+"[" = "LBracket"
+"]" = "RBracket"
+
+"," = "Comma"
+"." = "Dot"
+";" = "Semicolon"
+":" = "Colon"
+
+"+" = "Plus"
+"-" = "Minus"
+"*" = "Asterisk"
+"/" = "Slash"
