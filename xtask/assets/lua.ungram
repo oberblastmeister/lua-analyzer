@@ -1,0 +1,115 @@
+Stmt =
+  Assignment
+  | Function
+  | For
+  | If
+
+Expr =
+  Literal
+  | Table
+  | InfixExpr
+  | PrefixExpr
+  | IndexExpr
+
+Literal =
+  'number'
+  | 'string'
+  | 'true'
+  | 'false'
+
+Table =
+  '{'
+  (TableContent (',' TableContent)* ','?)
+  '}'
+
+TableContent =
+  KeyValue
+  | TableItem
+
+TableItem =
+  Expr
+
+KeyValue =
+  key:TableKey value:Expr
+  
+TableKey =
+  IndexKey
+  | LiteralKey
+
+IndexKey =
+  '[' index:Expr ']'
+
+LiteralKey =
+  'ident'
+
+InfixExpr =
+  lhs:Expr
+  op:InfixOp
+  rhs:Expr
+
+InfixOp =
+  '+' | '-' | '/' | '*' | '==' | '~='
+
+PrefixExpr =
+  '!' Expr
+
+IndexExpr =
+  base:Expr '[' index:Expr ']'
+
+Function =
+  Modifier? 'function' Name
+
+Parameters =
+  '('
+  (Name (',' Name)*)
+  // (TableContent (',' TableContent)* ','?)
+  ')'
+
+If =
+  'if'
+  cond:Expr
+  'then'
+  body:Body
+  'end'
+
+WhileStmt =
+  'while'
+  cond:Expr
+  'then'
+  body:Body
+  'end'
+
+For =
+  'for' ForContent 'do' body:Body 'end'
+
+ForContent =
+  NumericFor
+  | GenericFor
+
+NumericFor =
+  'ident' '='
+  start:Expr ','
+  end:Expr (',' inc:Expr)?
+
+GenericFor =
+  pat:Pat
+  'in'
+  expr:Expr
+  
+
+Body =
+  Stmt*
+  
+Name =
+  'ident'
+
+Modifier =
+  'local'
+
+Assignment =
+  Modifier? Pat '=' 
+
+Pat =
+  Name (',' Name)*
+
+// vim: set shiftwidth=2

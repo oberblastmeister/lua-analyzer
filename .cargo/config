@@ -1,0 +1,4 @@
+[alias]
+xtask = "run --package xtask --"
+
+# vim: ft=toml
