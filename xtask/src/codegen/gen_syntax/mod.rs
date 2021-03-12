@@ -111,6 +111,8 @@ fn gen_syntax_kinds(kinds_src: &KindsSrc, ast_src: &AstSrc) -> Result<String> {
             Tombstone,
             #[doc(hidden)]
             Eof,
+            #[doc(hiddent)]
+            Unknown,
             #(#punctuation,)*
             #(#keywords,)*
             #(#literals,)*
@@ -160,6 +162,7 @@ fn gen_syntax_kinds(kinds_src: &KindsSrc, ast_src: &AstSrc) -> Result<String> {
             #([#trivia_matches] => { $crate::SyntaxKind::#trivia};)*
             [__] => { $crate::SyntaxKind::Tombstone };
             [eof] => { $crate::SyntaxKind::Eof };
+            [unknown] => { $crate::SyntaxKind::Unknown };
         }
     };
 

@@ -1,26 +1,30 @@
 Stmt =
-  Assignment
-  | Function
-  | For
-  | If
+  AssignStmt
+  | FunctionStmt
+  | ForStmt
+  | IfStmt
 
 Expr =
-  Literal
-  | Table
+  LitExpr
+  | TableExpr
   | InfixExpr
   | PrefixExpr
   | IndexExpr
+  | DotExpr
 
-Literal =
+LitExpr =
   'number'
   | 'string'
   | 'true'
   | 'false'
 
-Table =
+TableExpr =
   '{'
   (TableContent (',' TableContent)* ','?)
   '}'
+
+DotExpr =
+    Expr '.' Name
 
 TableContent =
   KeyValue
@@ -56,7 +60,7 @@ PrefixExpr =
 IndexExpr =
   base:Expr '[' index:Expr ']'
 
-Function =
+FunctionStmt =
   Modifier? 'function' Name
 
 Parameters =
@@ -65,7 +69,7 @@ Parameters =
   // (TableContent (',' TableContent)* ','?)
   ')'
 
-If =
+IfStmt =
   'if'
   cond:Expr
   'then'
@@ -79,7 +83,7 @@ WhileStmt =
   body:Body
   'end'
 
-For =
+ForStmt =
   'for' ForContent 'do' body:Body 'end'
 
 ForContent =
@@ -106,7 +110,7 @@ Name =
 Modifier =
   'local'
 
-Assignment =
+AssignStmt =
   Modifier? Pat '=' 
 
 Pat =
