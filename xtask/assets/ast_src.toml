@@ -7,6 +7,7 @@ keywords = [
     "if",
     "then",
     "else",
+    "elseif",
 
     "while",
     "for",
@@ -17,9 +18,15 @@ keywords = [
 
     "and",
     "or",
+    "not",
 
     "return",
     "end",
+
+    "repeat",
+    "until",
+
+    "nil",
 ]
 
 literals = [
@@ -42,6 +49,11 @@ trivia = [
 "==" = "EqEq"
 "~=" = "NotEq"
 
+">" = "Gt"
+">=" = "GtEq"
+"<" = "Lt"
+"<=" = "LtEq"
+
 "=" = "Eq"
 
 "(" = "LParen"
@@ -61,4 +73,14 @@ trivia = [
 "*" = "Asterisk"
 "/" = "Slash"
 
+# not for luajit
+"%" = "Modulo"
+"^" = "Caret"
+
+# table length operator
+"#" = "Hash"
+
 "!" = "Bang"
+
+".." = "DoubleDot"
+"..." = "TripleDot"

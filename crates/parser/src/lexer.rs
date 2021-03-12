@@ -15,12 +15,6 @@ pub struct Token {
     pub len: TextSize,
 }
 
-macro_rules! ToT {
-    ($name:tt) => {
-        $name => T![$name]
-    };
-}
-
 impl Token {
     fn new(kind: SyntaxKind, len: u32) -> Token {
         Token {
@@ -74,6 +68,11 @@ impl<'a> Lexer<'a> {
         self.chars.next()
     }
 
+    fn bump_peek(&mut self) -> char {
+        self.bump();
+        self.peek()
+    }
+
     fn lex_main(&mut self) -> SyntaxKind {
         let c = self.peek();
 
@@ -96,13 +95,10 @@ impl<'a> Lexer<'a> {
 
             '!' => T![!],
 
-            '-' => {
-                self.bump();
-                match self.peek() {
-                    '-' => todo!(),
-                    _ => T![-],
-                }
-            }
+            '-' => match self.bump_peek() {
+                '-' => self.comment(),
+                _ => T![-],
+            },
 
             '\0' => T![eof],
 
@@ -110,5 +106,11 @@ impl<'a> Lexer<'a> {
         };
 
         kind
+    }
+
+    fn comment(&mut self) -> SyntaxKind {
+        assert_eq!(self.peek(), '-');
+        self.chars.find(|c| *c == '\n');
+        T![comment]
     }
 }
