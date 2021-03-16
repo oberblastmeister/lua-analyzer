@@ -1,0 +1,214 @@
+---
+source: crates/parser/src/lexer.rs
+expression: tokens
+
+---
+[
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            "\n",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Number,
+                len: 1,
+            },
+            "5",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Plus,
+                len: 1,
+            },
+            "+",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Number,
+                len: 1,
+            },
+            "1",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            "\n",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Number,
+                len: 2,
+            },
+            "12",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Asterisk,
+                len: 1,
+            },
+            "*",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Number,
+                len: 1,
+            },
+            "3",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            "\n",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Number,
+                len: 2,
+            },
+            "34",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Minus,
+                len: 1,
+            },
+            "-",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Number,
+                len: 2,
+            },
+            "23",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            "\n",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Number,
+                len: 1,
+            },
+            "2",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Slash,
+                len: 1,
+            },
+            "/",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Number,
+                len: 1,
+            },
+            "1",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 15,
+            },
+            "\n              ",
+        ),
+    ),
+]

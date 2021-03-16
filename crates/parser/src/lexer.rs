@@ -211,7 +211,7 @@ impl<'a> Lexer<'a> {
             '!' => T![!],
 
             '-' => match self.bump_peek() {
-                '-' => done!(self.comment()?),
+                '-' => done!(self.comment()),
                 _ => done!(T![-]),
             },
 
@@ -256,19 +256,13 @@ impl<'a> Lexer<'a> {
         T![whitespace]
     }
 
-    fn comment(&mut self) -> LexResult<SyntaxKind> {
+    fn comment(&mut self) -> SyntaxKind {
         assert_eq!(self.peek(), '-');
         self.bump().unwrap();
 
-        // if self.accept(('[', '[')) {
-        //     return self.multiline_comment(0);
-        // } else if self.accept(('[', '=')) {
-        //     let count = self.accept_while_count('=') + 1;
-        //     return self.multiline_comment(count);
-        // }
+        self.chars.find(|c| *c == '\n');
 
-        // self.chars.find(|c| *c == '\n');
-        Ok(T![comment])
+        T![comment]
     }
 
     fn bracket_enclosed(&mut self) -> LexResult<()> {
@@ -337,9 +331,15 @@ impl<'a> Lexer<'a> {
 
     fn ident(&mut self) -> SyntaxKind {
         assert!(is_ident_start(self.peek()));
+
+        let start = self.pos();
+        let text = self.chars.as_str();
+
         self.bump().unwrap();
         self.accept_while(is_ident_continue);
-        T![ident]
+
+        let text = &text[0..(self.pos() - start) as usize];
+        SyntaxKind::from_keyword(text).unwrap_or(T![ident])
     }
 }
 
@@ -620,6 +620,41 @@ bracketd string134 asd
 
 ]=====]
             "#,
+        )
+    }
+
+    #[test]
+    fn math() {
+        check(
+            "
+5 + 1
+12 * 3
+34 - 23
+2/1
+              ",
+        )
+    }
+
+    #[test]
+    fn operators() {
+        check(
+            "
+!13 !true
+            ",
+        )
+    }
+
+    #[test]
+    fn keywords() {
+        check(
+            r#"
+-- taken from the lua reference
+ and       break     do        else      elseif    end
+ false     for       function  goto      if        in
+ local     nil       not       or        repeat    return
+ then      true      until     while
+ local var = "asdf"
+            "#
              )
     }
 }

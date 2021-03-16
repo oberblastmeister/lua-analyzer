@@ -1,0 +1,502 @@
+---
+source: crates/parser/src/lexer.rs
+expression: tokens
+
+---
+[
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            "\n",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Comment,
+                len: 32,
+            },
+            "-- taken from the lua reference\n",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: AndKw,
+                len: 3,
+            },
+            "and",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 7,
+            },
+            "       ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: BreakKw,
+                len: 5,
+            },
+            "break",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 5,
+            },
+            "     ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: DoKw,
+                len: 2,
+            },
+            "do",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 8,
+            },
+            "        ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: ElseKw,
+                len: 4,
+            },
+            "else",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 6,
+            },
+            "      ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: ElseifKw,
+                len: 6,
+            },
+            "elseif",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 4,
+            },
+            "    ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: EndKw,
+                len: 3,
+            },
+            "end",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 2,
+            },
+            "\n ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: FalseKw,
+                len: 5,
+            },
+            "false",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 5,
+            },
+            "     ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: ForKw,
+                len: 3,
+            },
+            "for",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 7,
+            },
+            "       ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: FunctionKw,
+                len: 8,
+            },
+            "function",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 2,
+            },
+            "  ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: GotoKw,
+                len: 4,
+            },
+            "goto",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 6,
+            },
+            "      ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: IfKw,
+                len: 2,
+            },
+            "if",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 8,
+            },
+            "        ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: InKw,
+                len: 2,
+            },
+            "in",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 2,
+            },
+            "\n ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: LocalKw,
+                len: 5,
+            },
+            "local",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 5,
+            },
+            "     ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: NilKw,
+                len: 3,
+            },
+            "nil",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 7,
+            },
+            "       ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: NotKw,
+                len: 3,
+            },
+            "not",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 7,
+            },
+            "       ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: OrKw,
+                len: 2,
+            },
+            "or",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 8,
+            },
+            "        ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: RepeatKw,
+                len: 6,
+            },
+            "repeat",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 4,
+            },
+            "    ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: ReturnKw,
+                len: 6,
+            },
+            "return",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 2,
+            },
+            "\n ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: ThenKw,
+                len: 4,
+            },
+            "then",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 6,
+            },
+            "      ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: TrueKw,
+                len: 4,
+            },
+            "true",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 6,
+            },
+            "      ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: UntilKw,
+                len: 5,
+            },
+            "until",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 5,
+            },
+            "     ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: WhileKw,
+                len: 5,
+            },
+            "while",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 2,
+            },
+            "\n ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: LocalKw,
+                len: 5,
+            },
+            "local",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Ident,
+                len: 3,
+            },
+            "var",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Unknown,
+                len: 1,
+            },
+            "=",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Str,
+                len: 6,
+            },
+            "\"asdf\"",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 13,
+            },
+            "\n            ",
+        ),
+    ),
+]
