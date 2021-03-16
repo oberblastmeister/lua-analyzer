@@ -1,0 +1,34 @@
+---
+source: crates/parser/src/lexer.rs
+expression: tokens
+
+---
+[
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            "\n",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Str,
+                len: 33,
+            },
+            "[[\nbracketd string134 asd\nasdf\n]]",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 13,
+            },
+            "\n            ",
+        ),
+    ),
+]

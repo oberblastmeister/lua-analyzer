@@ -1,0 +1,11 @@
+---
+source: crates/parser/src/lexer.rs
+expression: "first_token(\"hello\")"
+
+---
+Ok(
+    Token {
+        kind: Ident,
+        len: 5,
+    },
+)

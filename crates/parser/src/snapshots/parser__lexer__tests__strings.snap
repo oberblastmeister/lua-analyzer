@@ -1,0 +1,70 @@
+---
+source: crates/parser/src/lexer.rs
+expression: tokens
+
+---
+[
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            "\n",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Str,
+                len: 6,
+            },
+            "\"str\n\"",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 1,
+            },
+            "\n",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Str,
+                len: 18,
+            },
+            "\"this is a string\"",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 2,
+            },
+            "\n\n",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Str,
+                len: 18,
+            },
+            "\'\nanother string\n\'",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                len: 15,
+            },
+            "\n              ",
+        ),
+    ),
+]

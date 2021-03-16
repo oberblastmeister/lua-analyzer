@@ -5,3 +5,4 @@ mod syntax_kind;
 mod grammar;
 
 pub use syntax_kind::SyntaxKind;
+pub use lexer::{tokenize, first_token};

@@ -1,0 +1,6 @@
+---
+source: crates/parser/src/lexer.rs
+expression: tokens
+
+---
+[]
