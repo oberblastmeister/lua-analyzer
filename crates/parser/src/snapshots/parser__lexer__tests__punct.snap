@@ -16,35 +16,53 @@ expression: tokens
     Ok(
         (
             Token {
-                kind: Bang,
+                kind: Comma,
                 range: 1..2,
             },
-            "!",
+            ",",
         ),
     ),
     Ok(
         (
             Token {
-                kind: Number,
-                range: 2..4,
+                kind: Dot,
+                range: 2..3,
             },
-            "13",
+            ".",
         ),
     ),
     Ok(
         (
             Token {
-                kind: Whitespace,
-                range: 4..5,
+                kind: Ident,
+                range: 3..6,
             },
-            " ",
+            "awe",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Semicolon,
+                range: 6..7,
+            },
+            ";",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Colon,
+                range: 7..8,
+            },
+            ":",
         ),
     ),
     Ok(
         (
             Token {
                 kind: Bang,
-                range: 5..6,
+                range: 8..9,
             },
             "!",
         ),
@@ -52,10 +70,10 @@ expression: tokens
     Ok(
         (
             Token {
-                kind: TrueKw,
-                range: 6..10,
+                kind: Semicolon,
+                range: 9..10,
             },
-            "true",
+            ";",
         ),
     ),
     Ok(

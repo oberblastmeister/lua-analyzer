@@ -15,3 +15,15 @@ impl From<SyntaxKind> for u16 {
         k as u16
     }
 }
+
+/// for the bit-set to work
+#[test]
+fn syntax_kinds_in_bounds() {
+    assert!(T![__] as u16 == 0);
+    eprintln!(
+        "Last syntaxkind id
+              = {:?}",
+        SyntaxKind::__LAST as u16
+    );
+    assert!((SyntaxKind::__LAST as u16) < 128);
+}

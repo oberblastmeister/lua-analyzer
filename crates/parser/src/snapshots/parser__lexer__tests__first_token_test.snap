@@ -4,8 +4,8 @@ expression: "first_token(\"hello\")"
 
 ---
 Ok(
-    Token {
-        kind: Ident,
-        len: 5,
-    },
+    (
+        Ident,
+        5,
+    ),
 )

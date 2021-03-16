@@ -8,6 +8,8 @@ edition = "2018"
 
 [dependencies]
 drop_bomb = "0.1.5"
+either = "1.6.1"
+itertools = "0.10.0"
 rowan = "0.12.6"
 thiserror = "1.0.24"
 

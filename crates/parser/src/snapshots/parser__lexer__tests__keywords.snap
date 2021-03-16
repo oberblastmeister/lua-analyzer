@@ -8,7 +8,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 1,
+                range: 0..1,
             },
             "\n",
         ),
@@ -17,7 +17,7 @@ expression: tokens
         (
             Token {
                 kind: Comment,
-                len: 32,
+                range: 1..33,
             },
             "-- taken from the lua reference\n",
         ),
@@ -26,7 +26,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 1,
+                range: 33..34,
             },
             " ",
         ),
@@ -35,7 +35,7 @@ expression: tokens
         (
             Token {
                 kind: AndKw,
-                len: 3,
+                range: 34..37,
             },
             "and",
         ),
@@ -44,7 +44,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 7,
+                range: 37..44,
             },
             "       ",
         ),
@@ -53,7 +53,7 @@ expression: tokens
         (
             Token {
                 kind: BreakKw,
-                len: 5,
+                range: 44..49,
             },
             "break",
         ),
@@ -62,7 +62,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 5,
+                range: 49..54,
             },
             "     ",
         ),
@@ -71,7 +71,7 @@ expression: tokens
         (
             Token {
                 kind: DoKw,
-                len: 2,
+                range: 54..56,
             },
             "do",
         ),
@@ -80,7 +80,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 8,
+                range: 56..64,
             },
             "        ",
         ),
@@ -89,7 +89,7 @@ expression: tokens
         (
             Token {
                 kind: ElseKw,
-                len: 4,
+                range: 64..68,
             },
             "else",
         ),
@@ -98,7 +98,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 6,
+                range: 68..74,
             },
             "      ",
         ),
@@ -107,7 +107,7 @@ expression: tokens
         (
             Token {
                 kind: ElseifKw,
-                len: 6,
+                range: 74..80,
             },
             "elseif",
         ),
@@ -116,7 +116,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 4,
+                range: 80..84,
             },
             "    ",
         ),
@@ -125,7 +125,7 @@ expression: tokens
         (
             Token {
                 kind: EndKw,
-                len: 3,
+                range: 84..87,
             },
             "end",
         ),
@@ -134,7 +134,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 2,
+                range: 87..89,
             },
             "\n ",
         ),
@@ -143,7 +143,7 @@ expression: tokens
         (
             Token {
                 kind: FalseKw,
-                len: 5,
+                range: 89..94,
             },
             "false",
         ),
@@ -152,7 +152,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 5,
+                range: 94..99,
             },
             "     ",
         ),
@@ -161,7 +161,7 @@ expression: tokens
         (
             Token {
                 kind: ForKw,
-                len: 3,
+                range: 99..102,
             },
             "for",
         ),
@@ -170,7 +170,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 7,
+                range: 102..109,
             },
             "       ",
         ),
@@ -179,7 +179,7 @@ expression: tokens
         (
             Token {
                 kind: FunctionKw,
-                len: 8,
+                range: 109..117,
             },
             "function",
         ),
@@ -188,7 +188,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 2,
+                range: 117..119,
             },
             "  ",
         ),
@@ -197,7 +197,7 @@ expression: tokens
         (
             Token {
                 kind: GotoKw,
-                len: 4,
+                range: 119..123,
             },
             "goto",
         ),
@@ -206,7 +206,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 6,
+                range: 123..129,
             },
             "      ",
         ),
@@ -215,7 +215,7 @@ expression: tokens
         (
             Token {
                 kind: IfKw,
-                len: 2,
+                range: 129..131,
             },
             "if",
         ),
@@ -224,7 +224,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 8,
+                range: 131..139,
             },
             "        ",
         ),
@@ -233,7 +233,7 @@ expression: tokens
         (
             Token {
                 kind: InKw,
-                len: 2,
+                range: 139..141,
             },
             "in",
         ),
@@ -242,7 +242,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 2,
+                range: 141..143,
             },
             "\n ",
         ),
@@ -251,7 +251,7 @@ expression: tokens
         (
             Token {
                 kind: LocalKw,
-                len: 5,
+                range: 143..148,
             },
             "local",
         ),
@@ -260,7 +260,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 5,
+                range: 148..153,
             },
             "     ",
         ),
@@ -269,7 +269,7 @@ expression: tokens
         (
             Token {
                 kind: NilKw,
-                len: 3,
+                range: 153..156,
             },
             "nil",
         ),
@@ -278,7 +278,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 7,
+                range: 156..163,
             },
             "       ",
         ),
@@ -287,7 +287,7 @@ expression: tokens
         (
             Token {
                 kind: NotKw,
-                len: 3,
+                range: 163..166,
             },
             "not",
         ),
@@ -296,7 +296,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 7,
+                range: 166..173,
             },
             "       ",
         ),
@@ -305,7 +305,7 @@ expression: tokens
         (
             Token {
                 kind: OrKw,
-                len: 2,
+                range: 173..175,
             },
             "or",
         ),
@@ -314,7 +314,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 8,
+                range: 175..183,
             },
             "        ",
         ),
@@ -323,7 +323,7 @@ expression: tokens
         (
             Token {
                 kind: RepeatKw,
-                len: 6,
+                range: 183..189,
             },
             "repeat",
         ),
@@ -332,7 +332,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 4,
+                range: 189..193,
             },
             "    ",
         ),
@@ -341,7 +341,7 @@ expression: tokens
         (
             Token {
                 kind: ReturnKw,
-                len: 6,
+                range: 193..199,
             },
             "return",
         ),
@@ -350,7 +350,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 2,
+                range: 199..201,
             },
             "\n ",
         ),
@@ -359,7 +359,7 @@ expression: tokens
         (
             Token {
                 kind: ThenKw,
-                len: 4,
+                range: 201..205,
             },
             "then",
         ),
@@ -368,7 +368,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 6,
+                range: 205..211,
             },
             "      ",
         ),
@@ -377,7 +377,7 @@ expression: tokens
         (
             Token {
                 kind: TrueKw,
-                len: 4,
+                range: 211..215,
             },
             "true",
         ),
@@ -386,7 +386,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 6,
+                range: 215..221,
             },
             "      ",
         ),
@@ -395,7 +395,7 @@ expression: tokens
         (
             Token {
                 kind: UntilKw,
-                len: 5,
+                range: 221..226,
             },
             "until",
         ),
@@ -404,7 +404,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 5,
+                range: 226..231,
             },
             "     ",
         ),
@@ -413,7 +413,7 @@ expression: tokens
         (
             Token {
                 kind: WhileKw,
-                len: 5,
+                range: 231..236,
             },
             "while",
         ),
@@ -422,7 +422,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 2,
+                range: 236..238,
             },
             "\n ",
         ),
@@ -431,7 +431,7 @@ expression: tokens
         (
             Token {
                 kind: LocalKw,
-                len: 5,
+                range: 238..243,
             },
             "local",
         ),
@@ -440,7 +440,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 1,
+                range: 243..244,
             },
             " ",
         ),
@@ -449,7 +449,7 @@ expression: tokens
         (
             Token {
                 kind: Ident,
-                len: 3,
+                range: 244..247,
             },
             "var",
         ),
@@ -458,7 +458,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 1,
+                range: 247..248,
             },
             " ",
         ),
@@ -467,7 +467,7 @@ expression: tokens
         (
             Token {
                 kind: Unknown,
-                len: 1,
+                range: 248..249,
             },
             "=",
         ),
@@ -476,7 +476,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 1,
+                range: 249..250,
             },
             " ",
         ),
@@ -485,7 +485,7 @@ expression: tokens
         (
             Token {
                 kind: Str,
-                len: 6,
+                range: 250..256,
             },
             "\"asdf\"",
         ),
@@ -494,7 +494,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 13,
+                range: 256..269,
             },
             "\n            ",
         ),

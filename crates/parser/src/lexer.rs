@@ -1,6 +1,7 @@
 use std::str::Chars;
 use std::{iter, ops::Range};
 
+use itertools::{Either, Itertools};
 use rowan::{TextRange, TextSize};
 use thiserror::Error;
 
@@ -27,24 +28,24 @@ macro_rules! assert_matches {
 }
 
 /// A lua token
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Token {
     /// The kind of token.
     pub kind: SyntaxKind,
     /// The length of the token.
-    pub len: TextSize,
+    pub range: TextRange,
 }
 
-impl Token {
-    fn new(kind: SyntaxKind, len: u32) -> Token {
-        Token {
-            kind,
-            len: TextSize::from(len),
-        }
-    }
+pub fn tokenize(input: &str) -> (Vec<Token>, Vec<LexError>) {
+    tokenize_iter(input).partition_map(|r| match r {
+        Ok(v) => Either::Left(v),
+        Err(v) => Either::Right(v),
+    })
 }
 
-pub fn tokenize(mut input: &str) -> impl Iterator<Item = Result<Token, LexError>> + '_ {
+pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = Result<Token, LexError>> + '_ {
+    let mut pos = TextSize::from(0);
+
     iter::from_fn(move || {
         if input.is_empty() {
             return None;
@@ -52,55 +53,53 @@ pub fn tokenize(mut input: &str) -> impl Iterator<Item = Result<Token, LexError>
 
         match first_token(input) {
             Ok(token) => {
-                input = &input[token.len.into()..];
+                let len = token.1;
+                let end = pos + len;
+
+                let token = Token {
+                    kind: token.0,
+                    range: TextRange::new(pos, end),
+                };
+
+                pos = end;
+                input = &input[len.into()..];
+
                 Some(Ok(token))
             }
-            Err(e) => {
-                input = &input[e.len.into()..];
+            Err(err) => {
+                let len = err.1;
+                let end = pos + len;
+
+                let e = LexError {
+                    msg: err.0,
+                    range: TextRange::new(pos, end),
+                };
+
+                pos = end;
+                input = &input[len.into()..];
+
                 Some(Err(e))
             }
         }
     })
 }
 
-pub fn first_token(input: &str) -> Result<Token, LexError> {
+pub fn first_token(input: &str) -> Result<(SyntaxKind, TextSize), (LexErrorMsg, TextSize)> {
     Lexer::new(input).next_token()
 }
 
 #[derive(Debug, Error)]
-enum LexErrorKind {
-    #[error("There were no digits after the e")]
-    WrongScientificNum,
-
-    #[error("Unknown token")]
-    Unknown,
-
-    #[error("Unfinished string")]
-    UnfinishedString,
-
-    #[error("Invalid bracket notation")]
-    InvalidBracketNotation,
-
-    #[error("Not correct = amount")]
-    NotCorrectEqualAmount,
-}
-
-#[derive(Debug)]
+#[error("{msg}")]
 pub struct LexError {
-    kind: LexErrorKind,
-    len: TextSize,
+    msg: LexErrorMsg,
+    range: TextRange,
 }
 
-impl LexError {
-    fn new(kind: LexErrorKind, len: u32) -> LexError {
-        LexError {
-            kind,
-            len: TextSize::from(len),
-        }
-    }
-}
+#[derive(Debug, Error)]
+#[error("{0}")]
+pub struct LexErrorMsg(&'static str);
 
-type LexResult<T, E = LexErrorKind> = Result<T, E>;
+type LexResult<T, E = LexErrorMsg> = Result<T, E>;
 
 pub struct Lexer<'a> {
     input_len: u32,
@@ -124,15 +123,15 @@ impl<'a> Lexer<'a> {
     }
 
     fn eof(&self) -> bool {
-        self.peek() == '\0'
+        self.at('\0')
     }
 
     /// Peeks next char from stream without consuming it
-    fn peek(&self) -> char {
+    fn current(&self) -> char {
         self.nth(0)
     }
 
-    fn is<T: Peek>(&self, t: T) -> bool {
+    fn at<T: Peek>(&self, t: T) -> bool {
         T::peek(t, self)
     }
 
@@ -154,15 +153,15 @@ impl<'a> Lexer<'a> {
         self.chars.next()
     }
 
-    fn bump_peek(&mut self) -> char {
+    fn bump_then(&mut self) -> char {
         self.bump();
-        self.peek()
+        self.current()
     }
 
-    fn next_token(&mut self) -> Result<Token, LexError> {
+    fn next_token(&mut self) -> Result<(SyntaxKind, TextSize), (LexErrorMsg, TextSize)> {
         self.lex_main()
-            .map(|kind| Token::new(kind, self.pos()))
-            .map_err(|e| LexError::new(e, self.pos()))
+            .map(|kind| (kind, self.pos().into()))
+            .map_err(|e| (e, self.pos().into()))
     }
 
     fn accept<T: Accept + Copy>(&mut self, t: T) -> bool {
@@ -182,7 +181,7 @@ impl<'a> Lexer<'a> {
     }
 
     fn lex_main(&mut self) -> LexResult<SyntaxKind> {
-        let c = self.peek();
+        let c = self.current();
 
         // return on special cases
         let kind = match c {
@@ -192,7 +191,7 @@ impl<'a> Lexer<'a> {
             ')' => T![')'],
             '{' => T!['{'],
             '}' => T!['}'],
-            '[' => match self.bump_peek() {
+            '[' => match self.bump_then() {
                 '[' => done!(self.multiline_string()?),
                 '=' => done!(self.multiline_string()?),
                 _ => done!(T!['[']),
@@ -210,7 +209,7 @@ impl<'a> Lexer<'a> {
 
             '!' => T![!],
 
-            '-' => match self.bump_peek() {
+            '-' => match self.bump_then() {
                 '-' => done!(self.comment()),
                 _ => done!(T![-]),
             },
@@ -231,7 +230,7 @@ impl<'a> Lexer<'a> {
     }
 
     fn number(&mut self) -> LexResult<SyntaxKind> {
-        assert!(is_number(self.peek()));
+        assert!(self.at(is_number));
 
         if self.accept(('0', 'x')) {
             self.accept_while(is_hex);
@@ -251,13 +250,15 @@ impl<'a> Lexer<'a> {
     }
 
     fn whitespace(&mut self) -> SyntaxKind {
-        assert!(is_whitespace(self.peek()));
+        assert!(self.at(is_whitespace));
+
         self.accept_while(is_whitespace);
         T![whitespace]
     }
 
     fn comment(&mut self) -> SyntaxKind {
-        assert_eq!(self.peek(), '-');
+        assert!(self.at('-'));
+
         self.bump().unwrap();
 
         self.chars.find(|c| *c == '\n');
@@ -270,7 +271,7 @@ impl<'a> Lexer<'a> {
             let mut err = Ok(());
             let mut set_err = || {
                 if err.is_ok() {
-                    err = Err(LexErrorKind::InvalidBracketNotation);
+                    err = Err(LexErrorMsg("Invalid bracket notation"));
                 }
             };
 
@@ -293,11 +294,11 @@ impl<'a> Lexer<'a> {
             err
         }
 
-        assert_matches!(self.peek(), '[' | '=');
+        assert_matches!(self.current(), '[' | '=');
 
-        if self.is('[') {
+        if self.at('[') {
             close(self, 0)
-        } else if self.is('=') {
+        } else if self.at('=') {
             let count = self.accept_while_count('=');
             close(self, count)
         } else {
@@ -306,31 +307,31 @@ impl<'a> Lexer<'a> {
     }
 
     fn multiline_string(&mut self) -> LexResult<SyntaxKind> {
-        assert_matches!(self.peek(), '[' | '=');
+        assert!(self.at('[') || self.at('='));
 
         self.bracket_enclosed().map(|()| T![str])
     }
 
     fn multiline_comment(&mut self) -> LexResult<SyntaxKind> {
-        assert_matches!(self.peek(), '[' | '=');
+        assert!(self.at('[') || self.at('='));
 
         self.bracket_enclosed().map(|()| T![comment])
     }
 
     fn string(&mut self, delimit: char) -> LexResult<SyntaxKind> {
         assert!(matches!(delimit, '\'' | '"'));
-        assert_eq!(self.peek(), delimit);
+        assert_eq!(self.current(), delimit);
         self.bump().unwrap();
 
         self.chars
             .find(|c| *c == delimit)
-            .ok_or(LexErrorKind::UnfinishedString)?;
+            .ok_or(LexErrorMsg("UnfinishedString".into()))?;
 
         Ok(T![str])
     }
 
     fn ident(&mut self) -> SyntaxKind {
-        assert!(is_ident_start(self.peek()));
+        assert!(self.at(is_ident_start));
 
         let start = self.pos();
         let text = self.chars.as_str();
@@ -494,17 +495,11 @@ mod tests {
             .into_iter()
             .map(|res| match res {
                 Ok(token) => {
-                    let token_len: usize = token.len.into();
-                    let new_pos = pos + token_len;
-                    let text = &input[pos..new_pos];
-                    pos = new_pos;
+                    let text = &input[token.range];
                     Ok((token, text))
                 }
                 Err(e) => {
-                    let token_len: usize = e.len.into();
-                    let new_pos = pos + token_len;
-                    let text = &input[pos..new_pos];
-                    pos = new_pos;
+                    let text = &input[e.range];
                     Err((e, text))
                 }
             })
@@ -512,7 +507,7 @@ mod tests {
     }
 
     fn check(input: &str) {
-        let tokens = get_text(input, tokenize(input));
+        let tokens = get_text(input, tokenize_iter(input));
         insta::assert_debug_snapshot!(tokens);
     }
 
@@ -528,9 +523,9 @@ mod tests {
         let mut lexer = Lexer::new("[]");
         lexer.accept(('[', '='));
         assert_eq!(lexer.pos(), 0);
-        assert_eq!(lexer.peek(), '[');
+        assert_eq!(lexer.current(), '[');
         lexer.bump().unwrap();
-        assert_eq!(lexer.peek(), ']');
+        assert_eq!(lexer.current(), ']');
     }
 
     #[test]
@@ -654,7 +649,27 @@ bracketd string134 asd
  local     nil       not       or        repeat    return
  then      true      until     while
  local var = "asdf"
-            "#
-             )
+            "#,
+        )
+    }
+
+    #[test]
+    fn delimiters() {
+        check(
+            r#"
+{hello = "another"}
+asdf()
+[][]
+            "#,
+        )
+    }
+
+    #[test]
+    fn punct() {
+        check(
+            r#"
+,.awe;:!;
+            "#,
+        )
     }
 }

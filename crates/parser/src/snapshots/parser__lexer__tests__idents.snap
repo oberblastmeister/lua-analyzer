@@ -8,7 +8,7 @@ expression: tokens
         (
             Token {
                 kind: Ident,
-                len: 5,
+                range: 0..5,
             },
             "hello",
         ),
@@ -17,7 +17,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 4,
+                range: 5..9,
             },
             "\n   ",
         ),
@@ -26,7 +26,7 @@ expression: tokens
         (
             Token {
                 kind: Ident,
-                len: 5,
+                range: 9..14,
             },
             "world",
         ),
@@ -35,7 +35,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 1,
+                range: 14..15,
             },
             " ",
         ),
@@ -44,7 +44,7 @@ expression: tokens
         (
             Token {
                 kind: Ident,
-                len: 3,
+                range: 15..18,
             },
             "yes",
         ),
@@ -53,7 +53,7 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                len: 15,
+                range: 18..33,
             },
             "\n              ",
         ),
