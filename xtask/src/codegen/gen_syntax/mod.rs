@@ -200,8 +200,9 @@ fn gen_tokens(kinds_src: &KindsSrc) -> Result<String> {
     });
 
     let pretty = utils::reformat(
-        #[allow(dead_code)]
         &quote! {
+            #![allow(dead_code)]
+
             use crate::{SyntaxKind, SyntaxToken, ast::AstToken};
             #(#tokens)*
         }
@@ -386,6 +387,8 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
     // }
 
     let ast = quote! {
+        #![allow(dead_code)]
+
         use crate::{
             SyntaxNode, SyntaxToken, SyntaxKind::{self, *},
             ast::{self, AstNode, AstChildren, support},

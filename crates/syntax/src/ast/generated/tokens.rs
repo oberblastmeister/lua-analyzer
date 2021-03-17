@@ -1,5 +1,6 @@
 //! Generated file, do not edit by hand, see `xtask/src/codegen`
 
+#![allow(dead_code)]
 use crate::{ast::AstToken, SyntaxKind, SyntaxToken};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -64,31 +65,6 @@ impl std::fmt::Display for Shebang {
 impl AstToken for Shebang {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Shebang
-    }
-    fn cast(syntax: SyntaxToken) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxToken {
-        &self.syntax
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Newline {
-    pub(crate) syntax: SyntaxToken,
-}
-impl std::fmt::Display for Newline {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(&self.syntax, f)
-    }
-}
-impl AstToken for Newline {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Newline
     }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {

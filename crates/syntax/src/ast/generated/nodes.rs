@@ -1,5 +1,6 @@
 //! Generated file, do not edit by hand, see `xtask/src/codegen`
 
+#![allow(dead_code)]
 use crate::{
     ast::{self, support, AstChildren, AstNode},
     SyntaxKind::{self, *},

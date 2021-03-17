@@ -1,0 +1,18 @@
+[package]
+name = "lua-analyzer"
+version = "0.1.0"
+authors = ["Brian Shu <littlebubu.shu@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.38"
+crossbeam-channel = "0.5.0"
+log = "0.4.14"
+lsp-server = "0.5.0"
+lsp-types = "0.88.0"
+rayon = "1.5.0"
+serde = { version = "1.0.124", features = ["derive"] }
+serde_json = "1.0.64"
+serde_path_to_error = "0.1.4"
