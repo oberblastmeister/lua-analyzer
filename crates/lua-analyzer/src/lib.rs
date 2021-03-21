@@ -1,7 +1,9 @@
 mod caps;
 mod dispatch;
+mod from_proto;
 mod global_state;
 mod main_loop;
+mod thread_pool;
 
 use anyhow::{anyhow, Result};
 use serde::de::DeserializeOwned;

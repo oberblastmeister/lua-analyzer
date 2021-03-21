@@ -3,7 +3,10 @@ use std::{fmt, panic};
 use anyhow::{anyhow, Result};
 use serde::{de::DeserializeOwned, Serialize};
 
-use crate::global_state::{GlobalState, GlobalStateSnapshot};
+use crate::{
+    global_state::{GlobalState, GlobalStateSnapshot},
+    main_loop::Task,
+};
 
 pub struct RequestDispatcher<'a> {
     pub req: Option<lsp_server::Request>,
@@ -27,9 +30,11 @@ impl<'a> RequestDispatcher<'a> {
         let world = panic::AssertUnwindSafe(&mut *self.global_state);
 
         let response = panic::catch_unwind(move || {
-            f(world.0, params);
+            let result = f(world.0, params);
+            result_to_response::<R>(id, result)
         })
         .map_err(|_err| anyhow!("sync task {:?} panicked", R::METHOD))?;
+        self.global_state.respond(response);
         Ok(self)
     }
 
@@ -48,10 +53,13 @@ impl<'a> RequestDispatcher<'a> {
             None => return self,
         };
 
-        self.global_state.thread_pool.install({
+        self.global_state.task_pool.handle.spawn({
             let world = self.global_state.snapshot();
 
-            move || f(world, params)
+            move || {
+                let result = f(world, params);
+                Task::Response(result_to_response::<R>(id, result))
+            }
         });
 
         self
@@ -113,34 +121,21 @@ impl<'a> NotificationDispatcher<'a> {
     }
 }
 
-// fn result_to_response<R>(
-//     id: lsp_server::RequestId,
-//     result: Result<R::Result>,
-// ) -> lsp_server::Response
-// where
-//     R: lsp_types::request::Request + 'static,
-//     R::Params: DeserializeOwned + 'static,
-//     R::Result: Serialize + 'static,
-// {
-//     match result {
-//         Ok(resp) => lsp_server::Response::new_ok(id, &resp),
-//         Err(e) => match e.downcast::<LspError>() {
-//             Ok(lsp_error) => lsp_server::Response::new_err(id, lsp_error.code, lsp_error.message),
-//             Err(e) => {
-//                 if is_canceled(&*e) {
-//                     lsp_server::Response::new_err(
-//                         id,
-//                         lsp_server::ErrorCode::ContentModified as i32,
-//                         "content modified".to_string(),
-//                     )
-//                 } else {
-//                     lsp_server::Response::new_err(
-//                         id,
-//                         lsp_server::ErrorCode::InternalError as i32,
-//                         e.to_string(),
-//                     )
-//                 }
-//             }
-//         },
-//     }
-// }
+fn result_to_response<R>(
+    id: lsp_server::RequestId,
+    result: Result<R::Result>,
+) -> lsp_server::Response
+where
+    R: lsp_types::request::Request + 'static,
+    R::Params: DeserializeOwned + 'static,
+    R::Result: Serialize + 'static,
+{
+    match result {
+        Ok(resp) => lsp_server::Response::new_ok(id, &resp),
+        Err(e) => lsp_server::Response::new_err(
+            id,
+            lsp_server::ErrorCode::InternalError as i32,
+            e.to_string(),
+        ),
+    }
+}

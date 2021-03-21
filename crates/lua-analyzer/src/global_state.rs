@@ -1,27 +1,39 @@
-use std::time::Instant;
+use std::{path::PathBuf, time::Instant};
 
+use anyhow::Result;
 use crossbeam_channel::{unbounded, Receiver, Sender};
 use rayon::{ThreadPool, ThreadPoolBuilder};
+use rustc_hash::FxHashMap;
+
+use crate::{main_loop::{Event, Task}, thread_pool::TaskPool};
 
 pub(crate) type ReqHandler = fn(&mut GlobalState, lsp_server::Response);
 pub(crate) type ReqQueue = lsp_server::ReqQueue<(String, Instant), ReqHandler>;
 
+// Enforces drop order
+pub(crate) struct Handle<H, C> {
+    pub(crate) handle: H,
+    pub(crate) receiver: C,
+}
+
 pub struct GlobalState {
     req_queue: ReqQueue,
     pub(crate) sender: Sender<lsp_server::Message>,
-    pub(crate) thread_pool: ThreadPool,
+    pub(crate) task_pool: Handle<TaskPool<Task>, Receiver<Task>>,
 }
 
 impl GlobalState {
     pub(crate) fn new(sender: Sender<lsp_server::Message>) -> GlobalState {
-        let thread_pool = ThreadPoolBuilder::new()
-            .build()
-            .expect("Failed to initialize threadpool");
+        let task_pool = {
+            let (sender, receiver) = unbounded();
+            let handle = TaskPool::new(sender);
+            Handle { handle, receiver }
+        };
 
         GlobalState {
             req_queue: ReqQueue::default(),
             sender,
-            thread_pool,
+            task_pool,
         }
     }
 
@@ -29,7 +41,19 @@ impl GlobalState {
         GlobalStateSnapshot {}
     }
 
-    pub(crate) fn response(&mut self, response: lsp_server::Response) {}
+    pub(crate) fn send_request<R: lsp_types::request::Request>(
+        &mut self,
+        params: R::Params,
+        handler: ReqHandler,
+    ) {
+        let request = self.req_queue.outgoing.register(R::METHOD.to_string(), params, handler);
+        self.send(request.into());
+    }
+
+    pub(crate) fn complete_request(&mut self, response: lsp_server::Response) {
+        let handler = self.req_queue.outgoing.complete(response.id.clone());
+        handler(self, response)
+    }
 
     pub(crate) fn respond(&mut self, response: lsp_server::Response) {
         if let Some((method, start)) = self.req_queue.incoming.complete(response.id.clone()) {
