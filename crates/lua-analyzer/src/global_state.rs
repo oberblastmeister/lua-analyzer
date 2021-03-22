@@ -2,10 +2,15 @@ use std::{path::PathBuf, time::Instant};
 
 use anyhow::Result;
 use crossbeam_channel::{unbounded, Receiver, Sender};
+use lsp_server::{Notification, Request};
 use rayon::{ThreadPool, ThreadPoolBuilder};
 use rustc_hash::FxHashMap;
 
-use crate::{main_loop::{Event, Task}, thread_pool::TaskPool};
+use crate::{
+    dispatch::{NotificationDispatcher, RequestDispatcher},
+    main_loop::{Event, Task},
+    thread_pool::TaskPool,
+};
 
 pub(crate) type ReqHandler = fn(&mut GlobalState, lsp_server::Response);
 pub(crate) type ReqQueue = lsp_server::ReqQueue<(String, Instant), ReqHandler>;
@@ -46,7 +51,10 @@ impl GlobalState {
         params: R::Params,
         handler: ReqHandler,
     ) {
-        let request = self.req_queue.outgoing.register(R::METHOD.to_string(), params, handler);
+        let request = self
+            .req_queue
+            .outgoing
+            .register(R::METHOD.to_string(), params, handler);
         self.send(request.into());
     }
 
@@ -55,10 +63,8 @@ impl GlobalState {
         handler(self, response)
     }
 
-    pub(crate) fn respond(&mut self, response: lsp_server::Response) {
-        if let Some((method, start)) = self.req_queue.incoming.complete(response.id.clone()) {
-            let duration = start.elapsed();
-            log::info!("handled req#{} in {:?}", response.id, duration);
+    pub(crate) fn cancel(&mut self, request_id: lsp_server::RequestId) {
+        if let Some(response) = self.req_queue.incoming.cancel(request_id) {
             self.send(response.into());
         }
     }
@@ -76,6 +82,28 @@ impl GlobalState {
             request.id.clone(),
             (request.method.clone(), request_received),
         );
+    }
+
+    pub(crate) fn respond(&mut self, response: lsp_server::Response) {
+        if let Some((method, start)) = self.req_queue.incoming.complete(response.id.clone()) {
+            let duration = start.elapsed();
+            log::info!("handled req#{} in {:?}", response.id, duration);
+            self.send(response.into());
+        }
+    }
+
+    pub(crate) fn notification_dispatcher(&mut self, not: Notification) -> NotificationDispatcher {
+        NotificationDispatcher {
+            not: Some(not),
+            global_state: self,
+        }
+    }
+
+    pub(crate) fn request_dispatcher(&mut self, req: Request) -> RequestDispatcher {
+        RequestDispatcher {
+            req: Some(req),
+            global_state: self,
+        }
     }
 }
 

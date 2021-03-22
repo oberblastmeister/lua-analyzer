@@ -89,6 +89,18 @@ impl<'a> RequestDispatcher<'a> {
             }
         }
     }
+
+    pub(crate) fn finish(&mut self) {
+        if let Some(req) = self.req.take() {
+            log::error!("unknown request: {:?}", req);
+            let response = lsp_server::Response::new_err(
+                req.id,
+                lsp_server::ErrorCode::MethodNotFound as i32,
+                "unknown request".to_string(),
+            );
+            self.global_state.respond(response);
+        }
+    }
 }
 
 pub struct NotificationDispatcher<'a> {
@@ -118,6 +130,14 @@ impl<'a> NotificationDispatcher<'a> {
         };
         f(self.global_state, params)?;
         Ok(self)
+    }
+
+    pub(crate) fn finish(&mut self) {
+        if let Some(not) = &self.not {
+            if !not.method.starts_with("$/") {
+                log::error!("unhandled notification: {:?}", not);
+            }
+        }
     }
 }
 

@@ -3,16 +3,23 @@ use std::time::Instant;
 use anyhow::{anyhow, bail, Result};
 
 use crossbeam_channel::{select, Receiver};
+use log::info;
 use lsp_server::{Connection, Notification, Request, Response};
 use lsp_types::notification::Notification as _;
 
-use crate::global_state::GlobalState;
+use crate::{
+    dispatch::{NotificationDispatcher, RequestDispatcher},
+    global_state::GlobalState,
+    handlers,
+};
 
+#[derive(Debug)]
 pub(crate) enum Event {
     Lsp(lsp_server::Message),
     Task(Task),
 }
 
+#[derive(Debug)]
 pub(crate) enum Task {
     Response(Response),
     Diagnostics,
@@ -54,12 +61,12 @@ impl GlobalState {
                 lsp_server::Message::Notification(not) => {
                     self.on_notification(not)?;
                 }
-                _ => todo!(),
+                lsp_server::Message::Response(resp) => self.complete_request(resp),
             },
             Event::Task(mut task) => loop {
                 match task {
                     Task::Response(response) => self.respond(response),
-                    _ => todo!(),
+                    Task::Diagnostics => todo!(),
                 }
 
                 task = match self.task_pool.receiver.try_recv() {
@@ -67,17 +74,41 @@ impl GlobalState {
                     Err(_) => break,
                 };
             },
-            _ => todo!(),
         }
 
         Ok(())
     }
 
     fn on_request(&mut self, request_received: Instant, req: Request) -> Result<()> {
-        todo!()
+        use lsp_types::request::*;
+
+        self.register_request(&req, request_received);
+
+        self.request_dispatcher(req)
+            .on::<Completion>(handlers::handle_completion)
+            .finish();
+
+        Ok(())
     }
 
     fn on_notification(&mut self, not: Notification) -> Result<()> {
+        use lsp_types::notification::*;
+
+        self.notification_dispatcher(not)
+            .on::<DidOpenTextDocument>(|this, params| {
+                info!("Did open text document");
+                Ok(())
+            })?
+            .on::<DidChangeTextDocument>(|this, params| {
+                info!("Did change text document");
+                Ok(())
+            })?
+            .on::<DidSaveTextDocument>(|this, params| {
+                info!("Did save text document");
+                Ok(())
+            })?
+            .finish();
+
         Ok(())
     }
 }

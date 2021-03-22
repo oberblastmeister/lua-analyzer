@@ -1,5 +1,6 @@
 use lsp_types::{
-    ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
+    CompletionOptions, ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind,
+    TextDocumentSyncOptions, WorkDoneProgressOptions,
 };
 
 pub fn server_capabilities() -> ServerCapabilities {
@@ -11,6 +12,14 @@ pub fn server_capabilities() -> ServerCapabilities {
                 ..Default::default()
             },
         )),
+        completion_provider: Some(CompletionOptions {
+            resolve_provider: None,
+            trigger_characters: Some(vec![":".to_string(), ".".to_string()]),
+            all_commit_characters: None,
+            work_done_progress_options: WorkDoneProgressOptions {
+                work_done_progress: None,
+            },
+        }),
         ..Default::default()
     }
 }

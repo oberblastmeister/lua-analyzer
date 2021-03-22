@@ -30,6 +30,9 @@ fn run_server() -> Result<()> {
 
     let (connection, io_threads) = Connection::stdio();
 
+    let capabilities = serde_json::to_value(lua_analyzer::server_capabilities()).unwrap();
+    connection.initialize(capabilities)?;
+
     lua_analyzer::main_loop(connection)?;
 
     io_threads.join()?;
