@@ -9,6 +9,7 @@ use lsp_types::notification::Notification as _;
 
 use crate::{
     dispatch::{NotificationDispatcher, RequestDispatcher},
+    from_proto,
     global_state::GlobalState,
     handlers,
 };
@@ -96,17 +97,26 @@ impl GlobalState {
 
         self.notification_dispatcher(not)
             .on::<DidOpenTextDocument>(|this, params| {
-                info!("Did open text document");
+                if let Ok(path) = from_proto::path(&params.text_document.uri) {
+                    let changed = this
+                        .vfs
+                        .write()
+                        .set_file_contents(path, Some(params.text_document.text.into_bytes()));
+                }
                 Ok(())
             })?
             .on::<DidChangeTextDocument>(|this, params| {
-                info!("Did change text document");
+                if let Ok(path) = from_proto::path(&params.text_document.uri) {
+                    let vfs = &mut this.vfs.write();
+                    let file_id = vfs.file_id(&path).unwrap();
+                    let mut text = String::from_utf8(vfs.file_contents(file_id).to_vec()).unwrap();
+                    // apply_document_changes(&mut text, params.content_changes);
+
+                    vfs.set_file_contents(path.clone(), Some(text.into_bytes()));
+                }
                 Ok(())
             })?
-            .on::<DidSaveTextDocument>(|this, params| {
-                info!("Did save text document");
-                Ok(())
-            })?
+            .on::<DidSaveTextDocument>(|this, params| Ok(()))?
             .finish();
 
         Ok(())

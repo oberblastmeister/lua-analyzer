@@ -10,6 +10,7 @@ use path_interner::PathInterner;
 #[derive(Copy, Clone, Debug, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct FileId(pub u32);
 
+#[derive(Default)]
 pub struct Vfs {
     interner: PathInterner,
     data: Vec<Option<Vec<u8>>>,

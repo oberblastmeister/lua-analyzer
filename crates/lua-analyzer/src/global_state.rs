@@ -1,8 +1,10 @@
-use std::{path::PathBuf, time::Instant};
+use std::{path::PathBuf, sync::Arc, time::Instant};
 
 use anyhow::Result;
 use crossbeam_channel::{unbounded, Receiver, Sender};
+use ide::{Analysis, AnalysisHost};
 use lsp_server::{Notification, Request};
+use parking_lot::RwLock;
 use rayon::{ThreadPool, ThreadPoolBuilder};
 use rustc_hash::FxHashMap;
 
@@ -25,6 +27,8 @@ pub struct GlobalState {
     req_queue: ReqQueue,
     pub(crate) sender: Sender<lsp_server::Message>,
     pub(crate) task_pool: Handle<TaskPool<Task>, Receiver<Task>>,
+    pub(crate) vfs: Arc<RwLock<vfs::Vfs>>,
+    pub(crate) analysis_host: AnalysisHost,
 }
 
 impl GlobalState {
@@ -38,12 +42,17 @@ impl GlobalState {
         GlobalState {
             req_queue: ReqQueue::default(),
             sender,
+            vfs: Arc::new(RwLock::new(vfs::Vfs::default())),
             task_pool,
+            analysis_host: AnalysisHost::new(),
         }
     }
 
     pub(crate) fn snapshot(&self) -> GlobalStateSnapshot {
-        GlobalStateSnapshot {}
+        GlobalStateSnapshot {
+            analysis: self.analysis_host.analysis(),
+            vfs: self.vfs.clone(),
+        }
     }
 
     pub(crate) fn send_request<R: lsp_types::request::Request>(
@@ -107,4 +116,7 @@ impl GlobalState {
     }
 }
 
-pub(crate) struct GlobalStateSnapshot {}
+pub(crate) struct GlobalStateSnapshot {
+    analysis: Analysis,
+    vfs: Arc<RwLock<vfs::Vfs>>,
+}
