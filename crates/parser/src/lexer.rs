@@ -9,12 +9,6 @@ use crate::{SyntaxKind, T};
 
 pub(crate) const EOF_CHAR: char = '\0';
 
-macro_rules! bail {
-    ($kind:ident) => {
-        return Err(LexErrorKind::$kind);
-    };
-}
-
 macro_rules! done {
     ($expr:expr) => {
         return Ok($expr);
@@ -95,7 +89,7 @@ pub struct LexError {
     range: TextRange,
 }
 
-#[derive(Debug, Error)]
+#[derive(Debug, Error, PartialEq, Eq)]
 #[error("{0}")]
 pub struct LexErrorMsg(&'static str);
 

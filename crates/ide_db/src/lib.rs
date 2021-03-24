@@ -1,6 +1,6 @@
 pub use base_db;
 
-use base_db::{Canceled, CheckCanceled};
+use base_db::{salsa, Canceled, CheckCanceled};
 
 #[salsa::database]
 pub struct RootDatabase {
@@ -25,12 +25,16 @@ impl salsa::Database for RootDatabase {
 
 impl salsa::ParallelDatabase for RootDatabase {
     fn snapshot(&self) -> salsa::Snapshot<RootDatabase> {
-        salsa::Snapshot::new(RootDatabase { storage: self.storage.snapshot() })
+        salsa::Snapshot::new(RootDatabase {
+            storage: self.storage.snapshot(),
+        })
     }
 }
 
 impl RootDatabase {
     pub fn new() -> RootDatabase {
-        RootDatabase { storage: salsa::Storage::default() }
+        RootDatabase {
+            storage: salsa::Storage::default(),
+        }
     }
 }

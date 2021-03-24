@@ -11,8 +11,8 @@ pub struct AssignStmt {
     pub(crate) syntax: SyntaxNode,
 }
 impl AssignStmt {
-    pub fn modifier(&self) -> Option<Modifier> {
-        support::child(&self.syntax)
+    pub fn local_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![local])
     }
     pub fn pat(&self) -> Option<Pat> {
         support::child(&self.syntax)
@@ -26,8 +26,8 @@ pub struct FunctionStmt {
     pub(crate) syntax: SyntaxNode,
 }
 impl FunctionStmt {
-    pub fn modifier(&self) -> Option<Modifier> {
-        support::child(&self.syntax)
+    pub fn local_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![local])
     }
     pub fn function_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![function])
@@ -244,15 +244,6 @@ impl InfixOp {
     }
     pub fn not_eq_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![~=])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Modifier {
-    pub(crate) syntax: SyntaxNode,
-}
-impl Modifier {
-    pub fn local_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![local])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -604,21 +595,6 @@ impl AstNode for LiteralKey {
 impl AstNode for InfixOp {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == InfixOp
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for Modifier {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == Modifier
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1024,11 +1000,6 @@ impl std::fmt::Display for LiteralKey {
     }
 }
 impl std::fmt::Display for InfixOp {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for Modifier {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

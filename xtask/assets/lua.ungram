@@ -61,7 +61,7 @@ IndexExpr =
   base:Expr '[' index:Expr ']'
 
 FunctionStmt =
-  Modifier? 'function' Name
+  'local'? 'function' Name
 
 Parameters =
   '('
@@ -107,11 +107,8 @@ Body =
 Name =
   'ident'
 
-Modifier =
-  'local'
-
 AssignStmt =
-  Modifier? Pat '=' 
+  'local'? Pat '=' 
 
 Pat =
   Name (',' Name)*

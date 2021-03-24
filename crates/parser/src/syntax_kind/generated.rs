@@ -81,7 +81,6 @@ pub enum SyntaxKind {
     IndexKey,
     LiteralKey,
     InfixOp,
-    Modifier,
     Parameters,
     Body,
     WhileStmt,

@@ -2,17 +2,16 @@ mod lexer;
 mod parser;
 #[macro_use]
 mod syntax_kind;
-mod grammar;
 mod event;
-mod token_set;
+mod grammar;
 mod parse_error;
+mod token_set;
 
-use rowan::TextRange;
-pub use syntax_kind::SyntaxKind;
-pub use lexer::{tokenize_iter, first_token, Token, LexError, LexErrorMsg};
 pub use event::Event;
+pub use lexer::{first_token, tokenize, tokenize_iter, LexError, LexErrorMsg, Token};
+pub use parse_error::{ParseError, ParseErrorKind};
+pub use syntax_kind::SyntaxKind;
 pub(crate) use token_set::TokenSet;
-pub use parse_error::{ParseErrorKind, ParseError};
 
 pub trait TokenSource {
     fn current(&self) -> Token;
@@ -30,7 +29,7 @@ pub trait TokenSource {
 /// `TreeSink` abstracts details of a particular syntax tree implementation.
 pub trait TreeSink {
     /// Adds new token to the current branch.
-    fn token(&mut self, kind: SyntaxKind, n_tokens: u8);
+    fn token(&mut self, token: Token);
 
     /// Start new branch and make it current.
     fn start_node(&mut self, kind: SyntaxKind);

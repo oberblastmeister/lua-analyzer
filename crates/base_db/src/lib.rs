@@ -1,8 +1,10 @@
 mod cancellation;
 
 pub use cancellation::Canceled;
+pub use salsa;
+pub use vfs::FileId;
 
-use std::panic;
+use std::{panic, sync::Arc};
 
 pub trait Upcast<T: ?Sized> {
     fn upcast(&self) -> &T;
@@ -42,4 +44,16 @@ impl<T: salsa::Database> CheckCanceled for T {
             Canceled::throw()
         }
     }
+}
+
+/// Database which stores all significant input facts: source code and project
+/// model. Everything else in rust-analyzer is derived from these queries.
+#[salsa::query_group(SourceDatabaseStorage)]
+pub trait SourceDatabase: CheckCanceled + std::fmt::Debug {
+    #[salsa::input]
+    fn file_text(&self, file_id: FileId) -> Arc<String>;
+
+    // Parses the file into the syntax tree.
+    // #[salsa::invoke(parse_query)]
+    // fn parse(&self, file_id: FileId) -> ();
 }

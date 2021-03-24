@@ -1,5 +1,5 @@
 use ide_db::{
-    base_db::{Canceled, CheckCanceled},
+    base_db::{salsa, Canceled, CheckCanceled},
     RootDatabase,
 };
 use salsa::{ParallelDatabase, Snapshot};

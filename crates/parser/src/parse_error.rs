@@ -3,7 +3,7 @@ use thiserror::Error;
 
 use crate::{LexErrorMsg, SyntaxKind};
 
-#[derive(Debug, Error)]
+#[derive(Debug, Error, PartialEq, Eq)]
 pub enum ParseErrorKind {
     #[error("{0}")]
     Message(&'static str),
@@ -27,7 +27,7 @@ impl ParseErrorKind {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct ParseError {
     kind: ParseErrorKind,
     range: TextRange,

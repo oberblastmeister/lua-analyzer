@@ -8,3 +8,5 @@ edition = "2018"
 
 [dependencies]
 salsa = "0.16.0"
+
+vfs = { path = "../vfs" }

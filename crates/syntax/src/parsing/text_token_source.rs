@@ -1,64 +1,68 @@
-////! See `TextTokenSource` docs.
+//! See `TextTokenSource` docs.
 
-//use parser::{TokenSource, T};
+use parser::{Token, TokenSource, T};
 
-//use rowan::{TextRange, TextSize};
+use rowan::TextRange;
 
-///// Implementation of `parser::TokenSource` that takes tokens from source code text.
-//pub(crate) struct TextTokenSource<'t> {
-//    text: &'t str,
-//    /// token and its start position (non-whitespace/comment tokens)
-//    /// ```non-rust
-//    ///  struct Foo;
-//    ///  ^------^--^-
-//    ///  |      |    \________
-//    ///  |      \____         \
-//    ///  |           \         |
-//    ///  (struct, 0) (Foo, 7) (;, 10)
-//    /// ```
-//    /// `[(struct, 0), (Foo, 7), (;, 10)]`
-//    token_offset_pairs: Vec<(Token, TextSize)>,
+/// Implementation of `parser::TokenSource` that takes tokens from source code text.
+pub(crate) struct TextTokenSource<'t> {
+    text: &'t str,
 
-//    /// Current token and position
-//    curr: (parser::Token, usize),
-//}
+    // token_offset_pairs: Vec<(Token, TextSize)>,
+    tokens: &'t [Token],
 
-//impl<'t> TokenSource for TextTokenSource<'t> {
-//    fn current(&self) -> parser::Token {
-//        self.curr.0
-//    }
+    // /// Current token and position
+    // curr: (parser::Token, usize),
+    curr: (Token, usize),
+}
 
-//    fn lookahead_nth(&self, n: usize) -> parser::Token {
-//        mk_token(self.curr.1 + n, &self.token_offset_pairs)
-//    }
+impl<'t> TextTokenSource<'t> {
+    pub(crate)  fn new(text: &'t str, tokens: &'t [Token]) -> TextTokenSource<'t> {
+        let first = mk_token(0, &tokens, TextRange::new(0.into(), 0.into()));
+        TextTokenSource {
+            text,
+            tokens,
+            curr: (first, 0),
+        }
+    }
 
-//    fn bump(&mut self) {
-//        if self.curr.0.kind == EOF {
-//            return;
-//        }
+    fn curr_range(&self) -> TextRange {
+        self.curr.0.range
+    }
+}
 
-//        let pos = self.curr.1 + 1;
-//        self.curr = (mk_token(pos, &self.token_offset_pairs), pos);
-//    }
+impl<'t> TokenSource for TextTokenSource<'t> {
+    fn current(&self) -> parser::Token {
+        self.curr.0
+    }
 
-//    fn is_keyword(&self, kw: &str) -> bool {
-//        self.token_offset_pairs
-//            .get(self.curr.1)
-//            .map(|(token, offset)| &self.text[TextRange::at(*offset, token.len)] == kw)
-//            .unwrap_or(false)
-//    }
-//}
+    fn lookahead_nth(&self, n: usize) -> parser::Token {
+        mk_token(n, &self.tokens, self.curr_range())
+    }
 
-//fn mk_token(pos: usize, token_offset_pairs: &[(Token, TextSize)]) -> parser::Token {
-//    let (kind, is_jointed_to_next) = match token_offset_pairs.get(pos) {
-//        Some((token, offset)) => (
-//            token.kind,
-//            token_offset_pairs
-//                .get(pos + 1)
-//                .map(|(_, next_offset)| offset + token.len == *next_offset)
-//                .unwrap_or(false),
-//        ),
-//        None => (EOF, false),
-//    };
-//    parser::Token { kind, is_jointed_to_next }
-//}
+    fn bump(&mut self) {
+        if self.curr.0.kind == T![eof] {
+            return;
+        }
+
+        let pos = self.curr.1 + 1;
+        self.curr = (mk_token(pos, &self.tokens, self.curr_range()), pos);
+    }
+
+    fn is_keyword(&self, kw: &str) -> bool {
+        self.tokens
+            .get(self.curr.1)
+            .map(|token| &self.text[token.range] == kw)
+            .unwrap_or(false)
+    }
+}
+
+fn mk_token(pos: usize, tokens: &[Token], eof_range: TextRange) -> Token {
+    match tokens.get(pos) {
+        Some(token) => *token,
+        None => Token {
+            kind: T![eof],
+            range: eof_range,
+        },
+    }
+}

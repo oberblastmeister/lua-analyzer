@@ -17,6 +17,7 @@ name = "base_db"
 version = "0.1.0"
 dependencies = [
  "salsa",
+ "vfs",
 ]
 
 [[package]]
@@ -203,7 +204,6 @@ name = "ide"
 version = "0.1.0"
 dependencies = [
  "ide_db",
- "salsa",
 ]
 
 [[package]]
@@ -211,7 +211,6 @@ name = "ide_db"
 version = "0.1.0"
 dependencies = [
  "base_db",
- "salsa",
 ]
 
 [[package]]
