@@ -272,7 +272,7 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
                 quote! {
                     impl AstNode for #name {
                         fn can_cast(kind: SyntaxKind) -> bool {
-                            kind == #kind
+                            kind == SyntaxKind::#kind
                         }
                         fn cast(syntax: SyntaxNode) -> Option<Self> {
                             if Self::can_cast(syntax.kind()) { Some(Self { syntax }) } else { None }
@@ -311,14 +311,14 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
                     impl AstNode for #name {
                         fn can_cast(kind: SyntaxKind) -> bool {
                             match kind {
-                                #(#kinds)|* => true,
+                                #(SyntaxKind::#kinds)|* => true,
                                 _ => false,
                             }
                         }
                         fn cast(syntax: SyntaxNode) -> Option<Self> {
                             let res = match syntax.kind() {
                                 #(
-                                #kinds => #name::#variants(#variants { syntax }),
+                                SyntaxKind::#kinds => #name::#variants(#variants { syntax }),
                                 )*
                                 _ => return None,
                             };
@@ -390,7 +390,7 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
         #![allow(dead_code)]
 
         use crate::{
-            SyntaxNode, SyntaxToken, SyntaxKind::{self, *},
+            SyntaxNode, SyntaxToken, SyntaxKind,
             ast::{self, AstNode, AstChildren, support},
             T,
         };

@@ -1,4 +1,4 @@
-use parser::ParseError;
+use parser::{LexError, LexErrorMsg, ParseError};
 use rowan::{GreenNodeBuilder, Language, TextRange};
 
 use crate::{Parse, SyntaxKind};
@@ -23,16 +23,11 @@ impl Language for RustLanguage {
 #[derive(Debug, PartialEq, Eq)]
 pub struct SyntaxError(String, TextRange);
 
-// impl From<ParseError> for SyntaxError {
-//     fn from(e: ParseError) -> Self {
-//         match e {
-//             ParseError::Lexer(parser::LexError { msg, range }) => {
-//                 SyntaxError(msg.to_string(), range)
-//             }
-//             ParseError::ParseError { kind, range } => SyntaxError(kind.to_string(), range),
-//         }
-//     }
-// }
+impl From<LexError> for SyntaxError {
+    fn from(e: LexError) -> SyntaxError {
+        SyntaxError(e.msg.to_string(), e.range)
+    }
+}
 
 pub type SyntaxNode = rowan::SyntaxNode<RustLanguage>;
 pub type SyntaxToken = rowan::SyntaxToken<RustLanguage>;

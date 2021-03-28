@@ -3,8 +3,7 @@
 #![allow(dead_code)]
 use crate::{
     ast::{self, support, AstChildren, AstNode},
-    SyntaxKind::{self, *},
-    SyntaxNode, SyntaxToken, T,
+    SyntaxKind, SyntaxNode, SyntaxToken, T,
 };
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Program {
@@ -378,7 +377,7 @@ pub enum ForContent {
 }
 impl AstNode for Program {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == Program
+        kind == SyntaxKind::Program
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -393,7 +392,7 @@ impl AstNode for Program {
 }
 impl AstNode for AssignStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == AssignStmt
+        kind == SyntaxKind::AssignStmt
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -408,7 +407,7 @@ impl AstNode for AssignStmt {
 }
 impl AstNode for FunctionStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == FunctionStmt
+        kind == SyntaxKind::FunctionStmt
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -423,7 +422,7 @@ impl AstNode for FunctionStmt {
 }
 impl AstNode for ForStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == ForStmt
+        kind == SyntaxKind::ForStmt
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -438,7 +437,7 @@ impl AstNode for ForStmt {
 }
 impl AstNode for IfStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == IfStmt
+        kind == SyntaxKind::IfStmt
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -453,7 +452,7 @@ impl AstNode for IfStmt {
 }
 impl AstNode for LitExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == LitExpr
+        kind == SyntaxKind::LitExpr
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -468,7 +467,7 @@ impl AstNode for LitExpr {
 }
 impl AstNode for TableExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == TableExpr
+        kind == SyntaxKind::TableExpr
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -483,7 +482,7 @@ impl AstNode for TableExpr {
 }
 impl AstNode for InfixExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == InfixExpr
+        kind == SyntaxKind::InfixExpr
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -498,7 +497,7 @@ impl AstNode for InfixExpr {
 }
 impl AstNode for PrefixExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == PrefixExpr
+        kind == SyntaxKind::PrefixExpr
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -513,7 +512,7 @@ impl AstNode for PrefixExpr {
 }
 impl AstNode for IndexExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == IndexExpr
+        kind == SyntaxKind::IndexExpr
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -528,7 +527,7 @@ impl AstNode for IndexExpr {
 }
 impl AstNode for DotExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == DotExpr
+        kind == SyntaxKind::DotExpr
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -543,7 +542,7 @@ impl AstNode for DotExpr {
 }
 impl AstNode for Name {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == Name
+        kind == SyntaxKind::Name
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -558,7 +557,7 @@ impl AstNode for Name {
 }
 impl AstNode for KeyValue {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == KeyValue
+        kind == SyntaxKind::KeyValue
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -573,7 +572,7 @@ impl AstNode for KeyValue {
 }
 impl AstNode for TableItem {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == TableItem
+        kind == SyntaxKind::TableItem
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -588,7 +587,7 @@ impl AstNode for TableItem {
 }
 impl AstNode for IndexKey {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == IndexKey
+        kind == SyntaxKind::IndexKey
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -603,7 +602,7 @@ impl AstNode for IndexKey {
 }
 impl AstNode for LiteralKey {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == LiteralKey
+        kind == SyntaxKind::LiteralKey
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -618,7 +617,7 @@ impl AstNode for LiteralKey {
 }
 impl AstNode for InfixOp {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == InfixOp
+        kind == SyntaxKind::InfixOp
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -633,7 +632,7 @@ impl AstNode for InfixOp {
 }
 impl AstNode for Parameters {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == Parameters
+        kind == SyntaxKind::Parameters
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -648,7 +647,7 @@ impl AstNode for Parameters {
 }
 impl AstNode for Body {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == Body
+        kind == SyntaxKind::Body
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -663,7 +662,7 @@ impl AstNode for Body {
 }
 impl AstNode for WhileStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == WhileStmt
+        kind == SyntaxKind::WhileStmt
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -678,7 +677,7 @@ impl AstNode for WhileStmt {
 }
 impl AstNode for NumericFor {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == NumericFor
+        kind == SyntaxKind::NumericFor
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -693,7 +692,7 @@ impl AstNode for NumericFor {
 }
 impl AstNode for GenericFor {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == GenericFor
+        kind == SyntaxKind::GenericFor
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -708,7 +707,7 @@ impl AstNode for GenericFor {
 }
 impl AstNode for Pat {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == Pat
+        kind == SyntaxKind::Pat
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -744,16 +743,19 @@ impl From<IfStmt> for Stmt {
 impl AstNode for Stmt {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
-            AssignStmt | FunctionStmt | ForStmt | IfStmt => true,
+            SyntaxKind::AssignStmt
+            | SyntaxKind::FunctionStmt
+            | SyntaxKind::ForStmt
+            | SyntaxKind::IfStmt => true,
             _ => false,
         }
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
-            AssignStmt => Stmt::AssignStmt(AssignStmt { syntax }),
-            FunctionStmt => Stmt::FunctionStmt(FunctionStmt { syntax }),
-            ForStmt => Stmt::ForStmt(ForStmt { syntax }),
-            IfStmt => Stmt::IfStmt(IfStmt { syntax }),
+            SyntaxKind::AssignStmt => Stmt::AssignStmt(AssignStmt { syntax }),
+            SyntaxKind::FunctionStmt => Stmt::FunctionStmt(FunctionStmt { syntax }),
+            SyntaxKind::ForStmt => Stmt::ForStmt(ForStmt { syntax }),
+            SyntaxKind::IfStmt => Stmt::IfStmt(IfStmt { syntax }),
             _ => return None,
         };
         Some(res)
@@ -800,18 +802,23 @@ impl From<DotExpr> for Expr {
 impl AstNode for Expr {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
-            LitExpr | TableExpr | InfixExpr | PrefixExpr | IndexExpr | DotExpr => true,
+            SyntaxKind::LitExpr
+            | SyntaxKind::TableExpr
+            | SyntaxKind::InfixExpr
+            | SyntaxKind::PrefixExpr
+            | SyntaxKind::IndexExpr
+            | SyntaxKind::DotExpr => true,
             _ => false,
         }
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
-            LitExpr => Expr::LitExpr(LitExpr { syntax }),
-            TableExpr => Expr::TableExpr(TableExpr { syntax }),
-            InfixExpr => Expr::InfixExpr(InfixExpr { syntax }),
-            PrefixExpr => Expr::PrefixExpr(PrefixExpr { syntax }),
-            IndexExpr => Expr::IndexExpr(IndexExpr { syntax }),
-            DotExpr => Expr::DotExpr(DotExpr { syntax }),
+            SyntaxKind::LitExpr => Expr::LitExpr(LitExpr { syntax }),
+            SyntaxKind::TableExpr => Expr::TableExpr(TableExpr { syntax }),
+            SyntaxKind::InfixExpr => Expr::InfixExpr(InfixExpr { syntax }),
+            SyntaxKind::PrefixExpr => Expr::PrefixExpr(PrefixExpr { syntax }),
+            SyntaxKind::IndexExpr => Expr::IndexExpr(IndexExpr { syntax }),
+            SyntaxKind::DotExpr => Expr::DotExpr(DotExpr { syntax }),
             _ => return None,
         };
         Some(res)
@@ -840,14 +847,14 @@ impl From<TableItem> for TableContent {
 impl AstNode for TableContent {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
-            KeyValue | TableItem => true,
+            SyntaxKind::KeyValue | SyntaxKind::TableItem => true,
             _ => false,
         }
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
-            KeyValue => TableContent::KeyValue(KeyValue { syntax }),
-            TableItem => TableContent::TableItem(TableItem { syntax }),
+            SyntaxKind::KeyValue => TableContent::KeyValue(KeyValue { syntax }),
+            SyntaxKind::TableItem => TableContent::TableItem(TableItem { syntax }),
             _ => return None,
         };
         Some(res)
@@ -872,14 +879,14 @@ impl From<LiteralKey> for TableKey {
 impl AstNode for TableKey {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
-            IndexKey | LiteralKey => true,
+            SyntaxKind::IndexKey | SyntaxKind::LiteralKey => true,
             _ => false,
         }
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
-            IndexKey => TableKey::IndexKey(IndexKey { syntax }),
-            LiteralKey => TableKey::LiteralKey(LiteralKey { syntax }),
+            SyntaxKind::IndexKey => TableKey::IndexKey(IndexKey { syntax }),
+            SyntaxKind::LiteralKey => TableKey::LiteralKey(LiteralKey { syntax }),
             _ => return None,
         };
         Some(res)
@@ -904,14 +911,14 @@ impl From<GenericFor> for ForContent {
 impl AstNode for ForContent {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
-            NumericFor | GenericFor => true,
+            SyntaxKind::NumericFor | SyntaxKind::GenericFor => true,
             _ => false,
         }
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
-            NumericFor => ForContent::NumericFor(NumericFor { syntax }),
-            GenericFor => ForContent::GenericFor(GenericFor { syntax }),
+            SyntaxKind::NumericFor => ForContent::NumericFor(NumericFor { syntax }),
+            SyntaxKind::GenericFor => ForContent::GenericFor(GenericFor { syntax }),
             _ => return None,
         };
         Some(res)

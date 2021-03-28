@@ -1,13 +1,13 @@
-mod ast;
+pub mod ast;
 mod parsing;
 mod syntax_node;
 
 use std::{marker::PhantomData, sync::Arc};
 
 use ast::AstNode;
-use parser::ParseError;
 pub use parser::{SyntaxKind, T};
 use rowan::GreenNode;
+
 pub use syntax_node::{
     SyntaxElement, SyntaxElementChildren, SyntaxError, SyntaxNode, SyntaxNodeChildren, SyntaxToken,
 };
@@ -75,5 +75,38 @@ impl Parse<SyntaxNode> {
         } else {
             None
         }
+    }
+}
+
+use ast::Program;
+
+impl Program {
+    pub fn parse(text: &str) -> Parse<Program> {
+        let (green, errors) = parsing::parse_text(text);
+        let root = SyntaxNode::new_root(green.clone());
+
+        assert_eq!(root.kind(), SyntaxKind::Program);
+        Parse {
+            green,
+            errors: Arc::new(errors),
+            _ty: PhantomData,
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn syntax() {
+        insta::glob!("snapshot_inputs/parser/*.txt", |path| {
+            let input = fs::read_to_string(path).unwrap();
+            let suffix = path.file_stem().unwrap().to_str().unwrap();
+            insta::with_settings!({snapshot_suffix => suffix}, {
+                insta::assert_debug_snapshot!(Program::parse(&input))
+            })
+        })
     }
 }

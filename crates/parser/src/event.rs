@@ -1,6 +1,6 @@
 use std::mem;
 
-use crate::{ParseError, SyntaxKind, Token, TreeSink};
+use crate::{ParseError, SyntaxKind, TreeSink};
 
 /// TODO: add node error event
 pub enum Event {
@@ -18,10 +18,6 @@ pub enum Event {
     Token,
 
     Error(ParseError),
-    // Error {
-    //     e: ParseError,
-    //     token_end: Option<u32>,
-    // }
 }
 
 impl Event {
@@ -33,7 +29,7 @@ impl Event {
     }
 }
 
-pub(super) fn process<TS: TreeSink>(mut sink: TS, mut events: Vec<Event>) {
+pub(super) fn process<TS: TreeSink>(mut sink: &mut TS, mut events: Vec<Event>) {
     let mut forward_parents = Vec::new();
 
     for i in 0..events.len() {

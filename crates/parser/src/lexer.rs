@@ -85,8 +85,8 @@ pub fn first_token(input: &str) -> Result<(SyntaxKind, TextSize), (LexErrorMsg, 
 #[derive(Debug, Error)]
 #[error("{msg}")]
 pub struct LexError {
-    msg: LexErrorMsg,
-    range: TextRange,
+    pub msg: LexErrorMsg,
+    pub range: TextRange,
 }
 
 #[derive(Debug, Error, PartialEq, Eq)]

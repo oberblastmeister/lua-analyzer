@@ -1,8 +1,10 @@
-mod generated;
+pub mod generated;
+
+pub use self::generated::{nodes::*, tokens::*};
 
 use std::marker::PhantomData;
 
-use crate::{SyntaxNode, SyntaxKind, SyntaxToken, SyntaxNodeChildren};
+use crate::{SyntaxKind, SyntaxNode, SyntaxNodeChildren, SyntaxToken};
 
 /// The main trait to go from untyped `SyntaxNode`  to a typed ast. The
 /// conversion itself has zero runtime cost: ast and syntax nodes have exactly
@@ -46,7 +48,10 @@ pub struct AstChildren<N> {
 
 impl<N> AstChildren<N> {
     fn new(parent: &SyntaxNode) -> Self {
-        AstChildren { inner: parent.children(), ph: PhantomData }
+        AstChildren {
+            inner: parent.children(),
+            ph: PhantomData,
+        }
     }
 }
 
@@ -69,6 +74,9 @@ mod support {
     }
 
     pub(super) fn token(parent: &SyntaxNode, kind: SyntaxKind) -> Option<SyntaxToken> {
-        parent.children_with_tokens().filter_map(|it| it.into_token()).find(|it| it.kind() == kind)
+        parent
+            .children_with_tokens()
+            .filter_map(|it| it.into_token())
+            .find(|it| it.kind() == kind)
     }
 }

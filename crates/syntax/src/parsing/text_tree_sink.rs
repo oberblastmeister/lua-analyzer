@@ -1,7 +1,7 @@
 use parser::{ParseError, SyntaxKind, Token, TreeSink};
-use rowan::{TextRange, TextSize};
+use rowan::{GreenNode, TextRange, TextSize};
 
-use crate::syntax_node::SyntaxTreeBuilder;
+use crate::{syntax_node::SyntaxTreeBuilder, SyntaxError};
 
 pub struct TextTreeSink<'a> {
     text: &'a str,
@@ -79,5 +79,9 @@ impl<'a> TextTreeSink<'a> {
         for error_node in self.error_ranges.iter_mut() {
             *error_node = error_node.cover(range)
         }
+    }
+
+    pub fn finish(self) -> (GreenNode, Vec<SyntaxError>) {
+        todo!()
     }
 }
