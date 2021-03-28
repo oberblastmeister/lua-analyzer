@@ -1,12 +1,13 @@
 use parser::ParseError;
-use rowan::{GreenNodeBuilder, Language};
+use rowan::{GreenNodeBuilder, Language, TextRange};
 
 use crate::{Parse, SyntaxKind};
 
-pub(crate) use rowan::{GreenNode, GreenToken, NodeOrToken};
+pub(crate) use rowan::GreenNode;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum RustLanguage {}
+
 impl Language for RustLanguage {
     type Kind = SyntaxKind;
 
@@ -19,6 +20,20 @@ impl Language for RustLanguage {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub struct SyntaxError(String, TextRange);
+
+// impl From<ParseError> for SyntaxError {
+//     fn from(e: ParseError) -> Self {
+//         match e {
+//             ParseError::Lexer(parser::LexError { msg, range }) => {
+//                 SyntaxError(msg.to_string(), range)
+//             }
+//             ParseError::ParseError { kind, range } => SyntaxError(kind.to_string(), range),
+//         }
+//     }
+// }
+
 pub type SyntaxNode = rowan::SyntaxNode<RustLanguage>;
 pub type SyntaxToken = rowan::SyntaxToken<RustLanguage>;
 pub type SyntaxElement = rowan::SyntaxElement<RustLanguage>;
@@ -27,12 +42,12 @@ pub type SyntaxElementChildren = rowan::SyntaxElementChildren<RustLanguage>;
 
 #[derive(Default)]
 pub struct SyntaxTreeBuilder {
-    errors: Vec<ParseError>,
+    errors: Vec<SyntaxError>,
     inner: GreenNodeBuilder<'static>,
 }
 
 impl SyntaxTreeBuilder {
-    pub(crate) fn finish_raw(self) -> (GreenNode, Vec<ParseError>) {
+    pub(crate) fn finish_raw(self) -> (GreenNode, Vec<SyntaxError>) {
         let green = self.inner.finish();
         (green, self.errors)
     }
@@ -56,7 +71,7 @@ impl SyntaxTreeBuilder {
         self.inner.finish_node()
     }
 
-    pub fn error(&mut self, error: parser::ParseError) {
-        self.errors.push(error)
+    pub fn error(&mut self, error: ParseError, range: TextRange) {
+        self.errors.push(SyntaxError(error.to_string(), range))
     }
 }

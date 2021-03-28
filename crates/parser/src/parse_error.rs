@@ -1,10 +1,9 @@
-use rowan::TextRange;
 use thiserror::Error;
 
-use crate::{LexErrorMsg, SyntaxKind};
+use crate::SyntaxKind;
 
 #[derive(Debug, Error, PartialEq, Eq)]
-pub enum ParseErrorKind {
+pub enum ParseError {
     #[error("{0}")]
     Message(&'static str),
 
@@ -13,22 +12,10 @@ pub enum ParseErrorKind {
         expected: SyntaxKind,
         got: SyntaxKind,
     },
-
-    #[error("Lexer error: {0}")]
-    Lexer(LexErrorMsg),
 }
 
-impl ParseErrorKind {
-    pub fn expected(expected: SyntaxKind, got: SyntaxKind) -> ParseErrorKind {
-        ParseErrorKind::Expected {
-            expected,
-            got,
-        }
+impl ParseError {
+    pub fn expected(expected: SyntaxKind, got: SyntaxKind) -> ParseError {
+        ParseError::Expected { expected, got }
     }
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub struct ParseError {
-    kind: ParseErrorKind,
-    range: TextRange,
 }

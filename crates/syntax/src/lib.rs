@@ -9,7 +9,7 @@ use parser::ParseError;
 pub use parser::{SyntaxKind, T};
 use rowan::GreenNode;
 pub use syntax_node::{
-    SyntaxElement, SyntaxElementChildren, SyntaxNode, SyntaxNodeChildren, SyntaxToken,
+    SyntaxElement, SyntaxElementChildren, SyntaxError, SyntaxNode, SyntaxNodeChildren, SyntaxToken,
 };
 
 /// `Parse` is the result of the parsing: a syntax tree and a collection of
@@ -20,12 +20,12 @@ pub use syntax_node::{
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Parse<T> {
     green: GreenNode,
-    errors: Arc<Vec<ParseError>>,
+    errors: Arc<Vec<SyntaxError>>,
     _ty: PhantomData<fn() -> T>,
 }
 
 impl<T> Parse<T> {
-    fn new(green: GreenNode, errors: Vec<ParseError>) -> Parse<T> {
+    fn new(green: GreenNode, errors: Vec<SyntaxError>) -> Parse<T> {
         Parse {
             green,
             errors: Arc::new(errors),
@@ -51,11 +51,11 @@ impl<T: AstNode> Parse<T> {
         T::cast(self.syntax_node()).unwrap()
     }
 
-    pub fn errors(&self) -> &[ParseError] {
+    pub fn errors(&self) -> &[SyntaxError] {
         &*self.errors
     }
 
-    pub fn ok(self) -> Result<T, Arc<Vec<ParseError>>> {
+    pub fn ok(self) -> Result<T, Arc<Vec<SyntaxError>>> {
         if self.errors.is_empty() {
             Ok(self.tree())
         } else {
@@ -67,7 +67,11 @@ impl<T: AstNode> Parse<T> {
 impl Parse<SyntaxNode> {
     pub fn cast<N: AstNode>(self) -> Option<Parse<N>> {
         if N::cast(self.syntax_node()).is_some() {
-            Some(Parse { green: self.green, errors: self.errors, _ty: PhantomData })
+            Some(Parse {
+                green: self.green,
+                errors: self.errors,
+                _ty: PhantomData,
+            })
         } else {
             None
         }

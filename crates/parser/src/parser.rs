@@ -1,8 +1,10 @@
+use std::marker::PhantomData;
+
 use drop_bomb::DropBomb;
 
-use crate::{Event, ParseErrorKind, SyntaxKind, TokenSet, TokenSource, T};
+use crate::{assert_matches, Event, ParseError, SyntaxKind, TokenSet, TokenSource, T};
 
-pub(crate) struct Parser<T: TokenSource> {
+pub struct Parser<T: TokenSource> {
     token_source: T,
     events: Vec<Event>,
 }
@@ -37,10 +39,18 @@ impl<T: TokenSource> Parser<T> {
     /// Starts a new node in the syntax tree. All nodes and tokens
     /// consumed between the `start` and the corresponding `Marker::complete`
     /// belong to the same node.
-    pub(crate) fn start(&mut self) -> Marker {
+    fn raw_start<MT: MarkerType>(&mut self) -> Marker<MT> {
         let pos = self.events_len();
         self.push_event(Event::tombstone());
         Marker::new(pos)
+    }
+
+    pub(crate) fn start(&mut self) -> Marker<RegularMarker> {
+        self.raw_start()
+    }
+
+    pub(crate) fn start_error(&mut self) -> Marker<ErrorMarker> {
+        self.raw_start()
     }
 
     fn push_event(&mut self, event: Event) {
@@ -48,7 +58,7 @@ impl<T: TokenSource> Parser<T> {
     }
 
     fn error(&mut self, message: &'static str) {
-        self.push_event(Event::Error(ParseErrorKind::Message(message)))
+        self.push_event(Event::Error(ParseError::Message(message)))
     }
 
     pub(crate) fn at_ts(&self, kinds: TokenSet) -> bool {
@@ -79,7 +89,7 @@ impl<T: TokenSource> Parser<T> {
     fn do_bump(&mut self, kind: SyntaxKind) {
         self.token_source.bump();
 
-        self.push_event(Event::Token(kind));
+        self.push_event(Event::Token);
     }
 
     fn nth_at(&self, n: usize, kind: SyntaxKind) -> bool {
@@ -106,24 +116,36 @@ impl<T: TokenSource> Parser<T> {
         if current == kind {
             return true;
         }
-        self.push_event(Event::Error(ParseErrorKind::expected(kind, current)));
+        self.push_event(Event::Error(ParseError::expected(kind, current)));
         false
     }
 }
 
-pub(crate) struct Marker {
+pub(crate) trait MarkerType {}
+
+pub(crate) enum ErrorMarker {}
+impl MarkerType for ErrorMarker {}
+
+pub(crate) enum RegularMarker {}
+impl MarkerType for RegularMarker {}
+
+pub(crate) struct Marker<T: MarkerType> {
     pos: u32,
     bomb: DropBomb,
+    _marker_type: PhantomData<T>,
 }
 
-impl Marker {
-    fn new(pos: u32) -> Marker {
+impl<T: MarkerType> Marker<T> {
+    fn new(pos: u32) -> Marker<T> {
         Marker {
             pos,
             bomb: DropBomb::new("Marker must be either completed or abandoned"),
+            _marker_type: PhantomData,
         }
     }
+}
 
+impl Marker<RegularMarker> {
     /// Finishes the syntax tree node and assigns `kind` to it,
     /// and mark the create a `CompletedMarker` for possible future
     /// operation like `.precede()` to deal with forward_parent.
@@ -131,7 +153,7 @@ impl Marker {
         mut self,
         p: &mut Parser<T>,
         kind: SyntaxKind,
-    ) -> CompletedMarker {
+    ) -> CompletedMarker<RegularMarker> {
         self.bomb.defuse();
         let idx = self.pos as usize;
         match &mut p.events[idx] {
@@ -162,21 +184,40 @@ impl Marker {
     }
 }
 
-pub(crate) struct CompletedMarker {
+impl Marker<ErrorMarker> {
+    pub(crate) fn complete<T: TokenSource>(
+        mut self,
+        p: &mut Parser<T>,
+        e: ParseError,
+    ) -> CompletedMarker<ErrorMarker> {
+        self.bomb.defuse();
+        let idx = self.pos as usize;
+        assert_matches!(p.events[idx], Event::StartError);
+        let finish_pos = p.events.len() as u32;
+        p.push_event(Event::FinishError(e));
+        CompletedMarker::new(self.pos, finish_pos, T![error])
+    }
+}
+
+pub(crate) struct CompletedMarker<T: MarkerType> {
     start_pos: u32,
     finish_pos: u32,
     kind: SyntaxKind,
+    _marker_type: PhantomData<T>,
 }
 
-impl CompletedMarker {
-    fn new(start_pos: u32, finish_pos: u32, kind: SyntaxKind) -> Self {
+impl<T: MarkerType> CompletedMarker<T> {
+    fn new(start_pos: u32, finish_pos: u32, kind: SyntaxKind) -> CompletedMarker<T> {
         CompletedMarker {
             start_pos,
             finish_pos,
             kind,
+            _marker_type: PhantomData,
         }
     }
+}
 
+impl CompletedMarker<RegularMarker> {
     /// This method allows to create a new node which starts
     /// *before* the current one. That is, parser could start
     /// node `A`, then complete it, and then after parsing the
@@ -189,7 +230,7 @@ impl CompletedMarker {
     /// Append a new `START` events as `[START, FINISH, NEWSTART]`,
     /// then mark `NEWSTART` as `START`'s parent with saving its relative
     /// distance to `NEWSTART` into forward_parent(=2 in this case);
-    pub(crate) fn precede<T: TokenSource>(self, p: &mut Parser<T>) -> Marker {
+    pub(crate) fn precede<T: TokenSource>(self, p: &mut Parser<T>) -> Marker<RegularMarker> {
         let new_pos = p.start();
         let idx = self.start_pos as usize;
         match &mut p.events[idx] {
@@ -202,7 +243,10 @@ impl CompletedMarker {
     }
 
     /// Undo this completion and turns into a `Marker`
-    pub(crate) fn undo_completion<T: TokenSource>(self, p: &mut Parser<T>) -> Marker {
+    pub(crate) fn undo_completion<T: TokenSource>(
+        self,
+        p: &mut Parser<T>,
+    ) -> Marker<RegularMarker> {
         let start_idx = self.start_pos as usize;
         let finish_idx = self.finish_pos as usize;
         match &mut p.events[start_idx] {

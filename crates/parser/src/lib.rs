@@ -9,9 +9,17 @@ mod token_set;
 
 pub use event::Event;
 pub use lexer::{first_token, tokenize, tokenize_iter, LexError, LexErrorMsg, Token};
-pub use parse_error::{ParseError, ParseErrorKind};
+pub use parse_error::ParseError;
 pub use syntax_kind::SyntaxKind;
 pub(crate) use token_set::TokenSet;
+
+#[macro_export]
+#[doc(hidden)]
+macro_rules! assert_matches {
+    ($expression:expr, $($stuff:tt)+) => {
+        assert!(matches!($expression, $($stuff)+));
+    };
+}
 
 pub trait TokenSource {
     fn current(&self) -> Token;
@@ -29,7 +37,7 @@ pub trait TokenSource {
 /// `TreeSink` abstracts details of a particular syntax tree implementation.
 pub trait TreeSink {
     /// Adds new token to the current branch.
-    fn token(&mut self, token: Token);
+    fn token(&mut self);
 
     /// Start new branch and make it current.
     fn start_node(&mut self, kind: SyntaxKind);
@@ -38,5 +46,31 @@ pub trait TreeSink {
     /// branch as current.
     fn finish_node(&mut self);
 
-    fn error(&mut self, error: ParseErrorKind);
+    fn start_error_node(&mut self);
+
+    fn finish_error_node(&mut self, e: ParseError);
+
+    fn error(&mut self, error: ParseError);
+}
+
+fn parse_from_tokens<F, T, TS>(token_source: T, tree_sink: TS, f: F)
+where
+    F: FnOnce(&mut parser::Parser<T>),
+    T: TokenSource,
+    TS: TreeSink,
+{
+    let mut p = parser::Parser::new(token_source);
+    f(&mut p);
+    let events = p.finish();
+    event::process(tree_sink, events);
+}
+
+/// Parse given tokens into the given sink as a rust file.
+pub fn parse<F, T, TS>(token_source: T, tree_sink: TS)
+where
+    F: FnOnce(&mut parser::Parser<T>),
+    T: TokenSource,
+    TS: TreeSink,
+{
+    parse_from_tokens(token_source, tree_sink, grammar::root);
 }

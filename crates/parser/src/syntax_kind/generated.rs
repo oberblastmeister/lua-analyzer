@@ -65,6 +65,7 @@ pub enum SyntaxKind {
     Error,
     Ident,
     Shebang,
+    Program,
     AssignStmt,
     FunctionStmt,
     ForStmt,

@@ -7,6 +7,15 @@ use crate::{
     SyntaxNode, SyntaxToken, T,
 };
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Program {
+    pub(crate) syntax: SyntaxNode,
+}
+impl Program {
+    pub fn stmts(&self) -> AstChildren<Stmt> {
+        support::children(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct AssignStmt {
     pub(crate) syntax: SyntaxNode,
 }
@@ -366,6 +375,21 @@ pub enum TableKey {
 pub enum ForContent {
     NumericFor(NumericFor),
     GenericFor(GenericFor),
+}
+impl AstNode for Program {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == Program
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
 }
 impl AstNode for AssignStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
@@ -920,6 +944,11 @@ impl std::fmt::Display for TableKey {
     }
 }
 impl std::fmt::Display for ForContent {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for Program {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
