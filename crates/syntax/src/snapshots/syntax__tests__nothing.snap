@@ -1,0 +1,7 @@
+---
+source: crates/syntax/src/lib.rs
+expression: "Program::parse(\"\").syntax_node()"
+
+---
+Program@0..0
+

@@ -481,7 +481,6 @@ name = "parser"
 version = "0.1.0"
 dependencies = [
  "drop_bomb",
- "either",
  "insta",
  "itertools",
  "rowan",

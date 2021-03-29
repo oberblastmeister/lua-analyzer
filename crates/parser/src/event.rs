@@ -3,6 +3,7 @@ use std::mem;
 use crate::{ParseError, SyntaxKind, TreeSink};
 
 /// TODO: add node error event
+#[derive(Debug)]
 pub enum Event {
     Start {
         kind: SyntaxKind,
@@ -29,7 +30,9 @@ impl Event {
     }
 }
 
-pub(super) fn process<TS: TreeSink>(mut sink: &mut TS, mut events: Vec<Event>) {
+pub(super) fn process<TS: TreeSink>(sink: &mut TS, mut events: Vec<Event>) {
+    eprintln!("events = {:?}", events);
+
     let mut forward_parents = Vec::new();
 
     for i in 0..events.len() {

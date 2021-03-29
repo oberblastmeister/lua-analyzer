@@ -70,7 +70,7 @@ impl<T: TokenSource> Parser<T> {
         if kind == T![eof] {
             return;
         }
-        self.do_bump(kind)
+        self.do_bump()
     }
 
     /// Create an error node and consume the next token.
@@ -86,7 +86,8 @@ impl<T: TokenSource> Parser<T> {
         m.complete(self, T![error]);
     }
 
-    fn do_bump(&mut self, kind: SyntaxKind) {
+    fn do_bump(&mut self) {
+        println!("Do bumping");
         self.token_source.bump();
 
         self.push_event(Event::Token);
@@ -97,16 +98,24 @@ impl<T: TokenSource> Parser<T> {
     }
 
     /// Checks if the current token is `kind`.
-    fn at(&self, kind: SyntaxKind) -> bool {
+    pub(crate) fn at(&self, kind: SyntaxKind) -> bool {
         self.nth_at(0, kind)
     }
 
-    fn accept(&mut self, kind: SyntaxKind) -> bool {
+    pub(crate) fn accept(&mut self, kind: SyntaxKind) -> bool {
         if !self.at(kind) {
             return false;
         }
-        self.do_bump(kind);
+        self.do_bump();
         true
+    }
+
+    pub(crate) fn bump(&mut self, kind: SyntaxKind) {
+        println!("current {:?}", self.current());
+        if !self.at(kind) {
+            panic!("Failed to bump {:?}, got {:?}", kind, self.current())
+        }
+        self.do_bump();
     }
 
     /// Consume the next token if it is `kind` or emit an error

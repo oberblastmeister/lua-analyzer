@@ -101,12 +101,18 @@ mod tests {
 
     #[test]
     fn syntax() {
-        insta::glob!("snapshot_inputs/parser/*.txt", |path| {
+        insta::glob!("snapshot_inputs/*.txt", |path| {
             let input = fs::read_to_string(path).unwrap();
             let suffix = path.file_stem().unwrap().to_str().unwrap();
             insta::with_settings!({snapshot_suffix => suffix}, {
-                insta::assert_debug_snapshot!(Program::parse(&input))
+                insta::assert_debug_snapshot!(Program::parse(&input).syntax_node())
             })
         })
+    }
+
+    #[test]
+    fn nothing() {
+        insta::assert_debug_snapshot!(Program::parse("").syntax_node(), @"Program@0..0
+");
     }
 }

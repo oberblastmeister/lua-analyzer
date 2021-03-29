@@ -181,6 +181,8 @@ impl<'a> Lexer<'a> {
         let kind = match c {
             '\0' => panic!("Should not be gotten"),
 
+            '=' => T![=],
+
             '(' => T!['('],
             ')' => T![')'],
             '{' => T!['{'],
@@ -665,5 +667,10 @@ asdf()
 ,.awe;:!;
             "#,
         )
+    }
+
+    #[test]
+    fn assignment() {
+        check("local hello = 5")
     }
 }

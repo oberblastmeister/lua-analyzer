@@ -1,0 +1,14 @@
+---
+source: crates/syntax/src/lib.rs
+expression: "Program::parse(&input).syntax_node()"
+
+---
+Program@0..15
+  LocalKw@0..5 "local"
+  Whitespace@5..6 " "
+  Ident@6..11 "hello"
+  Whitespace@11..12 " "
+  Eq@12..13 "="
+  Whitespace@13..14 " "
+  Number@14..15 "5"
+

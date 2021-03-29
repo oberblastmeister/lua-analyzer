@@ -82,6 +82,6 @@ impl<'a> TextTreeSink<'a> {
     }
 
     pub fn finish(self) -> (GreenNode, Vec<SyntaxError>) {
-        todo!()
+        self.inner.finish_raw()
     }
 }

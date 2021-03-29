@@ -9,7 +9,7 @@ pub(crate) struct TextTokenSource<'t> {
     text: &'t str,
 
     // token_offset_pairs: Vec<(Token, TextSize)>,
-    tokens: &'t [Token],
+    tokens: Vec<Token>,
 
     // /// Current token and position
     // curr: (parser::Token, usize),
@@ -17,8 +17,13 @@ pub(crate) struct TextTokenSource<'t> {
 }
 
 impl<'t> TextTokenSource<'t> {
-    pub(crate)  fn new(text: &'t str, tokens: &'t [Token]) -> TextTokenSource<'t> {
-        let first = mk_token(0, &tokens, TextRange::new(0.into(), 0.into()));
+    pub(crate) fn new(text: &'t str, raw_tokens: &'t [Token]) -> TextTokenSource<'t> {
+        let first = mk_token(0, &raw_tokens, TextRange::new(0.into(), 0.into()));
+        let tokens = raw_tokens
+            .iter()
+            .cloned()
+            .filter(|token| !token.kind.is_trivia())
+            .collect();
         TextTokenSource {
             text,
             tokens,
@@ -37,16 +42,20 @@ impl<'t> TokenSource for TextTokenSource<'t> {
     }
 
     fn lookahead_nth(&self, n: usize) -> parser::Token {
-        mk_token(n, &self.tokens, self.curr_range())
+        mk_token(self.curr.1 + n, &self.tokens, self.curr_range())
     }
 
     fn bump(&mut self) {
+        eprintln!("self.curr = {:?}", self.curr);
         if self.curr.0.kind == T![eof] {
             return;
         }
 
         let pos = self.curr.1 + 1;
-        self.curr = (mk_token(pos, &self.tokens, self.curr_range()), pos);
+        self.curr = (
+            mk_token(pos, &self.tokens, self.curr_range()),
+            self.curr.1 + 1,
+        );
     }
 
     fn is_keyword(&self, kw: &str) -> bool {

@@ -43,7 +43,7 @@ expression: tokens
     Ok(
         (
             Token {
-                kind: Unknown,
+                kind: Eq,
                 range: 8..9,
             },
             "=",

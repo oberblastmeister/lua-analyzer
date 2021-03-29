@@ -16,6 +16,8 @@ pub(crate) fn parse_text(text: &str) -> (GreenNode, Vec<SyntaxError>) {
             Err(v) => Either::Right(v.into()),
         });
 
+    eprintln!("tokens = {:?}", tokens);
+
     let token_source = TextTokenSource::new(text, &tokens);
     let mut tree_sink = TextTreeSink::new(text, &tokens);
 
