@@ -87,10 +87,10 @@ impl IfStmt {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct LitExpr {
+pub struct Literal {
     pub(crate) syntax: SyntaxNode,
 }
-impl LitExpr {
+impl Literal {
     pub fn number_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![number])
     }
@@ -345,6 +345,15 @@ impl Pat {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct NameRef {
+    pub(crate) syntax: SyntaxNode,
+}
+impl NameRef {
+    pub fn ident_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![ident])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Stmt {
     AssignStmt(AssignStmt),
     FunctionStmt(FunctionStmt),
@@ -353,7 +362,7 @@ pub enum Stmt {
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Expr {
-    LitExpr(LitExpr),
+    Literal(Literal),
     TableExpr(TableExpr),
     InfixExpr(InfixExpr),
     PrefixExpr(PrefixExpr),
@@ -450,9 +459,9 @@ impl AstNode for IfStmt {
         &self.syntax
     }
 }
-impl AstNode for LitExpr {
+impl AstNode for Literal {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::LitExpr
+        kind == SyntaxKind::Literal
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -720,6 +729,21 @@ impl AstNode for Pat {
         &self.syntax
     }
 }
+impl AstNode for NameRef {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::NameRef
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
 impl From<AssignStmt> for Stmt {
     fn from(node: AssignStmt) -> Stmt {
         Stmt::AssignStmt(node)
@@ -769,9 +793,9 @@ impl AstNode for Stmt {
         }
     }
 }
-impl From<LitExpr> for Expr {
-    fn from(node: LitExpr) -> Expr {
-        Expr::LitExpr(node)
+impl From<Literal> for Expr {
+    fn from(node: Literal) -> Expr {
+        Expr::Literal(node)
     }
 }
 impl From<TableExpr> for Expr {
@@ -802,7 +826,7 @@ impl From<DotExpr> for Expr {
 impl AstNode for Expr {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
-            SyntaxKind::LitExpr
+            SyntaxKind::Literal
             | SyntaxKind::TableExpr
             | SyntaxKind::InfixExpr
             | SyntaxKind::PrefixExpr
@@ -813,7 +837,7 @@ impl AstNode for Expr {
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
-            SyntaxKind::LitExpr => Expr::LitExpr(LitExpr { syntax }),
+            SyntaxKind::Literal => Expr::Literal(Literal { syntax }),
             SyntaxKind::TableExpr => Expr::TableExpr(TableExpr { syntax }),
             SyntaxKind::InfixExpr => Expr::InfixExpr(InfixExpr { syntax }),
             SyntaxKind::PrefixExpr => Expr::PrefixExpr(PrefixExpr { syntax }),
@@ -825,7 +849,7 @@ impl AstNode for Expr {
     }
     fn syntax(&self) -> &SyntaxNode {
         match self {
-            Expr::LitExpr(it) => &it.syntax,
+            Expr::Literal(it) => &it.syntax,
             Expr::TableExpr(it) => &it.syntax,
             Expr::InfixExpr(it) => &it.syntax,
             Expr::PrefixExpr(it) => &it.syntax,
@@ -980,7 +1004,7 @@ impl std::fmt::Display for IfStmt {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for LitExpr {
+impl std::fmt::Display for Literal {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
@@ -1066,6 +1090,11 @@ impl std::fmt::Display for GenericFor {
     }
 }
 impl std::fmt::Display for Pat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for NameRef {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

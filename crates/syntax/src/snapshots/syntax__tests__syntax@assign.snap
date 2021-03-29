@@ -10,5 +10,6 @@ Program@0..15
   Whitespace@11..12 " "
   Eq@12..13 "="
   Whitespace@13..14 " "
-  Number@14..15 "5"
+  Literal@14..15
+    Number@14..15 "5"
 

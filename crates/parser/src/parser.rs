@@ -4,13 +4,13 @@ use drop_bomb::DropBomb;
 
 use crate::{assert_matches, Event, ParseError, SyntaxKind, TokenSet, TokenSource, T};
 
-pub struct Parser<T: TokenSource> {
-    token_source: T,
+pub struct Parser<'a> {
+    token_source: &'a mut dyn TokenSource,
     events: Vec<Event>,
 }
 
-impl<T: TokenSource> Parser<T> {
-    pub fn new(token_source: T) -> Parser<T> {
+impl<'a> Parser<'a> {
+    pub fn new(token_source: &mut dyn TokenSource) -> Parser {
         Parser {
             token_source,
             events: Vec::new(),
@@ -21,7 +21,7 @@ impl<T: TokenSource> Parser<T> {
         self.events
     }
 
-    fn nth(&self, n: usize) -> SyntaxKind {
+    pub(crate) fn nth(&self, n: usize) -> SyntaxKind {
         self.token_source.lookahead_nth(n).kind
     }
 
@@ -158,9 +158,9 @@ impl Marker<RegularMarker> {
     /// Finishes the syntax tree node and assigns `kind` to it,
     /// and mark the create a `CompletedMarker` for possible future
     /// operation like `.precede()` to deal with forward_parent.
-    pub(crate) fn complete<T: TokenSource>(
+    pub(crate) fn complete(
         mut self,
-        p: &mut Parser<T>,
+        p: &mut Parser,
         kind: SyntaxKind,
     ) -> CompletedMarker<RegularMarker> {
         self.bomb.defuse();
@@ -178,7 +178,7 @@ impl Marker<RegularMarker> {
 
     /// Abandons the syntax tree node. All its children
     /// are attached to its parent instead.
-    pub(crate) fn abandon<T: TokenSource>(mut self, p: &mut Parser<T>) {
+    pub(crate) fn abandon(mut self, p: &mut Parser) {
         self.bomb.defuse();
         let idx = self.pos as usize;
         if idx == p.events.len() - 1 {
@@ -194,9 +194,9 @@ impl Marker<RegularMarker> {
 }
 
 impl Marker<ErrorMarker> {
-    pub(crate) fn complete<T: TokenSource>(
+    pub(crate) fn complete(
         mut self,
-        p: &mut Parser<T>,
+        p: &mut Parser,
         e: ParseError,
     ) -> CompletedMarker<ErrorMarker> {
         self.bomb.defuse();
@@ -226,6 +226,8 @@ impl<T: MarkerType> CompletedMarker<T> {
     }
 }
 
+pub(crate) type MarkerComplete = CompletedMarker<RegularMarker>;
+
 impl CompletedMarker<RegularMarker> {
     /// This method allows to create a new node which starts
     /// *before* the current one. That is, parser could start
@@ -239,7 +241,7 @@ impl CompletedMarker<RegularMarker> {
     /// Append a new `START` events as `[START, FINISH, NEWSTART]`,
     /// then mark `NEWSTART` as `START`'s parent with saving its relative
     /// distance to `NEWSTART` into forward_parent(=2 in this case);
-    pub(crate) fn precede<T: TokenSource>(self, p: &mut Parser<T>) -> Marker<RegularMarker> {
+    pub(crate) fn precede(self, p: &mut Parser) -> Marker<RegularMarker> {
         let new_pos = p.start();
         let idx = self.start_pos as usize;
         match &mut p.events[idx] {
@@ -252,9 +254,9 @@ impl CompletedMarker<RegularMarker> {
     }
 
     /// Undo this completion and turns into a `Marker`
-    pub(crate) fn undo_completion<T: TokenSource>(
+    pub(crate) fn undo_completion(
         self,
-        p: &mut Parser<T>,
+        p: &mut Parser,
     ) -> Marker<RegularMarker> {
         let start_idx = self.start_pos as usize;
         let finish_idx = self.finish_pos as usize;

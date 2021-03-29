@@ -53,10 +53,9 @@ pub trait TreeSink {
     fn error(&mut self, error: ParseError);
 }
 
-fn parse_from_tokens<F, T, TS>(token_source: T, tree_sink: &mut TS, f: F)
+fn parse_from_tokens<F, TS>(token_source: &mut dyn TokenSource, tree_sink: &mut TS, f: F)
 where
-    F: FnOnce(&mut parser::Parser<T>),
-    T: TokenSource,
+    F: FnOnce(&mut parser::Parser),
     TS: TreeSink,
 {
     let mut p = parser::Parser::new(token_source);
@@ -66,9 +65,8 @@ where
 }
 
 /// Parse given tokens into the given sink as a rust file.
-pub fn parse<T, TS>(token_source: T, tree_sink: &mut TS)
+pub fn parse<TS>(token_source: &mut dyn TokenSource, tree_sink: &mut TS)
 where
-    T: TokenSource,
     TS: TreeSink,
 {
     parse_from_tokens(token_source, tree_sink, grammar::root);
