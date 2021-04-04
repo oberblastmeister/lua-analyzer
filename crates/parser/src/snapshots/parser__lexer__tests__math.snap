@@ -206,7 +206,97 @@ expression: tokens
         (
             Token {
                 kind: Whitespace,
-                range: 25..40,
+                range: 25..26,
+            },
+            "\n",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Number,
+                range: 26..27,
+            },
+            "5",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                range: 27..28,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Modulo,
+                range: 28..29,
+            },
+            "%",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                range: 29..30,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Number,
+                range: 30..31,
+            },
+            "1",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                range: 31..32,
+            },
+            "\n",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Number,
+                range: 32..33,
+            },
+            "5",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Caret,
+                range: 33..34,
+            },
+            "^",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Number,
+                range: 34..35,
+            },
+            "6",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                range: 35..50,
             },
             "\n              ",
         ),

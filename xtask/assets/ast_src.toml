@@ -72,6 +72,8 @@ trivia = [
 "-" = "Minus"
 "*" = "Asterisk"
 "/" = "Slash"
+"%" = "Modulo"
+"^" = "Caret"
 
 # not for luajit
 "%" = "Modulo"

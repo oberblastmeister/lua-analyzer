@@ -1,5 +1,5 @@
 use crate::{
-    parser::{CompletedMarker, MarkerComplete, Parser},
+    parser::{CompletedMarker, Marker, MarkerComplete, Parser},
     token_set::TokenSet,
     SyntaxKind::*,
     TokenSource,
@@ -7,8 +7,8 @@ use crate::{
 
 const LOWEST: u8 = 0;
 
-pub(super) fn expr(p: &mut Parser) {
-    expr_bp(p, LOWEST);
+pub(super) fn expr(p: &mut Parser) -> Option<MarkerComplete> {
+    expr_bp(p, LOWEST)
 }
 
 fn expr_bp(p: &mut Parser, bp: u8) -> Option<MarkerComplete> {
@@ -17,13 +17,26 @@ fn expr_bp(p: &mut Parser, bp: u8) -> Option<MarkerComplete> {
 
 fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
     let peek = p.nth(1);
-    Some(match p.current() {
+    let m = match p.current() {
+        T!['('] => paren_expr(p)?,
         T![number] => literal(p)?,
         T![str] => literal(p)?,
         T![ident] if peek == T!['('] => todo!(),
         T![ident] => name_ref(p),
-        _ => todo!(),
-    })
+        _ => {
+            p.err_recover("Expected an expression");
+            return None;
+        }
+    };
+    Some(m)
+}
+
+fn paren_expr(p: &mut Parser) -> Option<MarkerComplete> {
+    let m = p.start();
+    p.bump(T!['(']);
+    expr_bp(p, LOWEST)?;
+    p.expect(T![')']);
+    Some(m.complete(p, ParenExpr))
 }
 
 pub(crate) const LITERAL: TokenSet = TokenSet::new(&[T![true], T![false], T![number], T![str]]);

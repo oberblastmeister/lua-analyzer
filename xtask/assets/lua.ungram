@@ -27,7 +27,12 @@ TableExpr =
   '}'
 
 DotExpr =
-    Expr '.' Name
+  Expr '.' Name
+
+ParenExpr =
+  '('
+  Expr
+  ')'
 
 TableContent =
   KeyValue

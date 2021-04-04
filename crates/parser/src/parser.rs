@@ -2,7 +2,9 @@ use std::marker::PhantomData;
 
 use drop_bomb::DropBomb;
 
-use crate::{assert_matches, Event, ParseError, SyntaxKind, TokenSet, TokenSource, T};
+use crate::{Event, ParseError, SyntaxKind, T, TokenSet, TokenSource, assert_matches};
+
+const RECOVERY: TokenSet = TokenSet::new(&[T![local]]);
 
 pub struct Parser<'a> {
     token_source: &'a mut dyn TokenSource,
@@ -74,16 +76,16 @@ impl<'a> Parser<'a> {
     }
 
     /// Create an error node and consume the next token.
-    pub(crate) fn err_recover(&mut self, message: &'static str, recovery: TokenSet) {
-        if self.at_ts(recovery) {
+    pub(crate) fn err_recover(&mut self, message: &'static str) {
+        if self.at_ts(RECOVERY) {
             self.error(message);
             return;
         }
 
-        let m = self.start();
+        let m = self.start_error();
         self.error(message);
         self.bump_any();
-        m.complete(self, T![error]);
+        m.complete(self, ParseError::Message(message));
     }
 
     fn do_bump(&mut self) {
@@ -120,9 +122,10 @@ impl<'a> Parser<'a> {
 
     /// Consume the next token if it is `kind` or emit an error
     /// otherwise.
-    fn expect(&mut self, kind: SyntaxKind) -> bool {
+    pub(crate) fn expect(&mut self, kind: SyntaxKind) -> bool {
         let current = self.current();
         if current == kind {
+            self.bump_any();
             return true;
         }
         self.push_event(Event::Error(ParseError::expected(kind, current)));
@@ -254,10 +257,7 @@ impl CompletedMarker<RegularMarker> {
     }
 
     /// Undo this completion and turns into a `Marker`
-    pub(crate) fn undo_completion(
-        self,
-        p: &mut Parser,
-    ) -> Marker<RegularMarker> {
+    pub(crate) fn undo_completion(self, p: &mut Parser) -> Marker<RegularMarker> {
         let start_idx = self.start_pos as usize;
         let finish_idx = self.finish_pos as usize;
         match &mut p.events[start_idx] {

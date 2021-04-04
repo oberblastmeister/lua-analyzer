@@ -77,6 +77,7 @@ pub enum SyntaxKind {
     IndexExpr,
     DotExpr,
     Name,
+    ParenExpr,
     KeyValue,
     TableItem,
     IndexKey,

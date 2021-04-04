@@ -1,3 +1,5 @@
+use std::mem;
+
 use parser::{ParseError, SyntaxKind, Token, TreeSink};
 use rowan::{GreenNode, TextRange, TextSize};
 
@@ -10,6 +12,12 @@ pub struct TextTreeSink<'a> {
     token_pos: usize,
     inner: SyntaxTreeBuilder,
     error_ranges: Vec<TextRange>,
+    state: State,
+}
+
+pub enum State {
+    PendingStart,
+    Normal,
 }
 
 impl<'a> TreeSink for TextTreeSink<'a> {
@@ -19,6 +27,16 @@ impl<'a> TreeSink for TextTreeSink<'a> {
     }
 
     fn start_node(&mut self, kind: SyntaxKind) {
+        match mem::replace(&mut self.state, State::Normal) {
+            State::PendingStart => {
+                self.inner.start_node(kind);
+                // No need to attach trivias to previous node: there is no
+                // previous node.
+                return;
+            }
+            State::Normal => (),
+        }
+
         self.eat_trivias();
         self.inner.start_node(kind);
         self.eat_trivias();
@@ -50,6 +68,7 @@ impl<'a> TextTreeSink<'a> {
             token_pos: 0,
             inner: SyntaxTreeBuilder::default(),
             error_ranges: Vec::new(),
+            state: State::PendingStart,
         }
     }
 

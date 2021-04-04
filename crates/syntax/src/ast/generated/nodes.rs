@@ -186,6 +186,21 @@ impl Name {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ParenExpr {
+    pub(crate) syntax: SyntaxNode,
+}
+impl ParenExpr {
+    pub fn l_paren_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T!['('])
+    }
+    pub fn expr(&self) -> Option<Expr> {
+        support::child(&self.syntax)
+    }
+    pub fn r_paren_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![')'])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct KeyValue {
     pub(crate) syntax: SyntaxNode,
 }
@@ -552,6 +567,21 @@ impl AstNode for DotExpr {
 impl AstNode for Name {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Name
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for ParenExpr {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ParenExpr
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1035,6 +1065,11 @@ impl std::fmt::Display for DotExpr {
     }
 }
 impl std::fmt::Display for Name {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for ParenExpr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

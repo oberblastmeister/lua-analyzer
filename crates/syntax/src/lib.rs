@@ -97,16 +97,62 @@ impl Program {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use core::fmt;
     use std::fs;
 
+    fn dump_parse<T: AstNode + fmt::Debug>(parse: Parse<T>) -> String {
+        let mut s = String::new();
+        s.push_str(&format!("{:#?}", parse.syntax_node()));
+        s.push_str(
+            "
+=============================
+Errors:
+=============================
+",
+        );
+        s.push_str(&format!("{:?}", parse.errors()));
+        s
+    }
+
+    fn dump_parse_no_errors<T: AstNode + fmt::Debug>(parse: Parse<T>) -> String {
+        let s = format!("{:#?}", parse.syntax_node());
+        if !parse.errors().is_empty() {
+            panic!("Should not have any errors")
+        }
+        s
+    }
+
     #[test]
-    fn syntax() {
-        insta::glob!("snapshot_inputs/*.txt", |path| {
+    fn successes() {
+        insta::glob!("snapshot_inputs/successes/*.lua", |path| {
             let input = fs::read_to_string(path).unwrap();
             let suffix = path.file_stem().unwrap().to_str().unwrap();
-            insta::with_settings!({snapshot_suffix => suffix}, {
-                insta::assert_debug_snapshot!(Program::parse(&input).syntax_node())
-            })
+            insta::with_settings!(
+                {
+                    snapshot_suffix => suffix,
+                    snapshot_path => "snapshots/successes",
+                },
+                {
+                    insta::assert_snapshot!(dump_parse_no_errors(Program::parse(&input)))
+                }
+            )
+        })
+    }
+
+    #[test]
+    fn fails() {
+        insta::glob!("snapshot_inputs/fails/*.lua", |path| {
+            let input = fs::read_to_string(path).unwrap();
+            let suffix = path.file_stem().unwrap().to_str().unwrap();
+            insta::with_settings!(
+                {
+                    snapshot_suffix => suffix,
+                    snapshot_path => "snapshots/fails",
+                },
+                {
+                    insta::assert_snapshot!(dump_parse(Program::parse(&input)))
+                }
+            )
         })
     }
 
