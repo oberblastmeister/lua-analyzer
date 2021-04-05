@@ -12,5 +12,7 @@ itertools = "0.10.0"
 rowan = "0.12.6"
 thiserror = "1.0.24"
 
+binding_powers = { path = "../../../binding_powers" }
+
 [dev-dependencies]
 insta = "1.7.0"

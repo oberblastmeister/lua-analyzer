@@ -1,8 +1,86 @@
+use binding_powers::precedences;
+
 use crate::{
     parser::{MarkerComplete, Parser},
     token_set::TokenSet,
     SyntaxKind::{self, *},
 };
+
+precedences! {
+    enum LuaOp {
+        #[Infix, Left]
+        Or,
+
+        #[Infix, Left]
+        And,
+
+        #[Infix, Left]
+        Lt,
+
+        #[Infix, Left]
+        Gt,
+
+        #[Infix, Left]
+        LtEq,
+
+        #[Infix, Left]
+        GtEq,
+
+        #[Infix, Left]
+        NotEq,
+
+        #[Infix, Left]
+        Eq,
+
+        #[Infix, Left]
+        Concat,
+
+        #[Infix, Left]
+        Plus,
+
+        #[Infix, Left]
+        Minus,
+
+        #[Infix, Left]
+        Mul,
+
+        #[Infix, Left]
+        Div,
+
+        #[Prefix]
+        Not,
+
+        #[Prefix]
+        Minus,
+
+        #[Infix, Right]
+        Power,
+    }
+}
+
+impl From<SyntaxKind> for Option<LuaOp> {
+    fn from(kind: SyntaxKind) -> Option<LuaOp> {
+        use LuaOp::*;
+
+        Some(match kind {
+            T![or] => Or,
+            T![and] => And,
+            T![<] => Lt,
+            T![>] => Gt,
+            T![<=] => LtEq,
+            T![>=] => GtEq,
+            T![~=] => NotEq,
+            T![==] => Eq,
+            T![..] => Concat,
+            T![+] => Plus,
+            T![-] => Minus,
+            T![*] => Mul,
+            T![/] => Div,
+            T![^] => Power,
+            _ => return None,
+        })
+    }
+}
 
 const LOWEST: u8 = 1;
 
@@ -70,7 +148,7 @@ fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
         T![number] => literal(p)?,
         T![str] => literal(p)?,
         T![function] => literal(p)?,
-        T![ident] if peek == T!['('] => call_expr(p),
+        // T![ident] if peek == T!['('] => call_expr(p),
         T![ident] => name_ref(p),
         _ => {
             p.err_recover("Expected an expression");
@@ -81,15 +159,25 @@ fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
     Some(m)
 }
 
-fn paren_expr(p: &mut Parser) -> Option<MarkerComplete> {
-    let m = p.start();
-    p.bump(T!['(']);
-    expr_bp(p, LOWEST)?;
-    p.expect(T![')']);
-    Some(m.complete(p, ParenExpr))
+fn postfix_expr(
+    p: &mut Parser,
+    mut lhs: MarkerComplete,
+    allow_calls: bool,
+) -> Option<MarkerComplete> {
+    todo!()
 }
 
-pub(crate) const LITERAL: TokenSet = TokenSet::new(&[T![true], T![false], T![number], T![str], T![function]]);
+pub(super) fn paren_expr(p: &mut Parser) -> Option<MarkerComplete> {
+    let m = p.start();
+    p.expect(T!['(']);
+    expr_bp(p, LOWEST)?;
+    p.expect(T![')']);
+    let paren_expr = m.complete(p, ParenExpr);
+    Some(call_expr(p, paren_expr))
+}
+
+pub(crate) const LITERAL: TokenSet =
+    TokenSet::new(&[T![true], T![false], T![number], T![str], T![function]]);
 
 fn literal(p: &mut Parser) -> Option<MarkerComplete> {
     if !p.at_ts(LITERAL) {
@@ -103,14 +191,18 @@ fn literal(p: &mut Parser) -> Option<MarkerComplete> {
 fn name_ref(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![ident]);
-    m.complete(p, NameRef)
+    let expr = m.complete(p, NameRef);
+    call_expr(p, expr)
 }
 
-pub(super) fn call_expr(p: &mut Parser) -> MarkerComplete {
-    let m = p.start();
-    name_ref(p);
-    arg_list(p);
-    m.complete(p, CallExpr)
+pub(super) fn call_expr(p: &mut Parser, expr: MarkerComplete) -> MarkerComplete {
+    if p.at(T!['(']) {
+        let m = expr.precede(p);
+        arg_list(p);
+        m.complete(p, CallExpr)
+    } else {
+        expr
+    }
 }
 
 fn arg_list(p: &mut Parser) -> MarkerComplete {

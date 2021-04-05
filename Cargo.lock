@@ -30,6 +30,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "binding_powers"
+version = "0.1.0"
+dependencies = [
+ "binding_powers_impl",
+]
+
+[[package]]
+name = "binding_powers_impl"
+version = "0.1.0"
+
+[[package]]
 name = "bitflags"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -480,6 +491,7 @@ dependencies = [
 name = "parser"
 version = "0.1.0"
 dependencies = [
+ "binding_powers",
  "drop_bomb",
  "insta",
  "itertools",
@@ -495,9 +507,9 @@ checksum = "d4fd5641d01c8f18a23da7b6fe29298ff4b55afcccdf78973b24cf3175fee32e"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.24"
+version = "1.0.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e0704ee1a7e00d7bb417d0770ea303c1bccbabf0ef1667dae92b5967f5f8a71"
+checksum = "a152013215dca273577e18d2bf00fa862b89b24169fb78c4c95aeb07992c9cec"
 dependencies = [
  "unicode-xid",
 ]
