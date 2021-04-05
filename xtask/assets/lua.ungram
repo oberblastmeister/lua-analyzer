@@ -3,9 +3,10 @@ Program =
 
 Stmt =
   AssignStmt
-  | FunctionStmt
+  | FunctionDefStmt
   | ForStmt
   | IfStmt
+  | ReturnStmt
 
 Expr =
   Literal
@@ -14,6 +15,13 @@ Expr =
   | PrefixExpr
   | IndexExpr
   | DotExpr
+  | CallExpr
+
+CallExpr =
+  Expr Arglist
+
+Arglist =
+  '(' args:(Expr (',' Expr)*)? ')'
 
 Literal =
   'number'
@@ -68,13 +76,14 @@ PrefixExpr =
 IndexExpr =
   base:Expr '[' index:Expr ']'
 
-FunctionStmt =
-  'local'? 'function' Name
+FunctionDefStmt =
+  'local'? 'function' Name Paramlist
+  body:Body
+  'end'
 
-Parameters =
+Paramlist =
   '('
-  (Name (',' Name)*)
-  // (TableContent (',' TableContent)* ','?)
+  (NameRef (',' NameRef)*)
   ')'
 
 IfStmt =
@@ -90,6 +99,10 @@ WhileStmt =
   'then'
   body:Body
   'end'
+
+ReturnStmt =
+  'return'
+  expr:Expr
 
 ForStmt =
   'for' ForContent 'do' body:Body 'end'
@@ -108,7 +121,6 @@ GenericFor =
   'in'
   expr:Expr
   
-
 Body =
   Stmt*
   

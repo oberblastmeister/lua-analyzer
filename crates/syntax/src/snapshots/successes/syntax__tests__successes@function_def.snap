@@ -1,0 +1,58 @@
+---
+source: crates/syntax/src/lib.rs
+expression: "dump_parse_no_errors(Program::parse(&input))"
+
+---
+Program@0..84
+  Stmt@0..84
+    FunctionDefStmt@0..84
+      LocalKw@0..5 "local"
+      Whitespace@5..6 " "
+      FunctionKw@6..14 "function"
+      Whitespace@14..15 " "
+      Name@15..20
+        Ident@15..20 "empty"
+      Paramlist@20..22
+        LParen@20..21 "("
+        RParen@21..22 ")"
+      Whitespace@22..25 "\n  "
+      Body@25..80
+        Stmt@25..40
+          AssignStmt@25..40
+            LocalKw@25..30 "local"
+            Whitespace@30..31 " "
+            Name@31..36
+              Ident@31..36 "hello"
+            Whitespace@36..37 " "
+            Eq@37..38 "="
+            Whitespace@38..39 " "
+            Literal@39..40
+              Number@39..40 "5"
+        Whitespace@40..43 "\n  "
+        Stmt@43..66
+          AssignStmt@43..66
+            LocalKw@43..48 "local"
+            Whitespace@48..49 " "
+            Name@49..56
+              Ident@49..56 "another"
+            Whitespace@56..57 " "
+            Eq@57..58 "="
+            Whitespace@58..60 "  "
+            InfixExpr@60..66
+              Literal@60..61
+                Number@60..61 "5"
+              Whitespace@61..62 " "
+              Asterisk@62..63 "*"
+              Whitespace@63..64 " "
+              Literal@64..66
+                Number@64..66 "10"
+        Whitespace@66..69 "\n  "
+        Stmt@69..80
+          ReturnStmt@69..80
+            ReturnKw@69..75 "return"
+            Whitespace@75..76 " "
+            Literal@76..80
+              Number@76..80 "1324"
+      Whitespace@80..81 "\n"
+      EndKw@81..84 "end"
+
