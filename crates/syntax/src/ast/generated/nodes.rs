@@ -108,6 +108,15 @@ impl ReturnStmt {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CallExprStmt {
+    pub(crate) syntax: SyntaxNode,
+}
+impl CallExprStmt {
+    pub fn call_expr(&self) -> Option<CallExpr> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Literal {
     pub(crate) syntax: SyntaxNode,
 }
@@ -450,6 +459,7 @@ pub enum Stmt {
     ForStmt(ForStmt),
     IfStmt(IfStmt),
     ReturnStmt(ReturnStmt),
+    CallExprStmt(CallExprStmt),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Expr {
@@ -554,6 +564,21 @@ impl AstNode for IfStmt {
 impl AstNode for ReturnStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ReturnStmt
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for CallExprStmt {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CallExprStmt
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -921,6 +946,11 @@ impl From<ReturnStmt> for Stmt {
         Stmt::ReturnStmt(node)
     }
 }
+impl From<CallExprStmt> for Stmt {
+    fn from(node: CallExprStmt) -> Stmt {
+        Stmt::CallExprStmt(node)
+    }
+}
 impl AstNode for Stmt {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
@@ -928,7 +958,8 @@ impl AstNode for Stmt {
             | SyntaxKind::FunctionDefStmt
             | SyntaxKind::ForStmt
             | SyntaxKind::IfStmt
-            | SyntaxKind::ReturnStmt => true,
+            | SyntaxKind::ReturnStmt
+            | SyntaxKind::CallExprStmt => true,
             _ => false,
         }
     }
@@ -939,6 +970,7 @@ impl AstNode for Stmt {
             SyntaxKind::ForStmt => Stmt::ForStmt(ForStmt { syntax }),
             SyntaxKind::IfStmt => Stmt::IfStmt(IfStmt { syntax }),
             SyntaxKind::ReturnStmt => Stmt::ReturnStmt(ReturnStmt { syntax }),
+            SyntaxKind::CallExprStmt => Stmt::CallExprStmt(CallExprStmt { syntax }),
             _ => return None,
         };
         Some(res)
@@ -950,6 +982,7 @@ impl AstNode for Stmt {
             Stmt::ForStmt(it) => &it.syntax,
             Stmt::IfStmt(it) => &it.syntax,
             Stmt::ReturnStmt(it) => &it.syntax,
+            Stmt::CallExprStmt(it) => &it.syntax,
         }
     }
 }
@@ -1173,6 +1206,11 @@ impl std::fmt::Display for IfStmt {
     }
 }
 impl std::fmt::Display for ReturnStmt {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for CallExprStmt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

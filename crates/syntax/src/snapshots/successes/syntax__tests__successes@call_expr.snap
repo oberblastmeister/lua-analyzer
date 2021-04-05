@@ -1,0 +1,15 @@
+---
+source: crates/syntax/src/lib.rs
+expression: "dump_parse_no_errors(Program::parse(&input))"
+
+---
+Program@0..17
+  Stmt@0..17
+    CallExprStmt@0..17
+      CallExpr@0..17
+        NameRef@0..15
+          Ident@0..15 "calling_an_expr"
+        Arglist@15..17
+          LParen@15..16 "("
+          RParen@16..17 ")"
+

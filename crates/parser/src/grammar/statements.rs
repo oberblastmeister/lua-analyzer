@@ -1,5 +1,5 @@
 use super::{expr, expressions::call_expr};
-use crate::{parser::Marker, SyntaxKind::*};
+use crate::{parser::Marker, SyntaxKind::*, TokenSet};
 use crate::{
     parser::{MarkerComplete, Parser},
     TokenSource,
@@ -39,7 +39,7 @@ fn local_stmt(p: &mut Parser) -> Option<MarkerComplete> {
 fn call_expr_stmt(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     call_expr(p);
-    m.complete(p, CallExpr)
+    m.complete(p, CallExprStmt)
 }
 
 fn function_def_stmt(p: &mut Parser, is_local: bool) -> MarkerComplete {
@@ -65,8 +65,17 @@ fn return_stmt(p: &mut Parser) -> MarkerComplete {
 }
 
 fn param_list(p: &mut Parser) -> MarkerComplete {
+    const END: TokenSet = TokenSet::new(&[T![')'], T![eof]]);
+
     let m = p.start();
     p.expect(T!['(']);
+    if !p.at_ts(END) {
+        expr(p);
+        while !p.at_ts(END) {
+            expr(p);
+            p.expect(T![,]);
+        }
+    }
     p.expect(T![')']);
     m.complete(p, Paramlist)
 }

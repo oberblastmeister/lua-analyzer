@@ -1,8 +1,7 @@
 use crate::{
-    parser::{CompletedMarker, Marker, MarkerComplete, Parser},
+    parser::{MarkerComplete, Parser},
     token_set::TokenSet,
     SyntaxKind::{self, *},
-    TokenSource,
 };
 
 const LOWEST: u8 = 1;
@@ -12,7 +11,7 @@ fn infix_binding_power(kind: SyntaxKind) -> (u8, u8) {
 
     match kind {
         T![or] | T![and] => (1, 2),
-        T![<] | T![>] | T![<=] | T![>=] | T![~=] | T![==] => (3, 4) ,
+        T![<] | T![>] | T![<=] | T![>=] | T![~=] | T![==] => (3, 4),
         T![..] => (4, 5),
         T![+] | T![-] => (6, 7),
         T![*] | T![/] => (8, 9),
@@ -70,7 +69,8 @@ fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
         T!['('] => paren_expr(p)?,
         T![number] => literal(p)?,
         T![str] => literal(p)?,
-        T![ident] if peek == T!['('] => todo!(),
+        T![function] => literal(p)?,
+        T![ident] if peek == T!['('] => call_expr(p),
         T![ident] => name_ref(p),
         _ => {
             p.err_recover("Expected an expression");
@@ -89,7 +89,7 @@ fn paren_expr(p: &mut Parser) -> Option<MarkerComplete> {
     Some(m.complete(p, ParenExpr))
 }
 
-pub(crate) const LITERAL: TokenSet = TokenSet::new(&[T![true], T![false], T![number], T![str]]);
+pub(crate) const LITERAL: TokenSet = TokenSet::new(&[T![true], T![false], T![number], T![str], T![function]]);
 
 fn literal(p: &mut Parser) -> Option<MarkerComplete> {
     if !p.at_ts(LITERAL) {
@@ -106,6 +106,16 @@ fn name_ref(p: &mut Parser) -> MarkerComplete {
     m.complete(p, NameRef)
 }
 
-pub(super) fn call_expr(p: &mut Parser) -> Option<MarkerComplete> {
-    todo!()
+pub(super) fn call_expr(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    name_ref(p);
+    arg_list(p);
+    m.complete(p, CallExpr)
+}
+
+fn arg_list(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T!['(']);
+    p.expect(T![')']);
+    m.complete(p, Arglist)
 }

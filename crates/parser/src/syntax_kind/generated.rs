@@ -71,6 +71,7 @@ pub enum SyntaxKind {
     ForStmt,
     IfStmt,
     ReturnStmt,
+    CallExprStmt,
     Literal,
     TableExpr,
     InfixExpr,
