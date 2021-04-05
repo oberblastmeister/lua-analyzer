@@ -3,7 +3,7 @@ source: crates/syntax/src/lib.rs
 expression: "dump_parse_no_errors(Program::parse(&input))"
 
 ---
-Program@0..131
+Program@0..188
   Whitespace@0..47 "                      ..."
   Comment@47..78 "-- just a comment at  ..."
   Stmt@78..93
@@ -44,4 +44,50 @@ Program@0..131
       Whitespace@123..124 " "
       Literal@124..131
         Str@124..131 "\"a str\""
+  Whitespace@131..132 "\n"
+  Stmt@132..150
+    AssignStmt@132..150
+      LocalKw@132..137 "local"
+      Whitespace@137..138 " "
+      Name@138..142
+        Ident@138..142 "expr"
+      Whitespace@142..143 " "
+      Eq@143..144 "="
+      Whitespace@144..145 " "
+      InfixExpr@145..150
+        Literal@145..146
+          Number@145..146 "5"
+        Whitespace@146..147 " "
+        Plus@147..148 "+"
+        Whitespace@148..149 " "
+        Literal@149..150
+          Number@149..150 "6"
+  Whitespace@150..151 "\n"
+  Stmt@151..188
+    AssignStmt@151..188
+      LocalKw@151..156 "local"
+      Whitespace@156..157 " "
+      Name@157..173
+        Ident@157..173 "complicated_expr"
+      Whitespace@173..174 " "
+      Eq@174..175 "="
+      Whitespace@175..176 " "
+      InfixExpr@176..188
+        Literal@176..177
+          Number@176..177 "5"
+        Whitespace@177..178 " "
+        Plus@178..179 "+"
+        Whitespace@179..180 " "
+        InfixExpr@180..188
+          InfixExpr@180..184
+            Literal@180..181
+              Number@180..181 "6"
+            Caret@181..182 "^"
+            Literal@182..184
+              Number@182..184 "11"
+          Whitespace@184..185 " "
+          Asterisk@185..186 "*"
+          Whitespace@186..187 " "
+          Literal@187..188
+            Number@187..188 "7"
 

@@ -250,23 +250,50 @@ pub struct InfixOp {
     pub(crate) syntax: SyntaxNode,
 }
 impl InfixOp {
+    pub fn caret_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![^])
+    }
+    pub fn not_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![not])
+    }
+    pub fn asterisk_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![*])
+    }
+    pub fn slash_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![/])
+    }
     pub fn plus_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![+])
     }
     pub fn minus_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![-])
     }
-    pub fn slash_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![/])
+    pub fn double_dot_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![..])
     }
-    pub fn asterisk_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![*])
+    pub fn lt_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![<])
+    }
+    pub fn gt_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![>])
+    }
+    pub fn lt_eq_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![<=])
+    }
+    pub fn gt_eq_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![>=])
+    }
+    pub fn not_eq_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![~=])
     }
     pub fn eq_eq_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![==])
     }
-    pub fn not_eq_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![~=])
+    pub fn and_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![and])
+    }
+    pub fn or_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![or])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
