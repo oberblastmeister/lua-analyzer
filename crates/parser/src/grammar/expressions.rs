@@ -1,4 +1,4 @@
-use binding_powers::precedences;
+use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP, NOT_AN_OP_INFIX, NOT_AN_OP_PREFIX};
 
 use crate::{
     parser::{MarkerComplete, Parser},
@@ -82,38 +82,16 @@ impl From<SyntaxKind> for Option<LuaOp> {
     }
 }
 
-const LOWEST: u8 = 1;
-
 fn infix_binding_power(kind: SyntaxKind) -> (u8, u8) {
-    const NOT_AN_OP: (u8, u8) = (0, 0);
-
-    match kind {
-        T![or] | T![and] => (1, 2),
-        T![<] | T![>] | T![<=] | T![>=] | T![~=] | T![==] => (3, 4),
-        T![..] => (4, 5),
-        T![+] | T![-] => (6, 7),
-        T![*] | T![/] => (8, 9),
-        T![^] => (12, 11),
-        _ => NOT_AN_OP,
-    }
+    <Option<LuaOp>>::from(kind)
+        .map(|op| op.infix_power())
+        .unwrap_or(NOT_AN_OP_INFIX)
 }
 
 fn prefix_binding_power(kind: SyntaxKind) -> ((), u8) {
-    const NOT_AN_OP: ((), u8) = ((), 0);
-
-    match kind {
-        T![not] | T![-] => ((), 10),
-        _ => NOT_AN_OP,
-    }
-}
-
-fn postfix_binding_power(kind: SyntaxKind) -> (u8, ()) {
-    const NOT_AN_OP: (u8, ()) = (0, ());
-
-    match kind {
-        T!['['] => (13, ()),
-        _ => NOT_AN_OP,
-    }
+    <Option<LuaOp>>::from(kind)
+        .map(|op| op.prefix_power())
+        .unwrap_or(NOT_AN_OP_PREFIX)
 }
 
 pub(super) fn expr(p: &mut Parser) -> Option<MarkerComplete> {
@@ -141,15 +119,18 @@ fn expr_bp(p: &mut Parser, min_bp: u8) -> Option<MarkerComplete> {
 }
 
 fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
-    let peek = p.nth(1);
+    let lhs = atom_expr(p)?;
+    Some(postfix_expr(p, lhs))
+}
+
+fn atom_expr(p: &mut Parser) -> Option<MarkerComplete> {
+    if p.at_ts(LITERAL) {
+        return literal(p);
+    }
 
     let m = match p.current() {
-        T!['('] => paren_expr(p)?,
-        T![number] => literal(p)?,
-        T![str] => literal(p)?,
-        T![function] => literal(p)?,
-        // T![ident] if peek == T!['('] => call_expr(p),
         T![ident] => name_ref(p),
+        T!['('] => paren_expr(p)?,
         _ => {
             p.err_recover("Expected an expression");
             return None;
@@ -159,12 +140,18 @@ fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
     Some(m)
 }
 
-fn postfix_expr(
-    p: &mut Parser,
-    mut lhs: MarkerComplete,
-    allow_calls: bool,
-) -> Option<MarkerComplete> {
-    todo!()
+fn postfix_expr(p: &mut Parser, mut lhs: MarkerComplete) -> MarkerComplete {
+    loop {
+        lhs = match p.current() {
+            T!['('] => call_expr(p, lhs),
+            T!['['] => index_expr(p, lhs),
+            T![:] => method_call_expr(p, lhs),
+            T![.] => dot_expr(p, lhs),
+            _ => break,
+        }
+    }
+
+    return lhs;
 }
 
 pub(super) fn paren_expr(p: &mut Parser) -> Option<MarkerComplete> {
@@ -180,9 +167,7 @@ pub(crate) const LITERAL: TokenSet =
     TokenSet::new(&[T![true], T![false], T![number], T![str], T![function]]);
 
 fn literal(p: &mut Parser) -> Option<MarkerComplete> {
-    if !p.at_ts(LITERAL) {
-        return None;
-    }
+    assert!(p.at_ts(LITERAL));
     let m = p.start();
     p.bump_any();
     Some(m.complete(p, Literal))
@@ -191,8 +176,7 @@ fn literal(p: &mut Parser) -> Option<MarkerComplete> {
 fn name_ref(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![ident]);
-    let expr = m.complete(p, NameRef);
-    call_expr(p, expr)
+    m.complete(p, NameRef)
 }
 
 pub(super) fn call_expr(p: &mut Parser, expr: MarkerComplete) -> MarkerComplete {
@@ -203,6 +187,18 @@ pub(super) fn call_expr(p: &mut Parser, expr: MarkerComplete) -> MarkerComplete 
     } else {
         expr
     }
+}
+
+fn index_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
+    todo!()
+}
+
+fn method_call_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
+    todo!()
+}
+
+fn dot_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
+    todo!()
 }
 
 fn arg_list(p: &mut Parser) -> MarkerComplete {

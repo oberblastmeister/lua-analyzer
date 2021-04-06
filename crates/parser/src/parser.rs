@@ -41,18 +41,16 @@ impl<'a> Parser<'a> {
     /// Starts a new node in the syntax tree. All nodes and tokens
     /// consumed between the `start` and the corresponding `Marker::complete`
     /// belong to the same node.
-    fn raw_start<MT: MarkerType>(&mut self) -> Marker<MT> {
+    pub(crate) fn start(&mut self) -> Marker<RegularMarker> {
         let pos = self.events_len();
         self.push_event(Event::tombstone());
         Marker::new(pos)
     }
 
-    pub(crate) fn start(&mut self) -> Marker<RegularMarker> {
-        self.raw_start()
-    }
-
     pub(crate) fn start_error(&mut self) -> Marker<ErrorMarker> {
-        self.raw_start()
+        let pos = self.events_len();
+        self.push_event(Event::StartError);
+        Marker::new(pos)
     }
 
     fn push_event(&mut self, event: Event) {
@@ -89,7 +87,6 @@ impl<'a> Parser<'a> {
     }
 
     fn do_bump(&mut self) {
-        println!("Do bumping");
         self.token_source.bump();
 
         self.push_event(Event::Token);

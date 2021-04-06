@@ -17,11 +17,17 @@ pub struct TextTreeSink<'a> {
 
 pub enum State {
     PendingStart,
+    PendingFinish,
     Normal,
 }
 
 impl<'a> TreeSink for TextTreeSink<'a> {
     fn token(&mut self) {
+        match mem::replace(&mut self.state, State::Normal) {
+            State::PendingStart => unreachable!(),
+            State::PendingFinish => self.inner.finish_node(),
+            State::Normal => (),
+        }
         self.eat_trivias();
         self.do_token();
     }
@@ -34,6 +40,7 @@ impl<'a> TreeSink for TextTreeSink<'a> {
                 // previous node.
                 return;
             }
+            State::PendingFinish => self.inner.finish_node(),
             State::Normal => (),
         }
 
@@ -43,7 +50,11 @@ impl<'a> TreeSink for TextTreeSink<'a> {
     }
 
     fn finish_node(&mut self) {
-        self.inner.finish_node();
+        match mem::replace(&mut self.state, State::PendingFinish) {
+            State::PendingStart => unreachable!(),
+            State::PendingFinish => self.inner.finish_node(),
+            State::Normal => (),
+        }
     }
 
     fn start_error_node(&mut self) {
@@ -100,7 +111,15 @@ impl<'a> TextTreeSink<'a> {
         }
     }
 
-    pub fn finish(self) -> (GreenNode, Vec<SyntaxError>) {
+    pub fn finish(mut self) -> (GreenNode, Vec<SyntaxError>) {
+        match mem::replace(&mut self.state, State::Normal) {
+            State::PendingFinish => {
+                self.eat_trivias();
+                self.inner.finish_node()
+            }
+            State::PendingStart | State::Normal => unreachable!(),
+        }
+
         self.inner.finish_raw()
     }
 }

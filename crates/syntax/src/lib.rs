@@ -100,6 +100,19 @@ mod tests {
     use core::fmt;
     use std::fs;
 
+    fn format_errors(errors: &[SyntaxError]) -> String {
+        let mut s = String::new();
+        s.push_str(
+            "
+=============================
+Errors:
+=============================
+",
+        );
+        s.push_str(&format!("{:#?}", errors));
+        s
+    }
+
     fn dump_parse<T: AstNode + fmt::Debug>(parse: Parse<T>) -> String {
         let mut s = String::new();
         s.push_str(&format!("{:#?}", parse.syntax_node()));
@@ -117,7 +130,7 @@ Errors:
     fn dump_parse_no_errors<T: AstNode + fmt::Debug>(parse: Parse<T>) -> String {
         let s = format!("{:#?}", parse.syntax_node());
         if !parse.errors().is_empty() {
-            panic!("Should not have any errors")
+            panic!("Should not have any errors {}", format_errors(parse.errors()))
         }
         s
     }

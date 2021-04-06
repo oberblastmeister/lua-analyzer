@@ -20,6 +20,7 @@ pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
         T![return] => no_ret!(return_stmt(p)),
         T![ident] if peek == T![=] => no_ret!(assignment(p, false)),
         T![ident] if peek == T!['('] => no_ret!(call_expr_stmt(p)),
+        T!['('] => no_ret!(call_expr_stmt(p)),
         _ => p.err_recover("Expected a statement"),
     }
     Some(m.complete(p, Stmt))
@@ -37,12 +38,13 @@ fn local_stmt(p: &mut Parser) -> Option<MarkerComplete> {
 }
 
 fn call_expr_stmt(p: &mut Parser) -> MarkerComplete {
-    todo!()
-    // let m = p.start();
-    // let m2 = p.start();
-    // call_expr(p);
-    // m2.complete(p, CallExprStmt);
-    // m.complete(p, Expr);
+    const CALL_TS: TokenSet = TokenSet::new(&[T![ident], T!['(']]);
+
+    assert!(p.at_ts(CALL_TS));
+
+    let m = p.start();
+    expr(p);
+    m.complete(p, CallExpr)
 }
 
 fn function_def_stmt(p: &mut Parser, is_local: bool) -> MarkerComplete {
@@ -68,7 +70,7 @@ fn return_stmt(p: &mut Parser) -> MarkerComplete {
 }
 
 fn param_list(p: &mut Parser) -> MarkerComplete {
-    const END: TokenSet<> = TokenSet::new(&[T![')'], T![eof]]);
+    const END: TokenSet = TokenSet::new(&[T![')'], T![eof]]);
 
     let m = p.start();
     p.expect(T!['(']);
@@ -89,7 +91,7 @@ fn assignment(p: &mut Parser, is_local: bool) -> MarkerComplete {
         p.bump(T![local]);
     }
     name(p);
-    p.bump(T![=]);
+    p.expect(T![=]);
     expr(p);
     m.complete(p, AssignStmt)
 }
