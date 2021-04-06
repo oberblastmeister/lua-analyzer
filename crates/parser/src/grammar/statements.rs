@@ -1,29 +1,24 @@
-use super::{expr, expressions::call_expr};
+use super::{expr_single, expressions::call_expr, expressions::expr};
 use crate::{parser::Marker, SyntaxKind::*, TokenSet};
 use crate::{
     parser::{MarkerComplete, Parser},
     TokenSource,
 };
 
-macro_rules! no_ret {
-    ($expr:expr) => {{
-        $expr;
-    }};
-}
-
 pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
-    let m = p.start();
     let peek = p.nth(1);
-    match p.current() {
-        T![local] => no_ret!(local_stmt(p)),
-        T![function] => no_ret!(function_def_stmt(p, false)),
-        T![return] => no_ret!(return_stmt(p)),
-        T![ident] if peek == T![=] => no_ret!(assignment(p, false)),
-        T![ident] if peek == T!['('] => no_ret!(call_expr_stmt(p)),
-        T!['('] => no_ret!(call_expr_stmt(p)),
-        _ => p.err_recover("Expected a statement"),
-    }
-    Some(m.complete(p, Stmt))
+    Some(match p.current() {
+        T![local] => local_stmt(p)?,
+        T![function] => function_def_stmt(p, false),
+        T![return] => return_stmt(p),
+        T![ident] if peek == T![=] => assignment(p, false),
+        T![ident] if peek == T!['('] => call_expr_stmt(p),
+        T!['('] => call_expr_stmt(p),
+        _ => {
+            p.err_recover("Expected a statement");
+            return None;
+        }
+    })
 }
 
 fn local_stmt(p: &mut Parser) -> Option<MarkerComplete> {
@@ -43,8 +38,8 @@ fn call_expr_stmt(p: &mut Parser) -> MarkerComplete {
     assert!(p.at_ts(CALL_TS));
 
     let m = p.start();
-    expr(p);
-    m.complete(p, CallExpr)
+    expr_single(p);
+    m.complete(p, CallExprStmt)
 }
 
 fn function_def_stmt(p: &mut Parser, is_local: bool) -> MarkerComplete {
@@ -75,9 +70,9 @@ fn param_list(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.expect(T!['(']);
     if !p.at_ts(END) {
-        expr(p);
+        expr_single(p);
         while !p.at_ts(END) {
-            expr(p);
+            expr_single(p);
             p.expect(T![,]);
         }
     }

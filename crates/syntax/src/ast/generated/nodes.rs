@@ -28,6 +28,9 @@ impl AssignStmt {
     pub fn eq_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![=])
     }
+    pub fn expr(&self) -> Option<Expr> {
+        support::child(&self.syntax)
+    }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct FunctionDefStmt {
@@ -211,11 +214,26 @@ pub struct CallExpr {
     pub(crate) syntax: SyntaxNode,
 }
 impl CallExpr {
-    pub fn expr(&self) -> Option<Expr> {
+    pub fn fun(&self) -> Option<Expr> {
         support::child(&self.syntax)
     }
-    pub fn arglist(&self) -> Option<Arglist> {
+    pub fn l_paren_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T!['('])
+    }
+    pub fn args(&self) -> Option<Expr> {
         support::child(&self.syntax)
+    }
+    pub fn r_paren_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![')'])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct MultivalExpr {
+    pub(crate) syntax: SyntaxNode,
+}
+impl MultivalExpr {
+    pub fn exprs(&self) -> AstChildren<Expr> {
+        support::children(&self.syntax)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -684,6 +702,21 @@ impl AstNode for DotExpr {
 impl AstNode for CallExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CallExpr
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for MultivalExpr {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::MultivalExpr
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1246,6 +1279,11 @@ impl std::fmt::Display for DotExpr {
     }
 }
 impl std::fmt::Display for CallExpr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for MultivalExpr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

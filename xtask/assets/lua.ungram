@@ -19,7 +19,10 @@ Expr =
   | CallExpr
 
 CallExpr =
-  Expr Arglist
+  fun:Expr '(' (args:Expr)? ')'
+
+MultivalExpr =
+  Expr (',' Expr)*
 
 Arglist =
   '(' args:(Expr (',' Expr)*)? ')'
@@ -134,7 +137,7 @@ NameRef =
   'ident'
 
 AssignStmt =
-  'local'? Pat '=' 
+  'local'? Pat ('=' Expr)?
 
 Pat =
   Name (',' Name)*

@@ -79,6 +79,7 @@ pub enum SyntaxKind {
     IndexExpr,
     DotExpr,
     CallExpr,
+    MultivalExpr,
     Arglist,
     Name,
     ParenExpr,

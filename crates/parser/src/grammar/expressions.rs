@@ -94,7 +94,30 @@ fn prefix_binding_power(kind: SyntaxKind) -> ((), u8) {
         .unwrap_or(NOT_AN_OP_PREFIX)
 }
 
-pub(super) fn expr(p: &mut Parser) -> Option<MarkerComplete> {
+pub(super) fn expr(p: &mut Parser) -> MarkerComplete {
+    expr_multi(p, false)
+}
+
+fn expr_multi(p: &mut Parser, in_function: bool) -> MarkerComplete {
+    let m = p.start();
+    expr_single(p);
+    if p.at(T![,]) && !p.at(T![')']) {
+        while !p.at(T![eof]) && !(in_function && p.at(T![')'])) {
+            p.bump(T![,]);
+
+            if expr_single(p).is_none() {
+                break;
+            }
+
+            if !p.at(T![,]) {
+                break;
+            }
+        }
+    }
+    m.complete(p, MultivalExpr)
+}
+
+pub(super) fn expr_single(p: &mut Parser) -> Option<MarkerComplete> {
     expr_bp(p, LOWEST)
 }
 
@@ -130,7 +153,7 @@ fn atom_expr(p: &mut Parser) -> Option<MarkerComplete> {
 
     let m = match p.current() {
         T![ident] => name_ref(p),
-        T!['('] => paren_expr(p)?,
+        T!['('] => paren_expr(p),
         _ => {
             p.err_recover("Expected an expression");
             return None;
@@ -154,13 +177,12 @@ fn postfix_expr(p: &mut Parser, mut lhs: MarkerComplete) -> MarkerComplete {
     return lhs;
 }
 
-pub(super) fn paren_expr(p: &mut Parser) -> Option<MarkerComplete> {
+pub(super) fn paren_expr(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.expect(T!['(']);
-    expr_bp(p, LOWEST)?;
+    expr_bp(p, LOWEST);
     p.expect(T![')']);
-    let paren_expr = m.complete(p, ParenExpr);
-    Some(call_expr(p, paren_expr))
+    m.complete(p, ParenExpr)
 }
 
 pub(crate) const LITERAL: TokenSet =
@@ -179,14 +201,20 @@ fn name_ref(p: &mut Parser) -> MarkerComplete {
     m.complete(p, NameRef)
 }
 
-pub(super) fn call_expr(p: &mut Parser, expr: MarkerComplete) -> MarkerComplete {
-    if p.at(T!['(']) {
-        let m = expr.precede(p);
-        arg_list(p);
-        m.complete(p, CallExpr)
-    } else {
-        expr
+pub(super) fn call_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
+    let m = lhs.precede(p);
+    arg_list(p);
+    m.complete(p, CallExpr)
+}
+
+fn arg_list(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T!['(']);
+    if !p.at(T![')']) {
+        expr_multi(p, true);
     }
+    p.expect(T![')']);
+    m.complete(p, Arglist)
 }
 
 fn index_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
@@ -201,9 +229,3 @@ fn dot_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
     todo!()
 }
 
-fn arg_list(p: &mut Parser) -> MarkerComplete {
-    let m = p.start();
-    p.bump(T!['(']);
-    p.expect(T![')']);
-    m.complete(p, Arglist)
-}

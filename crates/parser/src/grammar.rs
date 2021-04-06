@@ -2,7 +2,7 @@ mod expressions;
 mod statements;
 
 use crate::{parser::Parser, SyntaxKind::*, TokenSource};
-use expressions::expr;
+use expressions::expr_single;
 use statements::stmt;
 
 pub(crate) fn root(p: &mut Parser) {
