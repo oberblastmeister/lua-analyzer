@@ -22,4 +22,9 @@ Program@0..16
 =============================
 Errors:
 =============================
-[SyntaxError("Expected RParen, got Eof", 15..15)]
+[
+    SyntaxError(
+        "Expected RParen, got Eof",
+        15..15,
+    ),
+]

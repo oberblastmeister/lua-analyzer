@@ -3,7 +3,7 @@ use std::mem;
 use parser::{ParseError, SyntaxKind, Token, TreeSink};
 use rowan::{GreenNode, TextRange, TextSize};
 
-use crate::{syntax_node::SyntaxTreeBuilder, SyntaxError};
+use crate::{syntax_node::SyntaxTreeBuilder, SyntaxError, T};
 
 pub struct TextTreeSink<'a> {
     text: &'a str,
@@ -58,10 +58,12 @@ impl<'a> TreeSink for TextTreeSink<'a> {
     }
 
     fn start_error_node(&mut self) {
+        self.start_node(T![error]);
         self.error_ranges.push(TextRange::empty(self.text_pos));
     }
 
     fn finish_error_node(&mut self, e: ParseError) {
+        self.finish_node();
         self.inner.error(e, self.error_ranges.pop().unwrap())
     }
 

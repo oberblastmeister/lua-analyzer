@@ -21,6 +21,9 @@ Expr =
 CallExpr =
   fun:Expr '(' (args:Expr)? ')'
 
+MethodCallExpr =
+  fun:Expr ':' NameRef '(' (args:Expr)? ')'
+
 MultivalExpr =
   Expr (',' Expr)*
 
@@ -39,7 +42,7 @@ TableExpr =
   '}'
 
 DotExpr =
-  Expr '.' Name
+  Expr '.' 'ident'
 
 ParenExpr =
   '('

@@ -142,13 +142,14 @@ fn expr_bp(p: &mut Parser, min_bp: u8) -> Option<MarkerComplete> {
 }
 
 fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
-    let lhs = atom_expr(p)?;
-    Some(postfix_expr(p, lhs))
+    let (lhs, can_call) = atom_expr(p)?;
+    Some(postfix_expr(p, lhs, can_call))
 }
 
-fn atom_expr(p: &mut Parser) -> Option<MarkerComplete> {
+/// Returns the completed marker and whether we can do a function call on this expression
+fn atom_expr(p: &mut Parser) -> Option<(MarkerComplete, bool)> {
     if p.at_ts(LITERAL) {
-        return literal(p);
+        return literal(p).map(|it| (it, false));
     }
 
     let m = match p.current() {
@@ -160,18 +161,19 @@ fn atom_expr(p: &mut Parser) -> Option<MarkerComplete> {
         }
     };
 
-    Some(m)
+    Some((m, true))
 }
 
-fn postfix_expr(p: &mut Parser, mut lhs: MarkerComplete) -> MarkerComplete {
+fn postfix_expr(p: &mut Parser, mut lhs: MarkerComplete, mut can_call: bool) -> MarkerComplete {
     loop {
         lhs = match p.current() {
-            T!['('] => call_expr(p, lhs),
+            T!['('] if can_call => call_expr(p, lhs),
+            T![:] if can_call => method_call_expr(p, lhs),
             T!['['] => index_expr(p, lhs),
-            T![:] => method_call_expr(p, lhs),
             T![.] => dot_expr(p, lhs),
             _ => break,
-        }
+        };
+        can_call = true;
     }
 
     return lhs;
@@ -218,14 +220,26 @@ fn arg_list(p: &mut Parser) -> MarkerComplete {
 }
 
 fn index_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
-    todo!()
+    let m = lhs.precede(p);
+    p.bump(T!['[']);
+    if !p.at(T![']']) {
+        expr_single(p);
+    }
+    p.expect(T![']']);
+    m.complete(p, IndexExpr)
 }
 
 fn method_call_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
-    todo!()
+    let m = lhs.precede(p);
+    p.bump(T![:]);
+    name_ref(p);
+    arg_list(p);
+    m.complete(p, MethodCallExpr)
 }
 
 fn dot_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
-    todo!()
+    let m = lhs.precede(p);
+    p.bump(T![.]);
+    p.expect(T![ident]);
+    m.complete(p, DotExpr)
 }
-

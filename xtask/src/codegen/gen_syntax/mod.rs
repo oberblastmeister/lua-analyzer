@@ -391,7 +391,7 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
 
         use crate::{
             SyntaxNode, SyntaxToken, SyntaxKind,
-            ast::{self, AstNode, AstChildren, support},
+            ast::{AstNode, AstChildren, support},
             T,
         };
 

@@ -123,7 +123,7 @@ Errors:
 =============================
 ",
         );
-        s.push_str(&format!("{:?}", parse.errors()));
+        s.push_str(&format!("{:#?}", parse.errors()));
         s
     }
 

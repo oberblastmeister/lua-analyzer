@@ -2,7 +2,7 @@
 
 #![allow(dead_code)]
 use crate::{
-    ast::{self, support, AstChildren, AstNode},
+    ast::{support, AstChildren, AstNode},
     SyntaxKind, SyntaxNode, SyntaxToken, T,
 };
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -228,6 +228,39 @@ impl CallExpr {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct MethodCallExpr {
+    pub(crate) syntax: SyntaxNode,
+}
+impl MethodCallExpr {
+    pub fn fun(&self) -> Option<Expr> {
+        support::child(&self.syntax)
+    }
+    pub fn colon_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![:])
+    }
+    pub fn name_ref(&self) -> Option<NameRef> {
+        support::child(&self.syntax)
+    }
+    pub fn l_paren_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T!['('])
+    }
+    pub fn args(&self) -> Option<Expr> {
+        support::child(&self.syntax)
+    }
+    pub fn r_paren_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![')'])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct NameRef {
+    pub(crate) syntax: SyntaxNode,
+}
+impl NameRef {
+    pub fn ident_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![ident])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct MultivalExpr {
     pub(crate) syntax: SyntaxNode,
 }
@@ -393,15 +426,6 @@ pub struct Body {
 impl Body {
     pub fn stmts(&self) -> AstChildren<Stmt> {
         support::children(&self.syntax)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct NameRef {
-    pub(crate) syntax: SyntaxNode,
-}
-impl NameRef {
-    pub fn ident_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![ident])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -714,6 +738,36 @@ impl AstNode for CallExpr {
         &self.syntax
     }
 }
+impl AstNode for MethodCallExpr {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::MethodCallExpr
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for NameRef {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::NameRef
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
 impl AstNode for MultivalExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::MultivalExpr
@@ -867,21 +921,6 @@ impl AstNode for Paramlist {
 impl AstNode for Body {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Body
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for NameRef {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::NameRef
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1283,6 +1322,16 @@ impl std::fmt::Display for CallExpr {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
+impl std::fmt::Display for MethodCallExpr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for NameRef {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
 impl std::fmt::Display for MultivalExpr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
@@ -1334,11 +1383,6 @@ impl std::fmt::Display for Paramlist {
     }
 }
 impl std::fmt::Display for Body {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for NameRef {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
