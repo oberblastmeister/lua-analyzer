@@ -195,7 +195,16 @@ impl<'a> Lexer<'a> {
             ']' => T![']'],
 
             ',' => T![,],
-            '.' => T![.],
+            '.' => match self.bump_then() {
+                '.' => match self.bump_then() {
+                    '.' => {
+                        self.bump();
+                        done!(T![...])
+                    }
+                    _ => done!(T![..]),
+                },
+                _ => done!(T![.]),
+            },
             ';' => T![;],
             ':' => T![:],
 
@@ -676,5 +685,15 @@ asdf()
     #[test]
     fn assignment() {
         check("local hello = 5")
+    }
+
+    #[test]
+    fn vararg() {
+        check("function(...) print(...) end")
+    }
+
+    #[test]
+    fn concat() {
+        check("..")
     }
 }

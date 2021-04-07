@@ -92,7 +92,7 @@ pub enum SyntaxKind {
     KeyValue,
     PositionalValue,
     IndexKey,
-    LiteralKey,
+    IdentKey,
     InfixOp,
     DoStmt,
     Name,

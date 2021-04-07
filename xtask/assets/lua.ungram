@@ -74,12 +74,12 @@ KeyValue =
   
 TableKey =
   IndexKey
-  | LiteralKey
+  | IdentKey
 
 IndexKey =
   '[' index:Expr ']'
 
-LiteralKey =
+IdentKey =
   'ident'
 
 InfixExpr =

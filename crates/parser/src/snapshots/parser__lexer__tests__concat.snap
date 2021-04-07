@@ -1,0 +1,16 @@
+---
+source: crates/parser/src/lexer.rs
+expression: tokens
+
+---
+[
+    Ok(
+        (
+            Token {
+                kind: DoubleDot,
+                range: 0..2,
+            },
+            "..",
+        ),
+    ),
+]

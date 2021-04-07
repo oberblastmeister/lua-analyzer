@@ -218,7 +218,10 @@ Errors:
         dot_expr,
         array_table_expr,
         map_table_expr,
+        both_table_expr,
         types,
+        string_call_expr,
+        table_call_expr,
     ];
 
     test_fails![can_call, cannot_call_literal, missing_paren];

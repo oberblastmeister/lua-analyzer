@@ -1,0 +1,52 @@
+---
+source: crates/syntax/src/lib.rs
+expression: "dump_parse_no_errors(Program::parse(&input))"
+
+---
+Program@0..67
+  AssignStmt@0..66
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    MultiName@6..11
+      Name@6..11
+        Ident@6..11 "array"
+    Whitespace@11..12 " "
+    Eq@12..13 "="
+    Whitespace@13..14 " "
+    MultivalExpr@14..66
+      TableExpr@14..66
+        LBrace@14..15 "{"
+        Whitespace@15..18 "\n  "
+        TableContent@18..25
+          PositionalValue@18..25
+            Literal@18..25
+              Str@18..25 "\"first\""
+        Comma@25..26 ","
+        Whitespace@26..29 "\n  "
+        TableContent@29..32
+          PositionalValue@29..32
+            Literal@29..32
+              Number@29..32 "324"
+        Comma@32..33 ","
+        Whitespace@33..36 "\n  "
+        TableContent@36..50
+          PositionalValue@36..50
+            FunctionExpr@36..50
+              FunctionKw@36..44 "function"
+              Paramlist@44..46
+                LParen@44..45 "("
+                RParen@45..46 ")"
+              Whitespace@46..47 " "
+              Body@47..47
+              EndKw@47..50 "end"
+        Comma@50..51 ","
+        Whitespace@51..54 "\n  "
+        TableContent@54..63
+          PositionalValue@54..63
+            Literal@54..63
+              Str@54..63 "\"another\""
+        Comma@63..64 ","
+        Whitespace@64..65 "\n"
+        RBrace@65..66 "}"
+  Whitespace@66..67 "\n"
+

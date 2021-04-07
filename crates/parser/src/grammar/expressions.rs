@@ -175,6 +175,8 @@ fn postfix_expr(p: &mut Parser, mut lhs: MarkerComplete, mut can_call: bool) -> 
     loop {
         lhs = match p.current() {
             T!['('] if can_call => call_expr(p, lhs),
+            T!['{'] if can_call => table_call_expr(p, lhs),
+            T![str] if can_call => string_call_expr(p, lhs),
             T![:] if can_call => method_call_expr(p, lhs),
             T!['['] => index_expr(p, lhs),
             T![.] => dot_expr(p, lhs),
@@ -218,10 +220,44 @@ fn table_expr(p: &mut Parser) -> MarkerComplete {
 }
 
 fn table_content(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
     match p.current() {
-        T![ident] => todo!(),
+        T![ident] | T!['['] => key_value(p),
         _ => positional_value(p),
-    }
+    };
+    m.complete(p, TableContent)
+}
+
+fn key_value(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    table_key(p);
+    p.expect(T![=]);
+    expr_single(p);
+    m.complete(p, KeyValue)
+}
+
+fn table_key(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    match p.current() {
+        T![ident] => ident_key(p),
+        T!['['] => index_key(p),
+        _ => unreachable!(),
+    };
+    m.complete(p, TableKey)
+}
+
+fn ident_key(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T![ident]);
+    m.complete(p, IdentKey)
+}
+
+fn index_key(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T!['[']);
+    expr_single(p);
+    p.expect(T![']']);
+    m.complete(p, IndexKey)
 }
 
 fn positional_value(p: &mut Parser) -> MarkerComplete {
@@ -249,6 +285,20 @@ pub(super) fn call_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
     let m = lhs.precede(p);
     arg_list(p);
     m.complete(p, CallExpr)
+}
+
+fn string_call_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
+    assert!(p.at(T![str]));
+    let m = lhs.precede(p);
+    expr_single(p);
+    m.complete(p, StringCallExpr)
+}
+
+fn table_call_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
+    assert!(p.at(T!['{']));
+    let m = lhs.precede(p);
+    expr_single(p);
+    m.complete(p, TableCallExpr)
 }
 
 fn arg_list(p: &mut Parser) -> MarkerComplete {

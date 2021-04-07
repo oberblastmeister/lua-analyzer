@@ -399,10 +399,10 @@ impl IndexKey {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct LiteralKey {
+pub struct IdentKey {
     pub(crate) syntax: SyntaxNode,
 }
-impl LiteralKey {
+impl IdentKey {
     pub fn ident_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![ident])
     }
@@ -576,7 +576,7 @@ pub enum TableContent {
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TableKey {
     IndexKey(IndexKey),
-    LiteralKey(LiteralKey),
+    IdentKey(IdentKey),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ForContent {
@@ -988,9 +988,9 @@ impl AstNode for IndexKey {
         &self.syntax
     }
 }
-impl AstNode for LiteralKey {
+impl AstNode for IdentKey {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::LiteralKey
+        kind == SyntaxKind::IdentKey
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1293,22 +1293,22 @@ impl From<IndexKey> for TableKey {
         TableKey::IndexKey(node)
     }
 }
-impl From<LiteralKey> for TableKey {
-    fn from(node: LiteralKey) -> TableKey {
-        TableKey::LiteralKey(node)
+impl From<IdentKey> for TableKey {
+    fn from(node: IdentKey) -> TableKey {
+        TableKey::IdentKey(node)
     }
 }
 impl AstNode for TableKey {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
-            SyntaxKind::IndexKey | SyntaxKind::LiteralKey => true,
+            SyntaxKind::IndexKey | SyntaxKind::IdentKey => true,
             _ => false,
         }
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             SyntaxKind::IndexKey => TableKey::IndexKey(IndexKey { syntax }),
-            SyntaxKind::LiteralKey => TableKey::LiteralKey(LiteralKey { syntax }),
+            SyntaxKind::IdentKey => TableKey::IdentKey(IdentKey { syntax }),
             _ => return None,
         };
         Some(res)
@@ -1316,7 +1316,7 @@ impl AstNode for TableKey {
     fn syntax(&self) -> &SyntaxNode {
         match self {
             TableKey::IndexKey(it) => &it.syntax,
-            TableKey::LiteralKey(it) => &it.syntax,
+            TableKey::IdentKey(it) => &it.syntax,
         }
     }
 }
@@ -1512,7 +1512,7 @@ impl std::fmt::Display for IndexKey {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for LiteralKey {
+impl std::fmt::Display for IdentKey {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
