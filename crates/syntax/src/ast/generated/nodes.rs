@@ -22,7 +22,7 @@ impl AssignStmt {
     pub fn local_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![local])
     }
-    pub fn pat(&self) -> Option<Pat> {
+    pub fn multi_name(&self) -> Option<MultiName> {
         support::child(&self.syntax)
     }
     pub fn eq_token(&self) -> Option<SyntaxToken> {
@@ -133,6 +133,9 @@ impl Literal {
     pub fn false_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![false])
     }
+    pub fn function_literal(&self) -> Option<FunctionLiteral> {
+        support::child(&self.syntax)
+    }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TableExpr {
@@ -205,8 +208,8 @@ impl DotExpr {
     pub fn dot_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![.])
     }
-    pub fn name(&self) -> Option<Name> {
-        support::child(&self.syntax)
+    pub fn ident_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![ident])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -225,6 +228,27 @@ impl CallExpr {
     }
     pub fn r_paren_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![')'])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct TableCallExpr {
+    pub(crate) syntax: SyntaxNode,
+}
+impl TableCallExpr {
+    pub fn fun(&self) -> Option<Expr> {
+        support::child(&self.syntax)
+    }
+    pub fn tbl(&self) -> Option<TableExpr> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct StringCallExpr {
+    pub(crate) syntax: SyntaxNode,
+}
+impl StringCallExpr {
+    pub fn fun(&self) -> Option<Expr> {
+        support::child(&self.syntax)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -285,12 +309,45 @@ impl Arglist {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Name {
+pub struct FunctionLiteral {
     pub(crate) syntax: SyntaxNode,
 }
-impl Name {
-    pub fn ident_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![ident])
+impl FunctionLiteral {
+    pub fn function_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![function])
+    }
+    pub fn params(&self) -> Option<Paramlist> {
+        support::child(&self.syntax)
+    }
+    pub fn body(&self) -> Option<Body> {
+        support::child(&self.syntax)
+    }
+    pub fn end_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![end])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Paramlist {
+    pub(crate) syntax: SyntaxNode,
+}
+impl Paramlist {
+    pub fn l_paren_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T!['('])
+    }
+    pub fn multi_name(&self) -> Option<MultiName> {
+        support::child(&self.syntax)
+    }
+    pub fn r_paren_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![')'])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Body {
+    pub(crate) syntax: SyntaxNode,
+}
+impl Body {
+    pub fn stmts(&self) -> AstChildren<Stmt> {
+        support::children(&self.syntax)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -405,26 +462,20 @@ impl InfixOp {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Paramlist {
+pub struct Name {
     pub(crate) syntax: SyntaxNode,
 }
-impl Paramlist {
-    pub fn l_paren_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T!['('])
-    }
-    pub fn name_refs(&self) -> AstChildren<NameRef> {
-        support::children(&self.syntax)
-    }
-    pub fn r_paren_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![')'])
+impl Name {
+    pub fn ident_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![ident])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Body {
+pub struct MultiName {
     pub(crate) syntax: SyntaxNode,
 }
-impl Body {
-    pub fn stmts(&self) -> AstChildren<Stmt> {
+impl MultiName {
+    pub fn names(&self) -> AstChildren<Name> {
         support::children(&self.syntax)
     }
 }
@@ -475,7 +526,7 @@ pub struct GenericFor {
     pub(crate) syntax: SyntaxNode,
 }
 impl GenericFor {
-    pub fn pat(&self) -> Option<Pat> {
+    pub fn multi_name(&self) -> Option<MultiName> {
         support::child(&self.syntax)
     }
     pub fn in_token(&self) -> Option<SyntaxToken> {
@@ -483,15 +534,6 @@ impl GenericFor {
     }
     pub fn expr(&self) -> Option<Expr> {
         support::child(&self.syntax)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Pat {
-    pub(crate) syntax: SyntaxNode,
-}
-impl Pat {
-    pub fn names(&self) -> AstChildren<Name> {
-        support::children(&self.syntax)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -738,6 +780,36 @@ impl AstNode for CallExpr {
         &self.syntax
     }
 }
+impl AstNode for TableCallExpr {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::TableCallExpr
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for StringCallExpr {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::StringCallExpr
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
 impl AstNode for MethodCallExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::MethodCallExpr
@@ -798,9 +870,39 @@ impl AstNode for Arglist {
         &self.syntax
     }
 }
-impl AstNode for Name {
+impl AstNode for FunctionLiteral {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Name
+        kind == SyntaxKind::FunctionLiteral
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for Paramlist {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Paramlist
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for Body {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Body
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -903,9 +1005,9 @@ impl AstNode for InfixOp {
         &self.syntax
     }
 }
-impl AstNode for Paramlist {
+impl AstNode for Name {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Paramlist
+        kind == SyntaxKind::Name
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -918,9 +1020,9 @@ impl AstNode for Paramlist {
         &self.syntax
     }
 }
-impl AstNode for Body {
+impl AstNode for MultiName {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Body
+        kind == SyntaxKind::MultiName
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -966,21 +1068,6 @@ impl AstNode for NumericFor {
 impl AstNode for GenericFor {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::GenericFor
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for Pat {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Pat
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1322,6 +1409,16 @@ impl std::fmt::Display for CallExpr {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
+impl std::fmt::Display for TableCallExpr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for StringCallExpr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
 impl std::fmt::Display for MethodCallExpr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
@@ -1342,7 +1439,17 @@ impl std::fmt::Display for Arglist {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for Name {
+impl std::fmt::Display for FunctionLiteral {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for Paramlist {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for Body {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
@@ -1377,12 +1484,12 @@ impl std::fmt::Display for InfixOp {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for Paramlist {
+impl std::fmt::Display for Name {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for Body {
+impl std::fmt::Display for MultiName {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
@@ -1398,11 +1505,6 @@ impl std::fmt::Display for NumericFor {
     }
 }
 impl std::fmt::Display for GenericFor {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for Pat {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

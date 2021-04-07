@@ -135,6 +135,37 @@ Errors:
         s
     }
 
+    macro_rules! test_success {
+        ($name:literal) => {
+            #[test]
+            fn $name() {
+                insta::with_settings!(
+                    {
+                        snapshot_suffix => $name,
+                        snapshot_path => concat!("snapshots/successes", $name, ".lua"),
+                    },
+                    {
+                        insta::assert_snapshot!(dump_parse_no_errors(Program::parse(&input)))
+                    }
+                )
+            }
+        };
+    }
+
+    macro_rules! test_fail {
+        ($path:literal) => {
+            insta::with_settings!(
+                {
+                    snapshot_suffix => suffix,
+                    snapshot_path => concat!("snapshots/fails", $path),
+                },
+                {
+                    insta::assert_snapshot!(dump_parse_no_errors(Program::parse(&input)))
+                }
+            )
+        };
+    }
+
     #[test]
     fn successes() {
         insta::glob!("snapshot_inputs/successes/*.lua", |path| {

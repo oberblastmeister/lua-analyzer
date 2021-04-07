@@ -1,5 +1,6 @@
 use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP, NOT_AN_OP_INFIX, NOT_AN_OP_PREFIX};
 
+use super::statements::{body, param_list};
 use crate::{
     parser::{MarkerComplete, Parser},
     token_set::TokenSet,
@@ -193,8 +194,21 @@ pub(crate) const LITERAL: TokenSet =
 fn literal(p: &mut Parser) -> Option<MarkerComplete> {
     assert!(p.at_ts(LITERAL));
     let m = p.start();
-    p.bump_any();
+    if p.at(T![function]) {
+        function_literal(p);
+    } else {
+        p.bump_any();
+    }
     Some(m.complete(p, Literal))
+}
+
+fn function_literal(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T![function]);
+    param_list(p);
+    body(p);
+    p.expect(T![end]);
+    m.complete(p, FunctionLiteral)
 }
 
 fn name_ref(p: &mut Parser) -> MarkerComplete {

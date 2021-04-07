@@ -21,6 +21,12 @@ Expr =
 CallExpr =
   fun:Expr '(' (args:Expr)? ')'
 
+TableCallExpr =
+  fun:Expr tbl:TableExpr
+
+StringCallExpr =
+  fun:Expr 'string'
+
 MethodCallExpr =
   fun:Expr ':' NameRef '(' (args:Expr)? ')'
 
@@ -35,6 +41,13 @@ Literal =
   | 'string'
   | 'true'
   | 'false'
+  | FunctionLiteral
+
+FunctionLiteral =
+  'function'
+  params:Paramlist
+  body:Body
+  'end'
 
 TableExpr =
   '{'
@@ -90,7 +103,7 @@ FunctionDefStmt =
 
 Paramlist =
   '('
-  (NameRef (',' NameRef)*)
+  MultiName?
   ')'
 
 CallExprStmt = CallExpr
@@ -126,7 +139,7 @@ NumericFor =
   end:Expr (',' inc:Expr)?
 
 GenericFor =
-  pat:Pat
+  multi_name:MultiName
   'in'
   expr:Expr
   
@@ -140,9 +153,9 @@ NameRef =
   'ident'
 
 AssignStmt =
-  'local'? Pat ('=' Expr)?
+  'local'? MultiName ('=' Expr)?
 
-Pat =
+MultiName =
   Name (',' Name)*
 
 // vim: set shiftwidth=2

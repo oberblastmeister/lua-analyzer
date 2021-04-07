@@ -64,17 +64,13 @@ fn return_stmt(p: &mut Parser) -> MarkerComplete {
     m.complete(p, ReturnStmt)
 }
 
-fn param_list(p: &mut Parser) -> MarkerComplete {
+pub(super) fn param_list(p: &mut Parser) -> MarkerComplete {
     const END: TokenSet = TokenSet::new(&[T![')'], T![eof]]);
 
     let m = p.start();
     p.expect(T!['(']);
     if !p.at_ts(END) {
-        expr_single(p);
-        while !p.at_ts(END) {
-            expr_single(p);
-            p.expect(T![,]);
-        }
+        multi_name(p);
     }
     p.expect(T![')']);
     m.complete(p, Paramlist)
@@ -91,13 +87,24 @@ fn assignment(p: &mut Parser, is_local: bool) -> MarkerComplete {
     m.complete(p, AssignStmt)
 }
 
+fn multi_name(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    name(p);
+    while p.at(T![,]) {
+        p.bump(T![,]);
+
+        name(p);
+    }
+    m.complete(p, MultiName)
+}
+
 fn name(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
-    p.bump(T![ident]);
+    p.expect(T![ident]);
     m.complete(p, Name)
 }
 
-fn body(p: &mut Parser) -> MarkerComplete {
+pub(super) fn body(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     while !p.at(T![eof]) && !p.at(T![end]) {
         stmt(p);
