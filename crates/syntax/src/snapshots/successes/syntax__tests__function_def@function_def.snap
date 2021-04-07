@@ -1,0 +1,58 @@
+---
+source: crates/syntax/src/lib.rs
+expression: "dump_parse_no_errors(Program::parse(&input))"
+
+---
+Program@0..89
+  FunctionDefStmt@0..88
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    FunctionKw@6..14 "function"
+    Whitespace@14..15 " "
+    Name@15..20
+      Ident@15..20 "empty"
+    Paramlist@20..22
+      LParen@20..21 "("
+      RParen@21..22 ")"
+    Whitespace@22..25 "\n  "
+    Body@25..84
+      AssignStmt@25..40
+        LocalKw@25..30 "local"
+        Whitespace@30..31 " "
+        Name@31..36
+          Ident@31..36 "hello"
+        Whitespace@36..37 " "
+        Eq@37..38 "="
+        Whitespace@38..39 " "
+        MultivalExpr@39..40
+          Literal@39..40
+            Number@39..40 "5"
+      Whitespace@40..43 "\n  "
+      AssignStmt@43..69
+        LocalKw@43..48 "local"
+        Whitespace@48..49 " "
+        Name@49..56
+          Ident@49..56 "another"
+        Whitespace@56..57 " "
+        Eq@57..58 "="
+        Whitespace@58..59 " "
+        MultivalExpr@59..69
+          InfixExpr@59..69
+            NameRef@59..64
+              Ident@59..64 "hello"
+            Whitespace@64..65 " "
+            Asterisk@65..66 "*"
+            Whitespace@66..67 " "
+            Literal@67..69
+              Number@67..69 "10"
+      Whitespace@69..72 "\n  "
+      ReturnStmt@72..84
+        ReturnKw@72..78 "return"
+        Whitespace@78..79 " "
+        MultivalExpr@79..84
+          NameRef@79..84
+            Ident@79..84 "hello"
+    Whitespace@84..85 "\n"
+    EndKw@85..88 "end"
+  Whitespace@88..89 "\n"
+

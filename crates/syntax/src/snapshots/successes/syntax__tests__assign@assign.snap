@@ -1,0 +1,48 @@
+---
+source: crates/syntax/src/lib.rs
+expression: "dump_parse_no_errors(Program::parse(&input))"
+
+---
+Program@0..132
+  Whitespace@0..47 "                      ..."
+  Comment@47..78 "-- just a comment at  ..."
+  AssignStmt@78..93
+    LocalKw@78..83 "local"
+    Whitespace@83..84 " "
+    Name@84..89
+      Ident@84..89 "hello"
+    Whitespace@89..90 " "
+    Eq@90..91 "="
+    Whitespace@91..92 " "
+    MultivalExpr@92..93
+      Literal@92..93
+        Number@92..93 "5"
+  Whitespace@93..94 "\n"
+  AssignStmt@94..113
+    LocalKw@94..99 "local"
+    Whitespace@99..100 " "
+    Name@100..107
+      Ident@100..107 "another"
+    Whitespace@107..108 " "
+    Eq@108..109 "="
+    Whitespace@109..110 " "
+    MultivalExpr@110..113
+      ParenExpr@110..113
+        LParen@110..111 "("
+        Literal@111..112
+          Number@111..112 "5"
+        RParen@112..113 ")"
+  Whitespace@113..114 "\n"
+  AssignStmt@114..131
+    LocalKw@114..119 "local"
+    Whitespace@119..120 " "
+    Name@120..121
+      Ident@120..121 "s"
+    Whitespace@121..122 " "
+    Eq@122..123 "="
+    Whitespace@123..124 " "
+    MultivalExpr@124..131
+      Literal@124..131
+        Str@124..131 "\"a str\""
+  Whitespace@131..132 "\n"
+
