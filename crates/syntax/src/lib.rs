@@ -116,14 +116,7 @@ Errors:
     fn dump_parse<T: AstNode + fmt::Debug>(parse: Parse<T>) -> String {
         let mut s = String::new();
         s.push_str(&format!("{:#?}", parse.syntax_node()));
-        s.push_str(
-            "
-=============================
-Errors:
-=============================
-",
-        );
-        s.push_str(&format!("{:#?}", parse.errors()));
+        s.push_str(&format_errors(parse.errors()));
         s
     }
 
@@ -218,6 +211,14 @@ Errors:
         function_literal,
         higher_order_function,
         simple_math,
+        multi_name,
+        variable_def,
+        do_block,
+        index_expr,
+        dot_expr,
+        array_table_expr,
+        map_table_expr,
+        types,
     ];
 
     test_fails![can_call, cannot_call_literal, missing_paren];

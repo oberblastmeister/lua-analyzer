@@ -133,9 +133,6 @@ impl Literal {
     pub fn false_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![false])
     }
-    pub fn function_literal(&self) -> Option<FunctionLiteral> {
-        support::child(&self.syntax)
-    }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TableExpr {
@@ -231,6 +228,24 @@ impl CallExpr {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FunctionExpr {
+    pub(crate) syntax: SyntaxNode,
+}
+impl FunctionExpr {
+    pub fn function_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![function])
+    }
+    pub fn params(&self) -> Option<Paramlist> {
+        support::child(&self.syntax)
+    }
+    pub fn body(&self) -> Option<Body> {
+        support::child(&self.syntax)
+    }
+    pub fn end_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![end])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TableCallExpr {
     pub(crate) syntax: SyntaxNode,
 }
@@ -309,24 +324,6 @@ impl Arglist {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FunctionLiteral {
-    pub(crate) syntax: SyntaxNode,
-}
-impl FunctionLiteral {
-    pub fn function_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![function])
-    }
-    pub fn params(&self) -> Option<Paramlist> {
-        support::child(&self.syntax)
-    }
-    pub fn body(&self) -> Option<Body> {
-        support::child(&self.syntax)
-    }
-    pub fn end_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![end])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Paramlist {
     pub(crate) syntax: SyntaxNode,
 }
@@ -378,10 +375,10 @@ impl KeyValue {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TableItem {
+pub struct PositionalValue {
     pub(crate) syntax: SyntaxNode,
 }
-impl TableItem {
+impl PositionalValue {
     pub fn expr(&self) -> Option<Expr> {
         support::child(&self.syntax)
     }
@@ -459,6 +456,21 @@ impl InfixOp {
     }
     pub fn or_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![or])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct DoStmt {
+    pub(crate) syntax: SyntaxNode,
+}
+impl DoStmt {
+    pub fn do_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![do])
+    }
+    pub fn body(&self) -> Option<Body> {
+        support::child(&self.syntax)
+    }
+    pub fn end_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![end])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -554,11 +566,12 @@ pub enum Expr {
     IndexExpr(IndexExpr),
     DotExpr(DotExpr),
     CallExpr(CallExpr),
+    FunctionExpr(FunctionExpr),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TableContent {
     KeyValue(KeyValue),
-    TableItem(TableItem),
+    PositionalValue(PositionalValue),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TableKey {
@@ -780,6 +793,21 @@ impl AstNode for CallExpr {
         &self.syntax
     }
 }
+impl AstNode for FunctionExpr {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::FunctionExpr
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
 impl AstNode for TableCallExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::TableCallExpr
@@ -870,21 +898,6 @@ impl AstNode for Arglist {
         &self.syntax
     }
 }
-impl AstNode for FunctionLiteral {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FunctionLiteral
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
 impl AstNode for Paramlist {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Paramlist
@@ -945,9 +958,9 @@ impl AstNode for KeyValue {
         &self.syntax
     }
 }
-impl AstNode for TableItem {
+impl AstNode for PositionalValue {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::TableItem
+        kind == SyntaxKind::PositionalValue
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -993,6 +1006,21 @@ impl AstNode for LiteralKey {
 impl AstNode for InfixOp {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::InfixOp
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for DoStmt {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::DoStmt
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1180,6 +1208,11 @@ impl From<CallExpr> for Expr {
         Expr::CallExpr(node)
     }
 }
+impl From<FunctionExpr> for Expr {
+    fn from(node: FunctionExpr) -> Expr {
+        Expr::FunctionExpr(node)
+    }
+}
 impl AstNode for Expr {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
@@ -1189,7 +1222,8 @@ impl AstNode for Expr {
             | SyntaxKind::PrefixExpr
             | SyntaxKind::IndexExpr
             | SyntaxKind::DotExpr
-            | SyntaxKind::CallExpr => true,
+            | SyntaxKind::CallExpr
+            | SyntaxKind::FunctionExpr => true,
             _ => false,
         }
     }
@@ -1202,6 +1236,7 @@ impl AstNode for Expr {
             SyntaxKind::IndexExpr => Expr::IndexExpr(IndexExpr { syntax }),
             SyntaxKind::DotExpr => Expr::DotExpr(DotExpr { syntax }),
             SyntaxKind::CallExpr => Expr::CallExpr(CallExpr { syntax }),
+            SyntaxKind::FunctionExpr => Expr::FunctionExpr(FunctionExpr { syntax }),
             _ => return None,
         };
         Some(res)
@@ -1215,6 +1250,7 @@ impl AstNode for Expr {
             Expr::IndexExpr(it) => &it.syntax,
             Expr::DotExpr(it) => &it.syntax,
             Expr::CallExpr(it) => &it.syntax,
+            Expr::FunctionExpr(it) => &it.syntax,
         }
     }
 }
@@ -1223,22 +1259,24 @@ impl From<KeyValue> for TableContent {
         TableContent::KeyValue(node)
     }
 }
-impl From<TableItem> for TableContent {
-    fn from(node: TableItem) -> TableContent {
-        TableContent::TableItem(node)
+impl From<PositionalValue> for TableContent {
+    fn from(node: PositionalValue) -> TableContent {
+        TableContent::PositionalValue(node)
     }
 }
 impl AstNode for TableContent {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
-            SyntaxKind::KeyValue | SyntaxKind::TableItem => true,
+            SyntaxKind::KeyValue | SyntaxKind::PositionalValue => true,
             _ => false,
         }
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             SyntaxKind::KeyValue => TableContent::KeyValue(KeyValue { syntax }),
-            SyntaxKind::TableItem => TableContent::TableItem(TableItem { syntax }),
+            SyntaxKind::PositionalValue => {
+                TableContent::PositionalValue(PositionalValue { syntax })
+            }
             _ => return None,
         };
         Some(res)
@@ -1246,7 +1284,7 @@ impl AstNode for TableContent {
     fn syntax(&self) -> &SyntaxNode {
         match self {
             TableContent::KeyValue(it) => &it.syntax,
-            TableContent::TableItem(it) => &it.syntax,
+            TableContent::PositionalValue(it) => &it.syntax,
         }
     }
 }
@@ -1409,6 +1447,11 @@ impl std::fmt::Display for CallExpr {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
+impl std::fmt::Display for FunctionExpr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
 impl std::fmt::Display for TableCallExpr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
@@ -1439,11 +1482,6 @@ impl std::fmt::Display for Arglist {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for FunctionLiteral {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
 impl std::fmt::Display for Paramlist {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
@@ -1464,7 +1502,7 @@ impl std::fmt::Display for KeyValue {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for TableItem {
+impl std::fmt::Display for PositionalValue {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
@@ -1480,6 +1518,11 @@ impl std::fmt::Display for LiteralKey {
     }
 }
 impl std::fmt::Display for InfixOp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for DoStmt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

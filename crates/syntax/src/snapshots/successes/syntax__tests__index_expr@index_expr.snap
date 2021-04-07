@@ -1,0 +1,139 @@
+---
+source: crates/syntax/src/lib.rs
+expression: "dump_parse_no_errors(Program::parse(&input))"
+
+---
+Program@0..191
+  AssignStmt@0..25
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    MultiName@6..15
+      Name@6..15
+        Ident@6..15 "one_index"
+    Whitespace@15..16 " "
+    Eq@16..17 "="
+    Whitespace@17..18 " "
+    MultivalExpr@18..25
+      IndexExpr@18..25
+        NameRef@18..21
+          Ident@18..21 "tbl"
+        LBracket@21..22 "["
+        Literal@22..24
+          Number@22..24 "34"
+        RBracket@24..25 "]"
+  Whitespace@25..26 "\n"
+  AssignStmt@26..55
+    LocalKw@26..31 "local"
+    Whitespace@31..32 " "
+    MultiName@32..41
+      Name@32..41
+        Ident@32..41 "two_index"
+    Whitespace@41..42 " "
+    Eq@42..43 "="
+    Whitespace@43..44 " "
+    MultivalExpr@44..55
+      IndexExpr@44..55
+        IndexExpr@44..51
+          NameRef@44..47
+            Ident@44..47 "tbl"
+          LBracket@47..48 "["
+          Literal@48..50
+            Number@48..50 "23"
+          RBracket@50..51 "]"
+        LBracket@51..52 "["
+        Literal@52..54
+          Number@52..54 "10"
+        RBracket@54..55 "]"
+  Whitespace@55..56 "\n"
+  AssignStmt@56..148
+    LocalKw@56..61 "local"
+    Whitespace@61..62 " "
+    MultiName@62..72
+      Name@62..72
+        Ident@62..72 "index_expr"
+    Whitespace@72..73 " "
+    Eq@73..74 "="
+    Whitespace@74..75 " "
+    MultivalExpr@75..148
+      IndexExpr@75..148
+        IndexExpr@75..106
+          IndexExpr@75..90
+            NameRef@75..78
+              Ident@75..78 "tbl"
+            LBracket@78..79 "["
+            InfixExpr@79..89
+              InfixExpr@79..84
+                Literal@79..81
+                  Number@79..81 "23"
+                Caret@81..82 "^"
+                Literal@82..84
+                  Number@82..84 "23"
+              Whitespace@84..85 " "
+              Slash@85..86 "/"
+              Whitespace@86..87 " "
+              Literal@87..89
+                Number@87..89 "12"
+            RBracket@89..90 "]"
+          LBracket@90..91 "["
+          Literal@91..105
+            Str@91..105 "\"hello person\""
+          RBracket@105..106 "]"
+        LBracket@106..107 "["
+        FunctionExpr@107..147
+          FunctionKw@107..115 "function"
+          Paramlist@115..128
+            LParen@115..116 "("
+            MultiName@116..127
+              Name@116..121
+                Ident@116..121 "hello"
+              Comma@121..122 ","
+              Whitespace@122..123 " "
+              Name@123..127
+                Ident@123..127 "this"
+            RParen@127..128 ")"
+          Whitespace@128..129 " "
+          Body@129..143
+            CallExprStmt@129..143
+              CallExpr@129..143
+                NameRef@129..134
+                  Ident@129..134 "print"
+                Arglist@134..143
+                  LParen@134..135 "("
+                  MultivalExpr@135..142
+                    Literal@135..142
+                      Str@135..142 "\'hello\'"
+                  RParen@142..143 ")"
+          Whitespace@143..144 " "
+          EndKw@144..147 "end"
+        RBracket@147..148 "]"
+  Whitespace@148..149 "\n"
+  AssignStmt@149..190
+    LocalKw@149..154 "local"
+    Whitespace@154..155 " "
+    MultiName@155..165
+      Name@155..165
+        Ident@155..165 "index_call"
+    Whitespace@165..166 " "
+    Eq@166..167 "="
+    Whitespace@167..168 " "
+    MultivalExpr@168..190
+      CallExpr@168..190
+        IndexExpr@168..188
+          CallExpr@168..179
+            NameRef@168..170
+              Ident@168..170 "fn"
+            Arglist@170..179
+              LParen@170..171 "("
+              MultivalExpr@171..178
+                Literal@171..178
+                  Str@171..178 "\"hello\""
+              RParen@178..179 ")"
+          LBracket@179..180 "["
+          Literal@180..187
+            Str@180..187 "\'index\'"
+          RBracket@187..188 "]"
+        Arglist@188..190
+          LParen@188..189 "("
+          RParen@189..190 ")"
+  Whitespace@190..191 "\n"
+

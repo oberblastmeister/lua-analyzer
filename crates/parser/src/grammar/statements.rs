@@ -11,6 +11,7 @@ pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
         T![local] => local_stmt(p)?,
         T![function] => function_def_stmt(p, false),
         T![return] => return_stmt(p),
+        T![do] => do_stmt(p),
         T![ident] if peek == T![=] => assignment(p, false),
         T![ident] if peek == T!['('] => call_expr_stmt(p),
         T!['('] => call_expr_stmt(p),
@@ -57,6 +58,14 @@ fn function_def_stmt(p: &mut Parser, is_local: bool) -> MarkerComplete {
     m.complete(p, FunctionDefStmt)
 }
 
+fn do_stmt(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T![do]);
+    body(p);
+    p.expect(T![end]);
+    m.complete(p, DoStmt)
+}
+
 fn return_stmt(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![return]);
@@ -81,9 +90,10 @@ fn assignment(p: &mut Parser, is_local: bool) -> MarkerComplete {
     if is_local {
         p.bump(T![local]);
     }
-    name(p);
-    p.expect(T![=]);
-    expr(p);
+    multi_name(p);
+    if p.accept(T![=]) {
+        expr(p);
+    }
     m.complete(p, AssignStmt)
 }
 

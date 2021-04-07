@@ -48,6 +48,9 @@ precedences! {
         #[Infix, Left]
         Div,
 
+        #[Infix, Left]
+        Mod,
+
         #[Prefix]
         Not,
 
@@ -77,6 +80,7 @@ impl From<SyntaxKind> for Option<LuaOp> {
             T![-] => Minus,
             T![*] => Mul,
             T![/] => Div,
+            T![%] => Mod,
             T![^] => Power,
             _ => return None,
         })
@@ -154,6 +158,8 @@ fn atom_expr(p: &mut Parser) -> Option<(MarkerComplete, bool)> {
     }
 
     let m = match p.current() {
+        T![function] => function_expr(p),
+        T!['{'] => table_expr(p),
         T![ident] => name_ref(p),
         T!['('] => paren_expr(p),
         _ => {
@@ -189,26 +195,48 @@ pub(super) fn paren_expr(p: &mut Parser) -> MarkerComplete {
 }
 
 pub(crate) const LITERAL: TokenSet =
-    TokenSet::new(&[T![true], T![false], T![number], T![str], T![function]]);
+    TokenSet::new(&[T![true], T![false], T![number], T![str], T![nil]]);
 
 fn literal(p: &mut Parser) -> Option<MarkerComplete> {
     assert!(p.at_ts(LITERAL));
     let m = p.start();
-    if p.at(T![function]) {
-        function_literal(p);
-    } else {
-        p.bump_any();
-    }
+    p.bump_any();
     Some(m.complete(p, Literal))
 }
 
-fn function_literal(p: &mut Parser) -> MarkerComplete {
+fn table_expr(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T!['{']);
+    while !p.at(T!['}']) {
+        table_content(p);
+        if !p.accept(T![,]) {
+            break;
+        }
+    }
+    p.expect(T!['}']);
+    m.complete(p, TableExpr)
+}
+
+fn table_content(p: &mut Parser) -> MarkerComplete {
+    match p.current() {
+        T![ident] => todo!(),
+        _ => positional_value(p),
+    }
+}
+
+fn positional_value(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    expr_single(p);
+    m.complete(p, PositionalValue)
+}
+
+fn function_expr(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![function]);
     param_list(p);
     body(p);
     p.expect(T![end]);
-    m.complete(p, FunctionLiteral)
+    m.complete(p, FunctionExpr)
 }
 
 fn name_ref(p: &mut Parser) -> MarkerComplete {

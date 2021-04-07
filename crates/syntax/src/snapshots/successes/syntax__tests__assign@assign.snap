@@ -9,8 +9,9 @@ Program@0..132
   AssignStmt@78..93
     LocalKw@78..83 "local"
     Whitespace@83..84 " "
-    Name@84..89
-      Ident@84..89 "hello"
+    MultiName@84..89
+      Name@84..89
+        Ident@84..89 "hello"
     Whitespace@89..90 " "
     Eq@90..91 "="
     Whitespace@91..92 " "
@@ -21,8 +22,9 @@ Program@0..132
   AssignStmt@94..113
     LocalKw@94..99 "local"
     Whitespace@99..100 " "
-    Name@100..107
-      Ident@100..107 "another"
+    MultiName@100..107
+      Name@100..107
+        Ident@100..107 "another"
     Whitespace@107..108 " "
     Eq@108..109 "="
     Whitespace@109..110 " "
@@ -36,8 +38,9 @@ Program@0..132
   AssignStmt@114..131
     LocalKw@114..119 "local"
     Whitespace@119..120 " "
-    Name@120..121
-      Ident@120..121 "s"
+    MultiName@120..121
+      Name@120..121
+        Ident@120..121 "s"
     Whitespace@121..122 " "
     Eq@122..123 "="
     Whitespace@123..124 " "

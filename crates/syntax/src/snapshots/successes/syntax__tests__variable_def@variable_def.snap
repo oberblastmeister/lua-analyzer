@@ -1,0 +1,37 @@
+---
+source: crates/syntax/src/lib.rs
+expression: "dump_parse_no_errors(Program::parse(&input))"
+
+---
+Program@0..52
+  AssignStmt@0..22
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    MultiName@6..22
+      Name@6..9
+        Ident@6..9 "def"
+      Comma@9..10 ","
+      Whitespace@10..11 " "
+      Name@11..22
+        Ident@11..22 "another_def"
+  Whitespace@22..23 "\n"
+  AssignStmt@23..51
+    LocalKw@23..28 "local"
+    Whitespace@28..29 " "
+    MultiName@29..51
+      Name@29..34
+        Ident@29..34 "there"
+      Comma@34..35 ","
+      Whitespace@35..36 " "
+      Name@36..39
+        Ident@36..39 "are"
+      Comma@39..40 ","
+      Whitespace@40..41 " "
+      Name@41..45
+        Ident@41..45 "more"
+      Comma@45..46 ","
+      Whitespace@46..47 " "
+      Name@47..51
+        Ident@47..51 "defs"
+  Whitespace@51..52 "\n"
+

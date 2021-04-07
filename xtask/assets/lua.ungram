@@ -17,6 +17,7 @@ Expr =
   | IndexExpr
   | DotExpr
   | CallExpr
+  | FunctionExpr
 
 CallExpr =
   fun:Expr '(' (args:Expr)? ')'
@@ -41,9 +42,8 @@ Literal =
   | 'string'
   | 'true'
   | 'false'
-  | FunctionLiteral
 
-FunctionLiteral =
+FunctionExpr =
   'function'
   params:Paramlist
   body:Body
@@ -64,9 +64,9 @@ ParenExpr =
 
 TableContent =
   KeyValue
-  | TableItem
+  | PositionalValue
 
-TableItem =
+PositionalValue =
   Expr
 
 KeyValue =
@@ -95,6 +95,11 @@ PrefixExpr =
 
 IndexExpr =
   base:Expr '[' index:Expr ']'
+
+DoStmt =
+  'do'
+  body:Body
+  'end'
 
 FunctionDefStmt =
   'local'? 'function' Name Paramlist
