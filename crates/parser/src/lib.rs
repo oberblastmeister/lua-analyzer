@@ -11,7 +11,7 @@ pub use event::Event;
 pub use lexer::{first_token, tokenize, tokenize_iter, LexError, LexErrorMsg, Token};
 pub use parse_error::ParseError;
 pub use syntax_kind::SyntaxKind;
-pub(crate) use token_set::TokenSet;
+pub use token_set::TokenSet;
 
 #[macro_export]
 #[doc(hidden)]

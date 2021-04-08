@@ -4,7 +4,7 @@ use crate::SyntaxKind;
 
 /// A bit-set of `SyntaxKind`s
 #[derive(Clone, Copy)]
-pub(crate) struct TokenSet(u128);
+pub struct TokenSet(u128);
 
 impl TokenSet {
     pub(crate) const EMPTY: TokenSet = TokenSet(0);

@@ -1,6 +1,6 @@
-use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP, NOT_AN_OP_INFIX, NOT_AN_OP_PREFIX};
+use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP_INFIX, NOT_AN_OP_PREFIX};
 
-use super::statements::{body, param_list};
+use super::{body, name_ref, param_list};
 use crate::{
     parser::{MarkerComplete, Parser},
     token_set::TokenSet,
@@ -288,12 +288,6 @@ fn function_expr(p: &mut Parser) -> MarkerComplete {
     body(p);
     p.expect(T![end]);
     m.complete(p, FunctionExpr)
-}
-
-pub(crate) fn name_ref(p: &mut Parser) -> MarkerComplete {
-    let m = p.start();
-    p.bump(T![ident]);
-    m.complete(p, NameRef)
 }
 
 pub(super) fn call_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {

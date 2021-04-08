@@ -1,13 +1,14 @@
 use super::{
     expr_single,
+    name,
+    name_ref,
+    multi_name,
+    body,
+    param_list,
     expressions::expr,
-    expressions::{call_expr, name_ref},
 };
-use crate::{parser::Marker, SyntaxKind::*, TokenSet};
-use crate::{
-    parser::{MarkerComplete, Parser},
-    TokenSource,
-};
+use crate::parser::{MarkerComplete, Parser};
+use crate::SyntaxKind::*;
 
 pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
     let peek = p.nth(1);
@@ -155,18 +156,6 @@ fn return_stmt(p: &mut Parser) -> MarkerComplete {
     m.complete(p, ReturnStmt)
 }
 
-pub(super) fn param_list(p: &mut Parser) -> MarkerComplete {
-    const END: TokenSet = TokenSet::new(&[T![')'], T![eof]]);
-
-    let m = p.start();
-    p.expect(T!['(']);
-    if !p.at_ts(END) {
-        multi_name(p);
-    }
-    p.expect(T![')']);
-    m.complete(p, Paramlist)
-}
-
 fn assignment(p: &mut Parser, is_local: bool) -> MarkerComplete {
     let m = p.start();
     if is_local {
@@ -177,29 +166,4 @@ fn assignment(p: &mut Parser, is_local: bool) -> MarkerComplete {
         expr(p);
     }
     m.complete(p, AssignStmt)
-}
-
-fn multi_name(p: &mut Parser) -> MarkerComplete {
-    let m = p.start();
-    name(p);
-    while p.at(T![,]) {
-        p.bump(T![,]);
-
-        name(p);
-    }
-    m.complete(p, MultiName)
-}
-
-fn name(p: &mut Parser) -> MarkerComplete {
-    let m = p.start();
-    p.expect(T![ident]);
-    m.complete(p, Name)
-}
-
-pub(super) fn body(p: &mut Parser) -> MarkerComplete {
-    let m = p.start();
-    while !p.at(T![eof]) && !p.at(T![end]) {
-        stmt(p);
-    }
-    m.complete(p, Body)
 }
