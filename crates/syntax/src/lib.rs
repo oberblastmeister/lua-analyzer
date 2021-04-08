@@ -1,6 +1,8 @@
 pub mod ast;
 mod parsing;
 mod syntax_node;
+#[doc(hidden)]
+pub mod fuzz;
 
 use std::{fmt, marker::PhantomData, sync::Arc};
 
