@@ -22,8 +22,9 @@ pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
         T![for] => for_stmt(p),
         T![break] => break_stmt(p),
         T![ident] if peek == T![=] => assignment(p, false),
-        T![ident] if peek == T!['('] => call_expr_stmt(p),
-        T!['('] => call_expr_stmt(p),
+        T![ident] if peek == T!['('] => expr_stmt(p),
+        T![ident] => expr_stmt(p),
+        T!['('] => expr_stmt(p),
         _ => {
             p.err_recover("Expected a statement");
             return None;
@@ -118,14 +119,10 @@ fn local_stmt(p: &mut Parser) -> Option<MarkerComplete> {
     })
 }
 
-fn call_expr_stmt(p: &mut Parser) -> MarkerComplete {
-    const CALL_TS: TokenSet = TokenSet::new(&[T![ident], T!['(']]);
-
-    assert!(p.at_ts(CALL_TS));
-
+fn expr_stmt(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     expr_single(p);
-    m.complete(p, CallExprStmt)
+    m.complete(p, ExprStmt)
 }
 
 fn function_def_stmt(p: &mut Parser, is_local: bool) -> MarkerComplete {

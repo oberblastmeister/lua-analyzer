@@ -4,7 +4,7 @@ expression: "dump_parse_no_errors(Program::parse(&input))"
 
 ---
 Program@0..53
-  CallExprStmt@0..52
+  ExprStmt@0..52
     CallExpr@0..52
       CallExpr@0..24
         NameRef@0..15

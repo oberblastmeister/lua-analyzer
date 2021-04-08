@@ -13,7 +13,7 @@ Program@0..35
     DoKw@11..13 "do"
     Whitespace@13..16 "\n  "
     Body@16..30
-      CallExprStmt@16..30
+      ExprStmt@16..30
         CallExpr@16..30
           NameRef@16..21
             Ident@16..21 "print"

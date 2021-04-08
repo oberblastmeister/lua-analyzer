@@ -42,7 +42,7 @@ Program@0..102
                   RParen@54..55 ")"
                 Whitespace@55..62 "\n      "
                 Body@62..83
-                  CallExprStmt@62..83
+                  ExprStmt@62..83
                     CallExpr@62..83
                       NameRef@62..67
                         Ident@62..67 "print"

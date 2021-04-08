@@ -72,7 +72,7 @@ pub enum SyntaxKind {
     ForStmt,
     IfStmt,
     ReturnStmt,
-    CallExprStmt,
+    ExprStmt,
     BreakStmt,
     LabelStmt,
     Literal,

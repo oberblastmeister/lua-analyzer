@@ -111,11 +111,11 @@ impl ReturnStmt {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CallExprStmt {
+pub struct ExprStmt {
     pub(crate) syntax: SyntaxNode,
 }
-impl CallExprStmt {
-    pub fn call_expr(&self) -> Option<CallExpr> {
+impl ExprStmt {
+    pub fn expr(&self) -> Option<Expr> {
         support::child(&self.syntax)
     }
 }
@@ -594,7 +594,7 @@ pub enum Stmt {
     ForStmt(ForStmt),
     IfStmt(IfStmt),
     ReturnStmt(ReturnStmt),
-    CallExprStmt(CallExprStmt),
+    ExprStmt(ExprStmt),
     BreakStmt(BreakStmt),
     LabelStmt(LabelStmt),
 }
@@ -714,9 +714,9 @@ impl AstNode for ReturnStmt {
         &self.syntax
     }
 }
-impl AstNode for CallExprStmt {
+impl AstNode for ExprStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CallExprStmt
+        kind == SyntaxKind::ExprStmt
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1234,9 +1234,9 @@ impl From<ReturnStmt> for Stmt {
         Stmt::ReturnStmt(node)
     }
 }
-impl From<CallExprStmt> for Stmt {
-    fn from(node: CallExprStmt) -> Stmt {
-        Stmt::CallExprStmt(node)
+impl From<ExprStmt> for Stmt {
+    fn from(node: ExprStmt) -> Stmt {
+        Stmt::ExprStmt(node)
     }
 }
 impl From<BreakStmt> for Stmt {
@@ -1257,7 +1257,7 @@ impl AstNode for Stmt {
             | SyntaxKind::ForStmt
             | SyntaxKind::IfStmt
             | SyntaxKind::ReturnStmt
-            | SyntaxKind::CallExprStmt
+            | SyntaxKind::ExprStmt
             | SyntaxKind::BreakStmt
             | SyntaxKind::LabelStmt => true,
             _ => false,
@@ -1270,7 +1270,7 @@ impl AstNode for Stmt {
             SyntaxKind::ForStmt => Stmt::ForStmt(ForStmt { syntax }),
             SyntaxKind::IfStmt => Stmt::IfStmt(IfStmt { syntax }),
             SyntaxKind::ReturnStmt => Stmt::ReturnStmt(ReturnStmt { syntax }),
-            SyntaxKind::CallExprStmt => Stmt::CallExprStmt(CallExprStmt { syntax }),
+            SyntaxKind::ExprStmt => Stmt::ExprStmt(ExprStmt { syntax }),
             SyntaxKind::BreakStmt => Stmt::BreakStmt(BreakStmt { syntax }),
             SyntaxKind::LabelStmt => Stmt::LabelStmt(LabelStmt { syntax }),
             _ => return None,
@@ -1284,7 +1284,7 @@ impl AstNode for Stmt {
             Stmt::ForStmt(it) => &it.syntax,
             Stmt::IfStmt(it) => &it.syntax,
             Stmt::ReturnStmt(it) => &it.syntax,
-            Stmt::CallExprStmt(it) => &it.syntax,
+            Stmt::ExprStmt(it) => &it.syntax,
             Stmt::BreakStmt(it) => &it.syntax,
             Stmt::LabelStmt(it) => &it.syntax,
         }
@@ -1524,7 +1524,7 @@ impl std::fmt::Display for ReturnStmt {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for CallExprStmt {
+impl std::fmt::Display for ExprStmt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

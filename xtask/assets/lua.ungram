@@ -7,7 +7,7 @@ Stmt =
   | ForStmt
   | IfStmt
   | ReturnStmt
-  | CallExprStmt
+  | ExprStmt
   | BreakStmt
   | LabelStmt
 
@@ -125,7 +125,7 @@ Paramlist =
   MultiName?
   ')'
 
-CallExprStmt = CallExpr
+ExprStmt = Expr
 
 IfStmt =
   'if'

@@ -1,8 +1,8 @@
 pub mod ast;
-mod parsing;
-mod syntax_node;
 #[doc(hidden)]
 pub mod fuzz;
+mod parsing;
+mod syntax_node;
 
 use std::{fmt, marker::PhantomData, sync::Arc};
 
@@ -88,7 +88,7 @@ fn format_errors(errors: &[SyntaxError]) -> String {
         "
 =============================
 Errors:
-============================="
+=============================",
     );
     s.push('\n');
     s.push_str(&format!("{:#?}", errors));
@@ -132,9 +132,14 @@ mod tests {
 
     fn dump_parse_no_errors(parse: Parse<Program>) -> String {
         if !parse.errors().is_empty() {
+            // panic!(
+            //     "Should not have any errors {:#?}\n{}",
+            //     parse.syntax_node(),
+            //     format_errors(parse.errors())
+            // )
             panic!(
-                "Should not have any errors {}",
-                format_errors(parse.errors())
+                "Should not have any errors {:#?}",
+                parse.syntax_node(),
             )
         }
         parse.debug_dump()
@@ -234,6 +239,8 @@ mod tests {
         break_stmt,
         while_stmt,
         for_stmt,
+        // large_test,
+        ffi_test,
     ];
 
     test_fails![can_call, cannot_call_literal, missing_paren];
