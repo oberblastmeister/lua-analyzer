@@ -1,0 +1,72 @@
+---
+source: crates/syntax/src/lib.rs
+expression: "dump_parse_no_errors(Program::parse(&input))"
+
+---
+Program@0..84
+  AssignStmt@0..24
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    MultiName@6..13
+      Name@6..13
+        Ident@6..13 "neg_num"
+    Whitespace@13..14 " "
+    Eq@14..15 "="
+    Whitespace@15..16 " "
+    MultivalExpr@16..24
+      InfixExpr@16..24
+        PrefixExpr@16..18
+          Minus@16..17 "-"
+          Literal@17..18
+            Number@17..18 "5"
+        Whitespace@18..19 " "
+        Asterisk@19..20 "*"
+        Whitespace@20..21 " "
+        PrefixExpr@21..24
+          Minus@21..22 "-"
+          Literal@22..24
+            Number@22..24 "10"
+  Whitespace@24..25 "\n"
+  AssignStmt@25..49
+    LocalKw@25..30 "local"
+    Whitespace@30..31 " "
+    MultiName@31..38
+      Name@31..38
+        Ident@31..38 "another"
+    Whitespace@38..39 " "
+    Eq@39..40 "="
+    Whitespace@40..41 " "
+    MultivalExpr@41..49
+      PrefixExpr@41..49
+        NotKw@41..44 "not"
+        Whitespace@44..45 " "
+        Literal@45..49
+          TrueKw@45..49 "true"
+  Whitespace@49..50 "\n"
+  AssignStmt@50..83
+    LocalKw@50..55 "local"
+    Whitespace@55..56 " "
+    MultiName@56..62
+      Name@56..62
+        Ident@56..62 "finaly"
+    Whitespace@62..63 " "
+    Eq@63..64 "="
+    Whitespace@64..65 " "
+    MultivalExpr@65..83
+      InfixExpr@65..83
+        Literal@65..69
+          TrueKw@65..69 "true"
+        Whitespace@69..70 " "
+        AndKw@70..73 "and"
+        Whitespace@73..74 " "
+        PrefixExpr@74..83
+          NotKw@74..77 "not"
+          Whitespace@77..78 " "
+          Literal@78..83
+            FalseKw@78..83 "false"
+  Whitespace@83..84 "\n"
+
+=============================
+Errors:
+=============================
+[]

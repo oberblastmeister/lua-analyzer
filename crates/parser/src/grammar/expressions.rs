@@ -69,6 +69,7 @@ impl From<SyntaxKind> for Option<LuaOp> {
         Some(match kind {
             T![or] => Or,
             T![and] => And,
+            T![not] => Not,
             T![<] => Lt,
             T![>] => Gt,
             T![<=] => LtEq,
@@ -153,6 +154,12 @@ fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
 
 /// Returns the completed marker and whether we can do a function call on this expression
 fn atom_expr(p: &mut Parser) -> Option<(MarkerComplete, bool)> {
+    let ((), r_bp) = prefix_binding_power(p.current());
+    if r_bp > 0 {
+        let completed = prefix_expr(p, r_bp)?;
+        return Some((completed, false));
+    }
+
     if p.at_ts(LITERAL) {
         return literal(p).map(|it| (it, false));
     }
@@ -169,6 +176,14 @@ fn atom_expr(p: &mut Parser) -> Option<(MarkerComplete, bool)> {
     };
 
     Some((m, true))
+}
+
+fn prefix_expr(p: &mut Parser, r_bp: u8) -> Option<MarkerComplete> {
+    let m = p.start();
+    p.bump_any();
+    expr_bp(p, r_bp)?;
+    let completed = m.complete(p, PrefixExpr);
+    return Some(completed);
 }
 
 fn postfix_expr(p: &mut Parser, mut lhs: MarkerComplete, mut can_call: bool) -> MarkerComplete {

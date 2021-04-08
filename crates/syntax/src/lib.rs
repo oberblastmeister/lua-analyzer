@@ -118,6 +118,33 @@ impl Parse<Program> {
     }
 }
 
+/// Matches a `SyntaxNode` against an `ast` type.
+///
+/// # Example:
+///
+/// ```ignore
+/// match_ast! {
+///     match node {
+///         ast::CallExpr(it) => { ... },
+///         ast::MethodCallExpr(it) => { ... },
+///         ast::MacroCall(it) => { ... },
+///         _ => None,
+///     }
+/// }
+/// ```
+#[macro_export]
+macro_rules! match_ast {
+    (match $node:ident { $($tt:tt)* }) => { match_ast!(match ($node) { $($tt)* }) };
+
+    (match ($node:expr) {
+        $( ast::$ast:ident($it:ident) => $res:expr, )*
+        _ => $catch_all:expr $(,)?
+    }) => {{
+        $( if let Some($it) = ast::$ast::cast($node.clone()) { $res } else )*
+        { $catch_all }
+    }};
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -241,6 +268,7 @@ mod tests {
         for_stmt,
         // large_test,
         ffi_test,
+        prefix_expr,
     ];
 
     test_fails![can_call, cannot_call_literal, missing_paren];
