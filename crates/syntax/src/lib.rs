@@ -2,7 +2,7 @@ pub mod ast;
 mod parsing;
 mod syntax_node;
 
-use std::{marker::PhantomData, sync::Arc};
+use std::{fmt, marker::PhantomData, sync::Arc};
 
 use ast::AstNode;
 pub use parser::{SyntaxKind, T};
@@ -80,6 +80,19 @@ impl Parse<SyntaxNode> {
 
 use ast::Program;
 
+fn format_errors(errors: &[SyntaxError]) -> String {
+    let mut s = String::new();
+    s.push_str(
+        "
+=============================
+Errors:
+============================="
+    );
+    s.push('\n');
+    s.push_str(&format!("{:#?}", errors));
+    s
+}
+
 impl Program {
     pub fn parse(text: &str) -> Parse<Program> {
         let (green, errors) = parsing::parse_text(text);
@@ -94,24 +107,19 @@ impl Program {
     }
 }
 
+impl Parse<Program> {
+    pub fn debug_dump(&self) -> String {
+        let mut s = String::new();
+        s.push_str(&format!("{:#?}", self.syntax_node()));
+        s.push_str(&format_errors(self.errors()));
+        s
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use core::fmt;
-    use std::fs;
-
-    fn format_errors(errors: &[SyntaxError]) -> String {
-        let mut s = String::new();
-        s.push_str(
-            "
-=============================
-Errors:
-=============================
-",
-        );
-        s.push_str(&format!("{:#?}", errors));
-        s
-    }
 
     fn dump_parse<T: AstNode + fmt::Debug>(parse: Parse<T>) -> String {
         let mut s = String::new();
@@ -120,15 +128,14 @@ Errors:
         s
     }
 
-    fn dump_parse_no_errors<T: AstNode + fmt::Debug>(parse: Parse<T>) -> String {
-        let s = format!("{:#?}", parse.syntax_node());
+    fn dump_parse_no_errors(parse: Parse<Program>) -> String {
         if !parse.errors().is_empty() {
             panic!(
                 "Should not have any errors {}",
                 format_errors(parse.errors())
             )
         }
-        s
+        parse.debug_dump()
     }
 
     macro_rules! get_insta_path {

@@ -110,7 +110,6 @@ impl<'a> Parser<'a> {
     }
 
     pub(crate) fn bump(&mut self, kind: SyntaxKind) {
-        println!("current {:?}", self.current());
         if !self.at(kind) {
             panic!("Failed to bump {:?}, got {:?}", kind, self.current())
         }

@@ -267,7 +267,7 @@ impl<'a> Lexer<'a> {
         assert!(self.at('-'));
 
         self.bump().unwrap();
-
+        
         self.chars.find(|c| *c == '\n');
 
         T![comment]

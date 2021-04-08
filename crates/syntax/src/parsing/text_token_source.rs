@@ -46,7 +46,6 @@ impl<'t> TokenSource for TextTokenSource<'t> {
     }
 
     fn bump(&mut self) {
-        eprintln!("self.curr = {:?}", self.curr);
         if self.curr.0.kind == T![eof] {
             return;
         }

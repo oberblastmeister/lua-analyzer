@@ -20,7 +20,7 @@ impl Language for RustLanguage {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SyntaxError(String, TextRange);
 
 impl From<LexError> for SyntaxError {
