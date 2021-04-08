@@ -179,8 +179,6 @@ impl<'a> Lexer<'a> {
 
         // return on special cases
         let kind = match c {
-            '\0' => panic!("Should not be gotten"),
-
             '=' => T![=],
 
             '(' => T!['('],
@@ -267,7 +265,7 @@ impl<'a> Lexer<'a> {
         assert!(self.at('-'));
 
         self.bump().unwrap();
-        
+
         self.chars.find(|c| *c == '\n');
 
         T![comment]
@@ -292,6 +290,7 @@ impl<'a> Lexer<'a> {
 
             expect!(l.accept('['), NotCorrectEqualAmount);
 
+            // might need to fix this
             l.accept_while(|c| c != ']');
 
             expect!(l.accept(']'), InvalidBracketNotation);
@@ -367,7 +366,7 @@ trait Accept: Peek {
     where
         Self: Peek + Sized,
     {
-        if self.peek(l) {
+        if self.peek(l) && !l.eof() {
             l.bump().unwrap();
             true
         } else {
@@ -491,6 +490,8 @@ const fn is_hex(c: char) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use std::str;
+
     use super::*;
 
     fn get_text(
@@ -516,6 +517,10 @@ mod tests {
     fn check(input: &str) {
         let tokens = get_text(input, tokenize_iter(input));
         insta::assert_debug_snapshot!(tokens);
+    }
+
+    fn lex(input: &str) {
+        let tokens = get_text(input, tokenize_iter(input));
     }
 
     #[test]
@@ -695,5 +700,16 @@ asdf()
     #[test]
     fn concat() {
         check("..")
+    }
+
+    #[test]
+    fn null() {
+        tokenize("\0");
+        tokenize(str::from_utf8(&[0]).unwrap());
+    }
+
+    #[test]
+    fn weird_91() {
+        tokenize(str::from_utf8(&[91, 91]).unwrap());
     }
 }
