@@ -231,6 +231,9 @@ mod tests {
         types,
         string_call_expr,
         table_call_expr,
+        break_stmt,
+        while_stmt,
+        for_stmt,
     ];
 
     test_fails![can_call, cannot_call_literal, missing_paren];

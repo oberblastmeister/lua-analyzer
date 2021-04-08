@@ -8,6 +8,8 @@ Stmt =
   | IfStmt
   | ReturnStmt
   | CallExprStmt
+  | BreakStmt
+  | LabelStmt
 
 Expr =
   Literal
@@ -96,6 +98,18 @@ PrefixExpr =
 IndexExpr =
   base:Expr '[' index:Expr ']'
 
+LabelStmt =
+  start:LabelDelim Name finish:LabelDelim
+
+LabelDelim =
+  '::'
+
+GotoStmt =
+  'goto' NameRef
+
+BreakStmt =
+  'break'
+
 DoStmt =
   'do'
   body:Body
@@ -123,7 +137,7 @@ IfStmt =
 WhileStmt =
   'while'
   cond:Expr
-  'then'
+  'do'
   body:Body
   'end'
 
@@ -132,21 +146,21 @@ ReturnStmt =
   expr:Expr
 
 ForStmt =
-  'for' ForContent 'do' body:Body 'end'
+  'for' content:ForContent 'do' body:Body 'end'
 
 ForContent =
   NumericFor
   | GenericFor
 
 NumericFor =
-  'ident' '='
-  start:Expr ','
-  end:Expr (',' inc:Expr)?
+  Name
+  '='
+  expr:MultivalExpr
 
 GenericFor =
   multi_name:MultiName
   'in'
-  expr:Expr
+  expr:MultivalExpr
   
 Body =
   Stmt*

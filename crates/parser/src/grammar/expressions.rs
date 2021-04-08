@@ -275,7 +275,7 @@ fn function_expr(p: &mut Parser) -> MarkerComplete {
     m.complete(p, FunctionExpr)
 }
 
-fn name_ref(p: &mut Parser) -> MarkerComplete {
+pub(crate) fn name_ref(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![ident]);
     m.complete(p, NameRef)

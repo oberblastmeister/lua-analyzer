@@ -1,0 +1,11 @@
+---
+source: crates/syntax/src/lib.rs
+expression: "dump_parse_no_errors(Program::parse(&input))"
+
+---
+Program@0..0
+
+=============================
+Errors:
+=============================
+[]

@@ -1,17 +1,11 @@
 use glob::glob;
 use rayon::prelude::*;
-use std::{fs, path::PathBuf, sync::atomic::AtomicBool};
+use std::{fs, sync::atomic::AtomicBool};
 use std::{
     panic,
-    sync::{atomic::Ordering, Arc, Mutex},
+    sync::{atomic::Ordering, Arc},
 };
-use syntax::{ast::Program, SyntaxError};
-
-struct Failure {
-    path: PathBuf,
-    errors: Vec<SyntaxError>,
-    panicked: Option<String>,
-}
+use syntax::ast::Program;
 
 const GLOB: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/luajit2-test-suite/**/*.lua");
 

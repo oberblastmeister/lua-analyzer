@@ -204,7 +204,13 @@ impl<'a> Lexer<'a> {
                 _ => done!(T![.]),
             },
             ';' => T![;],
-            ':' => T![:],
+            ':' => match self.bump_then() {
+                ':' => {
+                    self.bump();
+                    done!(T![::]);
+                }
+                _ => done!(T![:]),
+            },
 
             '+' => T![+],
             '*' => T![*],
@@ -233,6 +239,13 @@ impl<'a> Lexer<'a> {
 
         Ok(kind)
     }
+
+    // fn label(&mut self) -> LexResult<SyntaxKind> {
+    // assert!(self.at(':'));
+    // self.bump();
+    // self.chars.find(|c| *c == ':');
+    // todo!()
+    // }
 
     fn number(&mut self) -> LexResult<SyntaxKind> {
         assert!(self.at(is_number));
@@ -700,6 +713,11 @@ asdf()
     #[test]
     fn concat() {
         check("..")
+    }
+
+    #[test]
+    fn double_colon() {
+        check("::continue:: ::has::")
     }
 
     #[test]

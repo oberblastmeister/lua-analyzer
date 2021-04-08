@@ -67,6 +67,7 @@ trivia = [
 "." = "Dot"
 ";" = "Semicolon"
 ":" = "Colon"
+"::" = "DoubleColon"
 
 "+" = "Plus"
 "-" = "Minus"
