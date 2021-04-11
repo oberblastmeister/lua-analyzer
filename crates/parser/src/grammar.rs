@@ -41,7 +41,7 @@ fn name(p: &mut Parser) -> MarkerComplete {
 }
 
 fn body(p: &mut Parser) -> MarkerComplete {
-    const END: TokenSet = TS![eof, end, elseif, else];
+    const END: TokenSet = TS![eof, end, elseif, else, until];
 
     let m = p.start();
     while !p.at_ts(END) {

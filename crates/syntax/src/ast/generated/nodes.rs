@@ -150,6 +150,24 @@ impl LabelStmt {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct RepeatUntilStmt {
+    pub(crate) syntax: SyntaxNode,
+}
+impl RepeatUntilStmt {
+    pub fn repeat_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![repeat])
+    }
+    pub fn body(&self) -> Option<Body> {
+        support::child(&self.syntax)
+    }
+    pub fn until_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![until])
+    }
+    pub fn expr(&self) -> Option<Expr> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Literal {
     pub(crate) syntax: SyntaxNode,
 }
@@ -639,6 +657,7 @@ pub enum Stmt {
     ExprStmt(ExprStmt),
     BreakStmt(BreakStmt),
     LabelStmt(LabelStmt),
+    RepeatUntilStmt(RepeatUntilStmt),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Expr {
@@ -789,6 +808,21 @@ impl AstNode for BreakStmt {
 impl AstNode for LabelStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::LabelStmt
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for RepeatUntilStmt {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::RepeatUntilStmt
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1321,6 +1355,11 @@ impl From<LabelStmt> for Stmt {
         Stmt::LabelStmt(node)
     }
 }
+impl From<RepeatUntilStmt> for Stmt {
+    fn from(node: RepeatUntilStmt) -> Stmt {
+        Stmt::RepeatUntilStmt(node)
+    }
+}
 impl AstNode for Stmt {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
@@ -1331,7 +1370,8 @@ impl AstNode for Stmt {
             | SyntaxKind::ReturnStmt
             | SyntaxKind::ExprStmt
             | SyntaxKind::BreakStmt
-            | SyntaxKind::LabelStmt => true,
+            | SyntaxKind::LabelStmt
+            | SyntaxKind::RepeatUntilStmt => true,
             _ => false,
         }
     }
@@ -1345,6 +1385,7 @@ impl AstNode for Stmt {
             SyntaxKind::ExprStmt => Stmt::ExprStmt(ExprStmt { syntax }),
             SyntaxKind::BreakStmt => Stmt::BreakStmt(BreakStmt { syntax }),
             SyntaxKind::LabelStmt => Stmt::LabelStmt(LabelStmt { syntax }),
+            SyntaxKind::RepeatUntilStmt => Stmt::RepeatUntilStmt(RepeatUntilStmt { syntax }),
             _ => return None,
         };
         Some(res)
@@ -1359,6 +1400,7 @@ impl AstNode for Stmt {
             Stmt::ExprStmt(it) => &it.syntax,
             Stmt::BreakStmt(it) => &it.syntax,
             Stmt::LabelStmt(it) => &it.syntax,
+            Stmt::RepeatUntilStmt(it) => &it.syntax,
         }
     }
 }
@@ -1607,6 +1649,11 @@ impl std::fmt::Display for BreakStmt {
     }
 }
 impl std::fmt::Display for LabelStmt {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for RepeatUntilStmt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

@@ -55,6 +55,9 @@ precedences! {
         Not,
 
         #[Prefix]
+        Len,
+
+        #[Prefix]
         Minus,
 
         #[Infix, Right]
@@ -78,6 +81,7 @@ impl From<SyntaxKind> for Option<LuaOp> {
             T![==] => Eq,
             T![..] => Concat,
             T![+] => Plus,
+            T![#] => Len,
             T![-] => Minus,
             T![*] => Mul,
             T![/] => Div,

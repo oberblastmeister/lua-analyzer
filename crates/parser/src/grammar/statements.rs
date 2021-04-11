@@ -9,6 +9,7 @@ pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
         T![::] => label_stmt(p),
         T![goto] => goto_stmt(p),
         T![local] => local_stmt(p)?,
+        T![repeat] => repeat_until_stmt(p),
         T![function] => function_def_stmt(p, false),
         T![return] => return_stmt(p),
         T![do] => do_stmt(p),
@@ -138,6 +139,15 @@ fn numeric_for(p: &mut Parser) -> MarkerComplete {
     p.bump(T![=]);
     expr(p);
     m.complete(p, GenericFor)
+}
+
+fn repeat_until_stmt(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T![repeat]);
+    body(p);
+    p.expect(T![until]);
+    expr_single(p);
+    m.complete(p, RepeatUntilStmt)
 }
 
 fn break_stmt(p: &mut Parser) -> MarkerComplete {

@@ -75,6 +75,7 @@ pub enum SyntaxKind {
     ExprStmt,
     BreakStmt,
     LabelStmt,
+    RepeatUntilStmt,
     Literal,
     TableExpr,
     InfixExpr,

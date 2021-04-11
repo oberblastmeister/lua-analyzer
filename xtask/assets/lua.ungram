@@ -10,6 +10,7 @@ Stmt =
   | ExprStmt
   | BreakStmt
   | LabelStmt
+  | RepeatUntilStmt
 
 Expr =
   Literal
@@ -158,7 +159,7 @@ ReturnStmt =
   expr:Expr
 
 ForStmt =
-  'for' content:ForContent 'do' body:Body 'end'
+  'for' content:ForContent 'do' Body 'end'
 
 ForContent =
   NumericFor
@@ -176,6 +177,12 @@ GenericFor =
   
 Body =
   Stmt*
+
+RepeatUntilStmt =
+  'repeat'
+  Body
+  'until'
+  Expr
   
 Name =
   'ident'
