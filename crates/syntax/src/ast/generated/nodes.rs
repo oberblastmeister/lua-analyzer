@@ -94,6 +94,12 @@ impl IfStmt {
     pub fn body(&self) -> Option<Body> {
         support::child(&self.syntax)
     }
+    pub fn else_branch(&self) -> Option<ElseBranch> {
+        support::child(&self.syntax)
+    }
+    pub fn else_if_branch(&self) -> Option<ElseIfBranch> {
+        support::child(&self.syntax)
+    }
     pub fn end_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![end])
     }
@@ -534,6 +540,42 @@ pub struct MultiName {
 impl MultiName {
     pub fn names(&self) -> AstChildren<Name> {
         support::children(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ElseBranch {
+    pub(crate) syntax: SyntaxNode,
+}
+impl ElseBranch {
+    pub fn else_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![else])
+    }
+    pub fn body(&self) -> Option<Body> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ElseIfBranch {
+    pub(crate) syntax: SyntaxNode,
+}
+impl ElseIfBranch {
+    pub fn elseif_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![elseif])
+    }
+    pub fn cond(&self) -> Option<Expr> {
+        support::child(&self.syntax)
+    }
+    pub fn then_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![then])
+    }
+    pub fn body(&self) -> Option<Body> {
+        support::child(&self.syntax)
+    }
+    pub fn else_if_branch(&self) -> Option<ElseIfBranch> {
+        support::child(&self.syntax)
+    }
+    pub fn else_branch(&self) -> Option<ElseBranch> {
+        support::child(&self.syntax)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1164,6 +1206,36 @@ impl AstNode for MultiName {
         &self.syntax
     }
 }
+impl AstNode for ElseBranch {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ElseBranch
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for ElseIfBranch {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ElseIfBranch
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
 impl AstNode for WhileStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::WhileStmt
@@ -1670,6 +1742,16 @@ impl std::fmt::Display for DoStmt {
     }
 }
 impl std::fmt::Display for MultiName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for ElseBranch {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for ElseIfBranch {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

@@ -4,7 +4,7 @@ mod statements;
 use crate::{
     parser::{MarkerComplete, Parser},
     SyntaxKind::*,
-    TokenSet,
+    TokenSet, TS,
 };
 use expressions::expr_single;
 use statements::stmt;
@@ -41,15 +41,17 @@ fn name(p: &mut Parser) -> MarkerComplete {
 }
 
 fn body(p: &mut Parser) -> MarkerComplete {
+    const END: TokenSet = TS![eof, end, elseif, else];
+
     let m = p.start();
-    while !p.at(T![eof]) && !p.at(T![end]) {
+    while !p.at_ts(END) {
         stmt(p);
     }
     m.complete(p, Body)
 }
 
 fn param_list(p: &mut Parser) -> MarkerComplete {
-    const END: TokenSet = TokenSet::new(&[T![')'], T![eof]]);
+    const END: TokenSet = TS![')', eof];
 
     let m = p.start();
     p.expect(T!['(']);

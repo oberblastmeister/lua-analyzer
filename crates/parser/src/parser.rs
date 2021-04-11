@@ -2,9 +2,9 @@ use std::marker::PhantomData;
 
 use drop_bomb::DropBomb;
 
-use crate::{Event, ParseError, SyntaxKind, T, TokenSet, TokenSource, assert_matches};
+use crate::{assert_matches, Event, ParseError, SyntaxKind, TokenSet, TokenSource, T, TS};
 
-const RECOVERY: TokenSet = TokenSet::new(&[T![local]]);
+const RECOVERY: TokenSet = TS![local];
 
 pub struct Parser<'a> {
     token_source: &'a mut dyn TokenSource,
@@ -57,7 +57,7 @@ impl<'a> Parser<'a> {
         self.events.push(event)
     }
 
-    fn error(&mut self, message: &'static str) {
+    pub(crate) fn error(&mut self, message: &'static str) {
         self.push_event(Event::Error(ParseError::Message(message)))
     }
 

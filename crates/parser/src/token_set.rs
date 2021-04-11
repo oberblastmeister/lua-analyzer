@@ -2,6 +2,13 @@
 
 use crate::SyntaxKind;
 
+#[macro_export]
+macro_rules! TS {
+    ($($stuff:tt)*) => {
+        TokenSet::new(&[$( T![$stuff], )*])
+    };
+}
+
 /// A bit-set of `SyntaxKind`s
 #[derive(Clone, Copy)]
 pub struct TokenSet(u128);
@@ -34,7 +41,7 @@ const fn mask(kind: SyntaxKind) -> u128 {
 
 #[test]
 fn token_set_works_for_tokens() {
-    let ts = TokenSet::new(&[T![eof], T![+], T![-]]);
+    let ts = TS![eof, +, -];
     assert!(ts.contains(T![eof]));
     assert!(ts.contains(T![+]));
     assert!(ts.contains(T![-]));

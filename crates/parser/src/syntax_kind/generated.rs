@@ -102,6 +102,8 @@ pub enum SyntaxKind {
     GotoStmt,
     DoStmt,
     MultiName,
+    ElseBranch,
+    ElseIfBranch,
     WhileStmt,
     NumericFor,
     GenericFor,

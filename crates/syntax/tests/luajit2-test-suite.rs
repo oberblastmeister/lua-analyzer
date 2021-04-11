@@ -13,6 +13,7 @@ use syntax::ast::Program;
 const GLOB: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/luajit2-test-suite/**/*.lua");
 
 #[test]
+#[ignore]
 fn run_test_suite() {
     let total = Arc::new(AtomicU32::new(0));
     let successes = Arc::new(AtomicU32::new(0));

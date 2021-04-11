@@ -3,8 +3,8 @@ use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP_INFIX, NOT_AN_OP_P
 use super::{body, name_ref, param_list};
 use crate::{
     parser::{MarkerComplete, Parser},
-    token_set::TokenSet,
     SyntaxKind::{self, *},
+    TokenSet, TS,
 };
 
 precedences! {
@@ -211,8 +211,7 @@ pub(super) fn paren_expr(p: &mut Parser) -> MarkerComplete {
     m.complete(p, ParenExpr)
 }
 
-pub(crate) const LITERAL: TokenSet =
-    TokenSet::new(&[T![true], T![false], T![number], T![str], T![nil]]);
+pub(crate) const LITERAL: TokenSet = TS![true, false, number, str, nil];
 
 fn literal(p: &mut Parser) -> Option<MarkerComplete> {
     assert!(p.at_ts(LITERAL));

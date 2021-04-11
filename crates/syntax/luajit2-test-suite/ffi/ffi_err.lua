@@ -35,4 +35,3 @@ point strchr(point* op1, point* op2);
   local line = debug.getinfo(foo).linedefined+3
   assert(string.match(err, "traceback:[^:]*:"..line..":"))
 end
-

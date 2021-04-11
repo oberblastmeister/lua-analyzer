@@ -186,6 +186,13 @@ impl<'a> Lexer<'a> {
                 }
                 _ => done!(T![=]),
             },
+            '~' => match self.bump_then() {
+                '=' => {
+                    self.bump();
+                    done!(T![~=]);
+                }
+                _ => done!(T![unknown]),
+            }
 
             '(' => T!['('],
             ')' => T![')'],
@@ -735,5 +742,10 @@ asdf()
     #[test]
     fn weird_91() {
         tokenize(str::from_utf8(&[91, 91]).unwrap());
+    }
+
+    #[test]
+    fn hex_numbers() { 
+        check("0xffffffff hello 0x12345678")
     }
 }

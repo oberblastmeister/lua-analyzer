@@ -131,8 +131,20 @@ IfStmt =
   'if'
   cond:Expr
   'then'
-  body:Body
+  Body
+  (ElseBranch | ElseIfBranch)?
   'end'
+
+ElseBranch =
+  'else'
+  Body
+
+ElseIfBranch =
+  'elseif'
+  cond:Expr
+  'then'
+  Body
+  (ElseIfBranch | ElseBranch)?
 
 WhileStmt =
   'while'

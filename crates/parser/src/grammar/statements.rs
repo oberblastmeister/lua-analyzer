@@ -1,18 +1,11 @@
-use super::{
-    expr_single,
-    name,
-    name_ref,
-    multi_name,
-    body,
-    param_list,
-    expressions::expr,
-};
+use super::{body, expr_single, expressions::expr, multi_name, name, name_ref, param_list};
 use crate::parser::{MarkerComplete, Parser};
 use crate::SyntaxKind::*;
 
 pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
     let peek = p.nth(1);
     Some(match p.current() {
+        T![if] => if_stmt(p),
         T![::] => label_stmt(p),
         T![goto] => goto_stmt(p),
         T![local] => local_stmt(p)?,
@@ -31,6 +24,50 @@ pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
             return None;
         }
     })
+}
+
+fn if_stmt(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T![if]);
+    expr_single(p);
+    p.expect(T![then]);
+    body(p);
+    match p.current() {
+        T![elseif] => {
+            elseif_branch(p);
+        }
+        T![else] => {
+            else_branch(p);
+        }
+        _ => (),
+    }
+    p.expect(T![end]);
+    m.complete(p, IfStmt)
+}
+
+fn elseif_branch(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T![elseif]);
+    expr_single(p);
+    p.expect(T![then]);
+    body(p);
+    match p.current() {
+        T![elseif] => {
+            elseif_branch(p);
+        }
+        T![else] => {
+            else_branch(p);
+        }
+        _ => (),
+    };
+    m.complete(p, ElseIfBranch)
+}
+
+fn else_branch(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T![else]);
+    body(p);
+    m.complete(p, ElseBranch)
 }
 
 fn goto_stmt(p: &mut Parser) -> MarkerComplete {
