@@ -1,0 +1,37 @@
+---
+source: crates/syntax/src/lib.rs
+expression: "dump_parse_no_errors(Program::parse(&input))"
+
+---
+Program@0..29
+  AssignStmt@0..28
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    MultiName@6..11
+      Name@6..11
+        Ident@6..11 "hello"
+    Whitespace@11..12 " "
+    Eq@12..13 "="
+    Whitespace@13..14 " "
+    MultivalExpr@14..28
+      CallExpr@14..28
+        NameRef@14..20
+          Ident@14..20 "assert"
+        Arglist@20..28
+          LParen@20..21 "("
+          MultivalExpr@21..27
+            InfixExpr@21..27
+              Literal@21..22
+                Number@21..22 "5"
+              Whitespace@22..23 " "
+              EqEq@23..25 "=="
+              Whitespace@25..26 " "
+              Literal@26..27
+                Number@26..27 "2"
+          RParen@27..28 ")"
+  Whitespace@28..29 "\n"
+
+=============================
+Errors:
+=============================
+[]

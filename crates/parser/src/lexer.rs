@@ -179,7 +179,13 @@ impl<'a> Lexer<'a> {
 
         // return on special cases
         let kind = match c {
-            '=' => T![=],
+            '=' => match self.bump_then() {
+                '=' => {
+                    self.bump();
+                    done!(T![==])
+                }
+                _ => done!(T![=]),
+            },
 
             '(' => T!['('],
             ')' => T![')'],
