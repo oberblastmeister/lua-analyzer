@@ -1,6 +1,6 @@
 ---
-source: crates/syntax/src/lib.rs
-expression: "dump_parse_no_errors(Program::parse(&input))"
+source: crates/syntax/src/tests.rs
+expression: "dump_parse(Program::parse(&input))"
 
 ---
 Program@0..89
@@ -19,8 +19,9 @@ Program@0..89
       AssignStmt@25..40
         LocalKw@25..30 "local"
         Whitespace@30..31 " "
-        Name@31..36
-          Ident@31..36 "hello"
+        MultiName@31..36
+          Name@31..36
+            Ident@31..36 "hello"
         Whitespace@36..37 " "
         Eq@37..38 "="
         Whitespace@38..39 " "
@@ -31,8 +32,9 @@ Program@0..89
       AssignStmt@43..69
         LocalKw@43..48 "local"
         Whitespace@48..49 " "
-        Name@49..56
-          Ident@49..56 "another"
+        MultiName@49..56
+          Name@49..56
+            Ident@49..56 "another"
         Whitespace@56..57 " "
         Eq@57..58 "="
         Whitespace@58..59 " "
@@ -56,3 +58,7 @@ Program@0..89
     EndKw@85..88 "end"
   Whitespace@88..89 "\n"
 
+=============================
+Errors:
+=============================
+[]

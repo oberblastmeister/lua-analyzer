@@ -1,14 +1,15 @@
 ---
-source: crates/syntax/src/lib.rs
-expression: "dump_parse(Program::parse(&input))"
+source: crates/syntax/src/tests.rs
+expression: dump_parse(parse)
 
 ---
 Program@0..16
   AssignStmt@0..15
     LocalKw@0..5 "local"
     Whitespace@5..6 " "
-    Name@6..10
-      Ident@6..10 "expr"
+    MultiName@6..10
+      Name@6..10
+        Ident@6..10 "expr"
     Whitespace@10..11 " "
     Eq@11..12 "="
     Whitespace@12..13 " "

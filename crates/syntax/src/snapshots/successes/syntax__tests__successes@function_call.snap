@@ -1,10 +1,10 @@
 ---
-source: crates/syntax/src/lib.rs
-expression: "dump_parse_no_errors(Program::parse(&input))"
+source: crates/syntax/src/tests.rs
+expression: "dump_parse(Program::parse(&input))"
 
 ---
 Program@0..61
-  CallExprStmt@0..12
+  ExprStmt@0..12
     CallExpr@0..12
       NameRef@0..10
         Ident@0..10 "empty_call"
@@ -12,7 +12,7 @@ Program@0..61
         LParen@10..11 "("
         RParen@11..12 ")"
   Whitespace@12..13 "\n"
-  CallExprStmt@13..37
+  ExprStmt@13..37
     CallExpr@13..37
       NameRef@13..26
         Ident@13..26 "call_with_one"
@@ -23,7 +23,7 @@ Program@0..61
             Ident@27..36 "first_arg"
         RParen@36..37 ")"
   Whitespace@37..38 "\n"
-  CallExprStmt@38..60
+  ExprStmt@38..60
     CallExpr@38..60
       NameRef@38..51
         Ident@38..51 "call_with_lit"
@@ -35,3 +35,7 @@ Program@0..61
         RParen@59..60 ")"
   Whitespace@60..61 "\n"
 
+=============================
+Errors:
+=============================
+[]

@@ -1,12 +1,12 @@
 ---
-source: crates/syntax/src/lib.rs
-expression: "dump_parse(Program::parse(&input))"
+source: crates/syntax/src/tests.rs
+expression: dump_parse(parse)
 
 ---
 Program@0..5
   Error@0..2
     Str@0..2 "\"\""
-  CallExprStmt@2..4
+  ExprStmt@2..4
     ParenExpr@2..4
       LParen@2..3 "("
       Error@3..4

@@ -1,14 +1,15 @@
 ---
-source: crates/syntax/src/lib.rs
-expression: "dump_parse_no_errors(Program::parse(&input))"
+source: crates/syntax/src/tests.rs
+expression: "dump_parse(Program::parse(&input))"
 
 ---
 Program@0..57
   AssignStmt@0..18
     LocalKw@0..5 "local"
     Whitespace@5..6 " "
-    Name@6..10
-      Ident@6..10 "expr"
+    MultiName@6..10
+      Name@6..10
+        Ident@6..10 "expr"
     Whitespace@10..11 " "
     Eq@11..12 "="
     Whitespace@12..13 " "
@@ -25,8 +26,9 @@ Program@0..57
   AssignStmt@19..56
     LocalKw@19..24 "local"
     Whitespace@24..25 " "
-    Name@25..41
-      Ident@25..41 "complicated_expr"
+    MultiName@25..41
+      Name@25..41
+        Ident@25..41 "complicated_expr"
     Whitespace@41..42 " "
     Eq@42..43 "="
     Whitespace@43..44 " "
@@ -51,3 +53,7 @@ Program@0..57
             Number@55..56 "7"
   Whitespace@56..57 "\n"
 
+=============================
+Errors:
+=============================
+[]
