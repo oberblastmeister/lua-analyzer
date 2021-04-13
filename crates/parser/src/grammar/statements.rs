@@ -1,7 +1,18 @@
-use super::{body, expr_single, expressions::expr, multi_name, name, name_ref, param_list};
+use super::{
+    body, expr_single,
+    expressions::{expr, LITERAL},
+    multi_name, name, name_ref, param_list,
+};
 use crate::parser::{MarkerComplete, Parser};
 use crate::SyntaxKind::*;
 use crate::{TokenSet, TS};
+
+macro_rules! none {
+    ($expr:expr) => {{
+        $expr;
+        return None;
+    }};
+}
 
 pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
     Some(match p.current() {
@@ -18,10 +29,10 @@ pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
         T![break] => break_stmt(p),
         T![ident] => expr_stmt(p),
         T!['('] => expr_stmt(p),
-        _ => {
-            p.err_recover("Expected a statement");
-            return None;
+        _ if p.at_ts(LITERAL) => {
+            none!(p.err_recover("A literal cannot be the start of an statement"))
         }
+        _ => none!(p.err_recover("Expected a statement")),
     })
 }
 

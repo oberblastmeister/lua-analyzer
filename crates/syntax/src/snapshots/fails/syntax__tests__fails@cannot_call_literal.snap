@@ -19,11 +19,11 @@ Errors:
 =============================
 [
     SyntaxError(
-        "Expected a statement",
+        "A literal cannot be the start of an statement",
         0..0,
     ),
     SyntaxError(
-        "Expected a statement",
+        "A literal cannot be the start of an statement",
         0..2,
     ),
     SyntaxError(
@@ -37,5 +37,9 @@ Errors:
     SyntaxError(
         "Expected RParen, got Eof",
         4..4,
+    ),
+    SyntaxError(
+        "Only one expression can be present in an expression statement, got 0",
+        2..4,
     ),
 ]

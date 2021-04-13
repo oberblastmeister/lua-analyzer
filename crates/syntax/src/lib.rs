@@ -98,12 +98,27 @@ Errors:
     s
 }
 
+impl ast::Expr {
+    pub fn is_call(&self) -> bool {
+        matches!(
+            self,
+            ast::Expr::CallExpr(_)
+                | ast::Expr::MethodCallExpr(_)
+                | ast::Expr::StringCallExpr(_)
+                | ast::Expr::TableCallExpr(_),
+        )
+    }
+}
+
 impl Program {
     pub fn parse(text: &str) -> Parse<Program> {
-        let (green, errors) = parsing::parse_text(text);
+        let (green, mut errors) = parsing::parse_text(text);
         let root = SyntaxNode::new_root(green.clone());
 
+        errors.extend(validation::validate(&root));
+
         assert_eq!(root.kind(), SyntaxKind::Program);
+
         Parse {
             green,
             errors: Arc::new(errors),
@@ -130,8 +145,16 @@ impl Parse<Program> {
 ///     match node {
 ///         ast::CallExpr(it) => { ... },
 ///         ast::MethodCallExpr(it) => { ... },
-///         ast::MacroCall(it) => { ... },
+///         ast::AssignStmt(it) => { ... },
 ///         _ => None,
+///     }
+/// }
+/// ```
+///
+/// ```ignore
+/// match_ast! {
+///     match node {
+///         ast::CallExpr(it) | ast::MethodCallExpr(it) | ast::AssignStmt(it) => { ... }
 ///     }
 /// }
 /// ```
@@ -152,6 +175,14 @@ macro_rules! match_ast {
         _ => $catch_all:expr $(,)?
     }) => {{
         $( if let Some($it) = ast::$ast::cast($node.clone()) { $res } else )*
+        { $catch_all }
+    }};
+
+    (match ($node:expr) {
+        $( ast::$ast:ident(_) )|* => $res:expr,
+        _ => $catch_all:expr $(,)?
+    }) => {{
+        $( if let Some(_) = ast::$ast::cast($node.clone()) { $res } else )*
         { $catch_all }
     }};
 }

@@ -20,8 +20,11 @@ Expr =
   | PrefixExpr
   | IndexExpr
   | DotExpr
-  | CallExpr
   | FunctionExpr
+  | CallExpr
+  | TableCallExpr
+  | StringCallExpr
+  | MethodCallExpr
 
 CallExpr =
   fun:Expr '(' (args:Expr)? ')'
@@ -127,7 +130,7 @@ Paramlist =
   MultiName?
   ')'
 
-ExprStmt = Expr
+ExprStmt = MultivalExpr
 
 IfStmt =
   'if'
@@ -195,7 +198,7 @@ LocalAssignStmt =
   'local' MultiName ('=' MultivalExpr)?
 
 AssignStmt =
-  MultivalExpr ('=' Expr)?
+  lhs:MultivalExpr ('=' rhs:MultivalExpr)?
 
 MultiName =
   Name (',' Name)*
