@@ -19,6 +19,21 @@ pub struct AssignStmt {
     pub(crate) syntax: SyntaxNode,
 }
 impl AssignStmt {
+    pub fn multival_expr(&self) -> Option<MultivalExpr> {
+        support::child(&self.syntax)
+    }
+    pub fn eq_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![=])
+    }
+    pub fn expr(&self) -> Option<Expr> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct LocalAssignStmt {
+    pub(crate) syntax: SyntaxNode,
+}
+impl LocalAssignStmt {
     pub fn local_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![local])
     }
@@ -232,14 +247,8 @@ impl IndexExpr {
     pub fn base(&self) -> Option<Expr> {
         support::child(&self.syntax)
     }
-    pub fn l_brack_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T!['['])
-    }
-    pub fn index(&self) -> Option<Expr> {
+    pub fn index(&self) -> Option<Index> {
         support::child(&self.syntax)
-    }
-    pub fn r_brack_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![']'])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -432,10 +441,10 @@ impl PositionalValue {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct IndexKey {
+pub struct Index {
     pub(crate) syntax: SyntaxNode,
 }
-impl IndexKey {
+impl Index {
     pub fn l_brack_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T!['['])
     }
@@ -650,6 +659,7 @@ impl GenericFor {
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Stmt {
     AssignStmt(AssignStmt),
+    LocalAssignStmt(LocalAssignStmt),
     FunctionDefStmt(FunctionDefStmt),
     ForStmt(ForStmt),
     IfStmt(IfStmt),
@@ -677,7 +687,7 @@ pub enum TableContent {
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TableKey {
-    IndexKey(IndexKey),
+    Index(Index),
     IdentKey(IdentKey),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -703,6 +713,21 @@ impl AstNode for Program {
 impl AstNode for AssignStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::AssignStmt
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for LocalAssignStmt {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::LocalAssignStmt
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1120,9 +1145,9 @@ impl AstNode for PositionalValue {
         &self.syntax
     }
 }
-impl AstNode for IndexKey {
+impl AstNode for Index {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::IndexKey
+        kind == SyntaxKind::Index
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1320,6 +1345,11 @@ impl From<AssignStmt> for Stmt {
         Stmt::AssignStmt(node)
     }
 }
+impl From<LocalAssignStmt> for Stmt {
+    fn from(node: LocalAssignStmt) -> Stmt {
+        Stmt::LocalAssignStmt(node)
+    }
+}
 impl From<FunctionDefStmt> for Stmt {
     fn from(node: FunctionDefStmt) -> Stmt {
         Stmt::FunctionDefStmt(node)
@@ -1364,6 +1394,7 @@ impl AstNode for Stmt {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             SyntaxKind::AssignStmt
+            | SyntaxKind::LocalAssignStmt
             | SyntaxKind::FunctionDefStmt
             | SyntaxKind::ForStmt
             | SyntaxKind::IfStmt
@@ -1378,6 +1409,7 @@ impl AstNode for Stmt {
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             SyntaxKind::AssignStmt => Stmt::AssignStmt(AssignStmt { syntax }),
+            SyntaxKind::LocalAssignStmt => Stmt::LocalAssignStmt(LocalAssignStmt { syntax }),
             SyntaxKind::FunctionDefStmt => Stmt::FunctionDefStmt(FunctionDefStmt { syntax }),
             SyntaxKind::ForStmt => Stmt::ForStmt(ForStmt { syntax }),
             SyntaxKind::IfStmt => Stmt::IfStmt(IfStmt { syntax }),
@@ -1393,6 +1425,7 @@ impl AstNode for Stmt {
     fn syntax(&self) -> &SyntaxNode {
         match self {
             Stmt::AssignStmt(it) => &it.syntax,
+            Stmt::LocalAssignStmt(it) => &it.syntax,
             Stmt::FunctionDefStmt(it) => &it.syntax,
             Stmt::ForStmt(it) => &it.syntax,
             Stmt::IfStmt(it) => &it.syntax,
@@ -1519,9 +1552,9 @@ impl AstNode for TableContent {
         }
     }
 }
-impl From<IndexKey> for TableKey {
-    fn from(node: IndexKey) -> TableKey {
-        TableKey::IndexKey(node)
+impl From<Index> for TableKey {
+    fn from(node: Index) -> TableKey {
+        TableKey::Index(node)
     }
 }
 impl From<IdentKey> for TableKey {
@@ -1532,13 +1565,13 @@ impl From<IdentKey> for TableKey {
 impl AstNode for TableKey {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
-            SyntaxKind::IndexKey | SyntaxKind::IdentKey => true,
+            SyntaxKind::Index | SyntaxKind::IdentKey => true,
             _ => false,
         }
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
-            SyntaxKind::IndexKey => TableKey::IndexKey(IndexKey { syntax }),
+            SyntaxKind::Index => TableKey::Index(Index { syntax }),
             SyntaxKind::IdentKey => TableKey::IdentKey(IdentKey { syntax }),
             _ => return None,
         };
@@ -1546,7 +1579,7 @@ impl AstNode for TableKey {
     }
     fn syntax(&self) -> &SyntaxNode {
         match self {
-            TableKey::IndexKey(it) => &it.syntax,
+            TableKey::Index(it) => &it.syntax,
             TableKey::IdentKey(it) => &it.syntax,
         }
     }
@@ -1614,6 +1647,11 @@ impl std::fmt::Display for Program {
     }
 }
 impl std::fmt::Display for AssignStmt {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for LocalAssignStmt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
@@ -1753,7 +1791,7 @@ impl std::fmt::Display for PositionalValue {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for IndexKey {
+impl std::fmt::Display for Index {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

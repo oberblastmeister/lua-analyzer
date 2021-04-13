@@ -1,10 +1,10 @@
 ---
 source: crates/syntax/src/tests.rs
-expression: "dump_parse(Program::parse(&input))"
+expression: s
 
 ---
 Program@0..129
-  AssignStmt@0..26
+  LocalAssignStmt@0..26
     LocalKw@0..5 "local"
     Whitespace@5..6 " "
     MultiName@6..19
@@ -25,7 +25,7 @@ Program@0..129
       Literal@25..26
         Number@25..26 "2"
   Whitespace@26..27 "\n"
-  AssignStmt@27..61
+  LocalAssignStmt@27..61
     LocalKw@27..32 "local"
     Whitespace@32..33 " "
     MultiName@33..46
@@ -56,7 +56,7 @@ Program@0..129
       Literal@59..61
         Number@59..61 "12"
   Whitespace@61..62 "\n"
-  AssignStmt@62..128
+  LocalAssignStmt@62..128
     LocalKw@62..67 "local"
     Whitespace@67..68 " "
     MultiName@68..76

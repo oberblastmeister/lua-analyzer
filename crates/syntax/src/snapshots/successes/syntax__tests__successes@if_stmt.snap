@@ -27,15 +27,16 @@ Program@0..57
     Whitespace@31..34 "\n  "
     Body@34..52
       ExprStmt@34..52
-        CallExpr@34..52
-          NameRef@34..39
-            Ident@34..39 "print"
-          Arglist@39..52
-            LParen@39..40 "("
-            MultivalExpr@40..51
-              Literal@40..51
-                Str@40..51 "\"is string\""
-            RParen@51..52 ")"
+        MultivalExpr@34..52
+          CallExpr@34..52
+            NameRef@34..39
+              Ident@34..39 "print"
+            Arglist@39..52
+              LParen@39..40 "("
+              MultivalExpr@40..51
+                Literal@40..51
+                  Str@40..51 "\"is string\""
+              RParen@51..52 ")"
     Whitespace@52..53 "\n"
     EndKw@53..56 "end"
   Whitespace@56..57 "\n"

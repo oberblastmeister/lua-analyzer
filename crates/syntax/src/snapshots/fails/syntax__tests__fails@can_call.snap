@@ -7,18 +7,20 @@ Program@0..9
   Error@0..2
     Str@0..2 "\"\""
   ExprStmt@2..4
-    ParenExpr@2..4
-      LParen@2..3 "("
-      Error@3..4
-        RParen@3..4 ")"
+    MultivalExpr@2..4
+      ParenExpr@2..4
+        LParen@2..3 "("
+        Error@3..4
+          RParen@3..4 ")"
   Whitespace@4..5 "\n"
   Error@5..6
     Number@5..6 "5"
   ExprStmt@6..8
-    ParenExpr@6..8
-      LParen@6..7 "("
-      Error@7..8
-        RParen@7..8 ")"
+    MultivalExpr@6..8
+      ParenExpr@6..8
+        LParen@6..7 "("
+        Error@7..8
+          RParen@7..8 ")"
   Whitespace@8..9 "\n"
 
 =============================

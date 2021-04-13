@@ -1,18 +1,19 @@
 ---
 source: crates/syntax/src/tests.rs
-expression: "dump_parse(Program::parse(&input))"
+expression: s
 
 ---
 Program@0..274
   ExprStmt@0..273
-    StringCallExpr@0..273
-      DotExpr@0..8
-        NameRef@0..3
-          Ident@0..3 "ffi"
-        Dot@3..4 "."
-        Ident@4..8 "cdef"
-      Literal@8..273
-        Str@8..273 "[[\ntypedef enum enum_ ..."
+    MultivalExpr@0..273
+      StringCallExpr@0..273
+        DotExpr@0..8
+          NameRef@0..3
+            Ident@0..3 "ffi"
+          Dot@3..4 "."
+          Ident@4..8 "cdef"
+        Literal@8..273
+          Str@8..273 "[[\ntypedef enum enum_ ..."
   Whitespace@273..274 "\n"
 
 =============================

@@ -4,7 +4,7 @@ expression: dump_parse(parse)
 
 ---
 Program@0..16
-  AssignStmt@0..15
+  LocalAssignStmt@0..15
     LocalKw@0..5 "local"
     Whitespace@5..6 " "
     MultiName@6..10

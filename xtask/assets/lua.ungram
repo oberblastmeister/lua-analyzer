@@ -3,6 +3,7 @@ Program =
 
 Stmt =
   AssignStmt
+  | LocalAssignStmt
   | FunctionDefStmt
   | ForStmt
   | IfStmt
@@ -76,10 +77,10 @@ KeyValue =
   key:TableKey value:Expr
   
 TableKey =
-  IndexKey
+  Index
   | IdentKey
 
-IndexKey =
+Index =
   '[' index:Expr ']'
 
 IdentKey =
@@ -97,7 +98,7 @@ PrefixExpr =
   '!' Expr
 
 IndexExpr =
-  base:Expr '[' index:Expr ']'
+  base:Expr Index
 
 LabelStmt =
   start:LabelDelim Name finish:LabelDelim
@@ -190,8 +191,11 @@ Name =
 NameRef =
   'ident'
 
+LocalAssignStmt =
+  'local' MultiName ('=' Expr)?
+
 AssignStmt =
-  'local'? MultiName ('=' Expr)?
+  MultivalExpr ('=' Expr)?
 
 MultiName =
   Name (',' Name)*

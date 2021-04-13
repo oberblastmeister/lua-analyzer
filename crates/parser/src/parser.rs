@@ -153,6 +153,8 @@ impl<T: MarkerType> Marker<T> {
     }
 }
 
+pub(crate) type MarkerRegular = Marker<RegularMarker>;
+
 impl Marker<RegularMarker> {
     /// Finishes the syntax tree node and assigns `kind` to it,
     /// and mark the create a `CompletedMarker` for possible future

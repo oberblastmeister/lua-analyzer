@@ -24,30 +24,32 @@ Program@0..83
     Whitespace@21..24 "\n  "
     Body@24..49
       ExprStmt@24..49
-        CallExpr@24..49
-          NameRef@24..29
-            Ident@24..29 "print"
-          Arglist@29..49
-            LParen@29..30 "("
-            MultivalExpr@30..48
-              Literal@30..48
-                Str@30..48 "\"yes was not true\""
-            RParen@48..49 ")"
+        MultivalExpr@24..49
+          CallExpr@24..49
+            NameRef@24..29
+              Ident@24..29 "print"
+            Arglist@29..49
+              LParen@29..30 "("
+              MultivalExpr@30..48
+                Literal@30..48
+                  Str@30..48 "\"yes was not true\""
+              RParen@48..49 ")"
     Whitespace@49..50 "\n"
     ElseBranch@50..78
       ElseKw@50..54 "else"
       Whitespace@54..57 "\n  "
       Body@57..78
         ExprStmt@57..78
-          CallExpr@57..78
-            NameRef@57..62
-              Ident@57..62 "print"
-            Arglist@62..78
-              LParen@62..63 "("
-              MultivalExpr@63..77
-                Literal@63..77
-                  Str@63..77 "\'yes was true\'"
-              RParen@77..78 ")"
+          MultivalExpr@57..78
+            CallExpr@57..78
+              NameRef@57..62
+                Ident@57..62 "print"
+              Arglist@62..78
+                LParen@62..63 "("
+                MultivalExpr@63..77
+                  Literal@63..77
+                    Str@63..77 "\'yes was true\'"
+                RParen@77..78 ")"
     Whitespace@78..79 "\n"
     EndKw@79..82 "end"
   Whitespace@82..83 "\n"

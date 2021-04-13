@@ -1,0 +1,38 @@
+---
+source: crates/syntax/src/tests.rs
+expression: s
+
+---
+Program@0..72
+  AssignStmt@0..42
+    MultivalExpr@0..28
+      DotExpr@0..19
+        CallExpr@0..13
+          NameRef@0..11
+            Ident@0..11 "returns_tbl"
+          Arglist@11..13
+            LParen@11..12 "("
+            RParen@12..13 ")"
+        Dot@13..14 "."
+        Ident@14..19 "hello"
+      Comma@19..20 ","
+      Whitespace@20..21 " "
+      NameRef@21..28
+        Ident@21..28 "another"
+    Whitespace@28..29 " "
+    Eq@29..30 "="
+    Whitespace@30..31 " "
+    MultivalExpr@31..42
+      Literal@31..34
+        Number@31..34 "123"
+      Comma@34..35 ","
+      Whitespace@35..36 " "
+      Literal@36..42
+        Number@36..42 "132423"
+  Whitespace@42..43 "\n"
+  Comment@43..72 "-- another_tbl()[3] = ..."
+
+=============================
+Errors:
+=============================
+[]

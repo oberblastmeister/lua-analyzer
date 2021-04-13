@@ -1,0 +1,115 @@
+---
+source: crates/syntax/src/tests.rs
+expression: s
+
+---
+Program@0..826
+  DoStmt@0..525
+    DoKw@0..2 "do"
+    Whitespace@2..5 "\n  "
+    Body@5..172
+      FunctionDefStmt@5..172
+        LocalKw@5..10 "local"
+        Whitespace@10..11 " "
+        FunctionKw@11..19 "function"
+        Whitespace@19..20 " "
+        Name@20..23
+          Ident@20..23 "foo"
+        Paramlist@23..25
+          LParen@23..24 "("
+          RParen@24..25 ")"
+        Whitespace@25..30 "\n    "
+        Body@30..74
+          LocalAssignStmt@30..42
+            LocalKw@30..35 "local"
+            Whitespace@35..36 " "
+            MultiName@36..37
+              Name@36..37
+                Ident@36..37 "t"
+            Whitespace@37..38 " "
+            Eq@38..39 "="
+            Whitespace@39..40 " "
+            MultivalExpr@40..42
+              TableExpr@40..42
+                LBrace@40..41 "{"
+                RBrace@41..42 "}"
+          Whitespace@42..47 "\n    "
+          ForStmt@47..74
+            ForKw@47..50 "for"
+            Whitespace@50..51 " "
+            ForContent@51..58
+              NumericFor@51..58
+                Name@51..52
+                  Ident@51..52 "i"
+                Eq@52..53 "="
+                MultivalExpr@53..58
+                  Literal@53..54
+                    Number@53..54 "1"
+                  Comma@54..55 ","
+                  Literal@55..58
+                    Number@55..58 "100"
+            Whitespace@58..59 " "
+            DoKw@59..61 "do"
+            Whitespace@61..62 " "
+            Body@62..70
+              AssignStmt@62..70
+                MultivalExpr@62..66
+                  IndexExpr@62..66
+                    NameRef@62..63
+                      Ident@62..63 "t"
+                    Index@63..66
+                      LBracket@63..64 "["
+                      NameRef@64..65
+                        Ident@64..65 "i"
+                      RBracket@65..66 "]"
+                Whitespace@66..67 " "
+                Eq@67..68 "="
+                Whitespace@68..69 " "
+                MultivalExpr@69..70
+                  NameRef@69..70
+                    Ident@69..70 "i"
+            Whitespace@70..71 " "
+            EndKw@71..74 "end"
+        Whitespace@74..79 "\n    "
+        Comment@79..110 "-- for a,b in ipairs( ..."
+        Whitespace@110..114 "    "
+        Comment@114..129 "-- local m = 0\n"
+        Whitespace@129..133 "    "
+        Comment@133..167 "-- while m < 100 do m ..."
+        Whitespace@167..169 "  "
+        EndKw@169..172 "end"
+    Whitespace@172..176 "\n\n  "
+    Comment@176..207 "-- local d1 = string. ..."
+    Whitespace@207..209 "  "
+    Comment@209..218 "-- foo()\n"
+    Whitespace@218..220 "  "
+    Comment@220..254 "-- assert(string.dump ..."
+    Whitespace@254..256 "  "
+    Comment@256..272 "-- jit.off(foo)\n"
+    Whitespace@272..274 "  "
+    Comment@274..283 "-- foo()\n"
+    Whitespace@283..285 "  "
+    Comment@285..319 "-- assert(string.dump ..."
+    Whitespace@319..321 "  "
+    Comment@321..373 "-- local d2 = string. ..."
+    Whitespace@373..375 "  "
+    Comment@375..435 "-- local d3 = string. ..."
+    Whitespace@435..437 "  "
+    Comment@437..457 "-- assert(d2 == d3)\n"
+    Whitespace@457..459 "  "
+    Comment@459..522 "-- assert(loadstring( ..."
+    EndKw@522..525 "end"
+  Whitespace@525..527 "\n\n"
+  Comment@527..533 "-- do\n"
+  Comment@533..581 "--   local function f ..."
+  Comment@581..629 "--   local function f ..."
+  Comment@629..662 "--   assert(f1() == - ..."
+  Comment@662..724 "--   assert(loadstrin ..."
+  Comment@724..757 "--   assert(f2() == 0 ..."
+  Comment@757..819 "--   assert(loadstrin ..."
+  Comment@819..826 "-- end\n"
+
+=============================
+Errors:
+=============================
+[]

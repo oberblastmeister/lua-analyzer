@@ -2,7 +2,7 @@ use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP_INFIX, NOT_AN_OP_P
 
 use super::{body, name_ref, param_list};
 use crate::{
-    parser::{MarkerComplete, Parser},
+    parser::{MarkerComplete, MarkerRegular, Parser},
     SyntaxKind::{self, *},
     TokenSet, TS,
 };
@@ -33,7 +33,7 @@ precedences! {
         #[Infix, Left]
         Eq,
 
-        #[Infix, Left]
+        #[Infix, Right]
         Concat,
 
         #[Infix, Left]
@@ -258,7 +258,7 @@ fn table_key(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     match p.current() {
         T![ident] => ident_key(p),
-        T!['['] => index_key(p),
+        T!['['] => index(p),
         _ => unreachable!(),
     };
     m.complete(p, TableKey)
@@ -268,14 +268,6 @@ fn ident_key(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![ident]);
     m.complete(p, IdentKey)
-}
-
-fn index_key(p: &mut Parser) -> MarkerComplete {
-    let m = p.start();
-    p.bump(T!['[']);
-    expr_single(p);
-    p.expect(T![']']);
-    m.complete(p, IndexKey)
 }
 
 fn positional_value(p: &mut Parser) -> MarkerComplete {
@@ -325,11 +317,7 @@ fn arg_list(p: &mut Parser) -> MarkerComplete {
 
 fn index_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
     let m = lhs.precede(p);
-    p.bump(T!['[']);
-    if !p.at(T![']']) {
-        expr_single(p);
-    }
-    p.expect(T![']']);
+    index(p);
     m.complete(p, IndexExpr)
 }
 
@@ -346,4 +334,12 @@ fn dot_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
     p.bump(T![.]);
     p.expect(T![ident]);
     m.complete(p, DotExpr)
+}
+
+fn index(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T!['[']);
+    expr_single(p);
+    p.expect(T![']']);
+    m.complete(p, Index)
 }

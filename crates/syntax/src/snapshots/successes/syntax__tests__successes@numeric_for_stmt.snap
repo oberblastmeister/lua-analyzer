@@ -1,0 +1,85 @@
+---
+source: crates/syntax/src/tests.rs
+expression: s
+
+---
+Program@0..82
+  ForStmt@0..46
+    ForKw@0..3 "for"
+    Whitespace@3..4 " "
+    ForContent@4..16
+      NumericFor@4..16
+        Name@4..5
+          Ident@4..5 "i"
+        Whitespace@5..6 " "
+        Eq@6..7 "="
+        Whitespace@7..8 " "
+        MultivalExpr@8..16
+          Literal@8..11
+            Number@8..11 "100"
+          Comma@11..12 ","
+          Whitespace@12..13 " "
+          Literal@13..16
+            Number@13..16 "107"
+    Whitespace@16..17 " "
+    DoKw@17..19 "do"
+    Whitespace@19..22 "\n  "
+    Body@22..42
+      ExprStmt@22..42
+        MultivalExpr@22..42
+          CallExpr@22..42
+            NameRef@22..27
+              Ident@22..27 "print"
+            Arglist@27..42
+              LParen@27..28 "("
+              MultivalExpr@28..41
+                Literal@28..41
+                  Str@28..41 "\'hello world\'"
+              RParen@41..42 ")"
+    Whitespace@42..43 "\n"
+    EndKw@43..46 "end"
+  Whitespace@46..48 "\n\n"
+  ForStmt@48..81
+    ForKw@48..51 "for"
+    Whitespace@51..52 " "
+    ForContent@52..63
+      NumericFor@52..63
+        Name@52..53
+          Ident@52..53 "i"
+        Whitespace@53..54 " "
+        Eq@54..55 "="
+        Whitespace@55..56 " "
+        MultivalExpr@56..63
+          Literal@56..57
+            Number@56..57 "3"
+          Comma@57..58 ","
+          Whitespace@58..59 " "
+          Literal@59..60
+            Number@59..60 "5"
+          Comma@60..61 ","
+          Whitespace@61..62 " "
+          Literal@62..63
+            Number@62..63 "2"
+    Whitespace@63..64 " "
+    DoKw@64..66 "do"
+    Whitespace@66..69 "\n  "
+    Body@69..77
+      ExprStmt@69..77
+        MultivalExpr@69..77
+          CallExpr@69..77
+            NameRef@69..74
+              Ident@69..74 "print"
+            Arglist@74..77
+              LParen@74..75 "("
+              MultivalExpr@75..76
+                NameRef@75..76
+                  Ident@75..76 "i"
+              RParen@76..77 ")"
+    Whitespace@77..78 "\n"
+    EndKw@78..81 "end"
+  Whitespace@81..82 "\n"
+
+=============================
+Errors:
+=============================
+[]

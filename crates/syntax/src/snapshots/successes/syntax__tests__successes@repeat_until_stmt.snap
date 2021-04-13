@@ -8,7 +8,7 @@ Program@0..65
     RepeatKw@0..6 "repeat"
     Whitespace@6..9 "\n  "
     Body@9..42
-      AssignStmt@9..24
+      LocalAssignStmt@9..24
         LocalKw@9..14 "local"
         Whitespace@14..15 " "
         MultiName@15..20
@@ -22,8 +22,8 @@ Program@0..65
             Number@23..24 "2"
       Whitespace@24..27 "\n  "
       AssignStmt@27..42
-        MultiName@27..34
-          Name@27..34
+        MultivalExpr@27..34
+          NameRef@27..34
             Ident@27..34 "another"
         Whitespace@34..35 " "
         Eq@35..36 "="

@@ -1,9 +1,9 @@
 use super::{body, expr_single, expressions::expr, multi_name, name, name_ref, param_list};
 use crate::parser::{MarkerComplete, Parser};
 use crate::SyntaxKind::*;
+use crate::{TokenSet, TS};
 
 pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
-    let peek = p.nth(1);
     Some(match p.current() {
         T![if] => if_stmt(p),
         T![::] => label_stmt(p),
@@ -16,8 +16,6 @@ pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
         T![while] => while_stmt(p),
         T![for] => for_stmt(p),
         T![break] => break_stmt(p),
-        T![ident] if peek == T![=] => assignment(p, false),
-        T![ident] if peek == T!['('] => expr_stmt(p),
         T![ident] => expr_stmt(p),
         T!['('] => expr_stmt(p),
         _ => {
@@ -138,7 +136,7 @@ fn numeric_for(p: &mut Parser) -> MarkerComplete {
     name(p);
     p.bump(T![=]);
     expr(p);
-    m.complete(p, GenericFor)
+    m.complete(p, NumericFor)
 }
 
 fn repeat_until_stmt(p: &mut Parser) -> MarkerComplete {
@@ -159,7 +157,7 @@ fn break_stmt(p: &mut Parser) -> MarkerComplete {
 fn local_stmt(p: &mut Parser) -> Option<MarkerComplete> {
     Some(match p.nth(1) {
         T![function] => function_def_stmt(p, true),
-        T![ident] => assignment(p, true),
+        T![ident] => local_assign_stmt(p),
         _ => {
             p.err_recover("Expected a local function or local assignment");
             return None;
@@ -169,8 +167,13 @@ fn local_stmt(p: &mut Parser) -> Option<MarkerComplete> {
 
 fn expr_stmt(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
-    expr_single(p);
-    m.complete(p, ExprStmt)
+    expr(p);
+    if p.accept(T![=]) {
+        expr(p);
+        m.complete(p, AssignStmt)
+    } else {
+        m.complete(p, ExprStmt)
+    }
 }
 
 fn function_def_stmt(p: &mut Parser, is_local: bool) -> MarkerComplete {
@@ -203,14 +206,12 @@ fn return_stmt(p: &mut Parser) -> MarkerComplete {
     m.complete(p, ReturnStmt)
 }
 
-fn assignment(p: &mut Parser, is_local: bool) -> MarkerComplete {
+fn local_assign_stmt(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
-    if is_local {
-        p.bump(T![local]);
-    }
+    p.bump(T![local]);
     multi_name(p);
     if p.accept(T![=]) {
         expr(p);
     }
-    m.complete(p, AssignStmt)
+    m.complete(p, LocalAssignStmt)
 }

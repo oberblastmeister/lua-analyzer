@@ -1,38 +1,41 @@
 ---
 source: crates/syntax/src/tests.rs
-expression: "dump_parse(Program::parse(&input))"
+expression: s
 
 ---
 Program@0..61
   ExprStmt@0..12
-    CallExpr@0..12
-      NameRef@0..10
-        Ident@0..10 "empty_call"
-      Arglist@10..12
-        LParen@10..11 "("
-        RParen@11..12 ")"
+    MultivalExpr@0..12
+      CallExpr@0..12
+        NameRef@0..10
+          Ident@0..10 "empty_call"
+        Arglist@10..12
+          LParen@10..11 "("
+          RParen@11..12 ")"
   Whitespace@12..13 "\n"
   ExprStmt@13..37
-    CallExpr@13..37
-      NameRef@13..26
-        Ident@13..26 "call_with_one"
-      Arglist@26..37
-        LParen@26..27 "("
-        MultivalExpr@27..36
-          NameRef@27..36
-            Ident@27..36 "first_arg"
-        RParen@36..37 ")"
+    MultivalExpr@13..37
+      CallExpr@13..37
+        NameRef@13..26
+          Ident@13..26 "call_with_one"
+        Arglist@26..37
+          LParen@26..27 "("
+          MultivalExpr@27..36
+            NameRef@27..36
+              Ident@27..36 "first_arg"
+          RParen@36..37 ")"
   Whitespace@37..38 "\n"
   ExprStmt@38..60
-    CallExpr@38..60
-      NameRef@38..51
-        Ident@38..51 "call_with_lit"
-      Arglist@51..60
-        LParen@51..52 "("
-        MultivalExpr@52..59
-          Literal@52..59
-            Str@52..59 "\"hello\""
-        RParen@59..60 ")"
+    MultivalExpr@38..60
+      CallExpr@38..60
+        NameRef@38..51
+          Ident@38..51 "call_with_lit"
+        Arglist@51..60
+          LParen@51..52 "("
+          MultivalExpr@52..59
+            Literal@52..59
+              Str@52..59 "\"hello\""
+          RParen@59..60 ")"
   Whitespace@60..61 "\n"
 
 =============================
