@@ -5,6 +5,7 @@ mod parsing;
 mod syntax_node;
 #[cfg(test)]
 mod tests;
+mod validation;
 
 use std::{fmt, marker::PhantomData, sync::Arc};
 
@@ -140,6 +141,14 @@ macro_rules! match_ast {
 
     (match ($node:expr) {
         $( ast::$ast:ident($it:ident) => $res:expr, )*
+        _ => $catch_all:expr $(,)?
+    }) => {{
+        $( if let Some($it) = ast::$ast::cast($node.clone()) { $res } else )*
+        { $catch_all }
+    }};
+
+    (match ($node:expr) {
+        $( ast::$ast:ident($it:ident) )|* => $res:expr,
         _ => $catch_all:expr $(,)?
     }) => {{
         $( if let Some($it) = ast::$ast::cast($node.clone()) { $res } else )*

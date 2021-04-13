@@ -23,6 +23,12 @@ impl Language for RustLanguage {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SyntaxError(String, TextRange);
 
+impl SyntaxError {
+    pub(crate) fn new(msg: String, range: TextRange) -> SyntaxError {
+        SyntaxError(msg, range)
+    }
+}
+
 impl From<LexError> for SyntaxError {
     fn from(e: LexError) -> SyntaxError {
         SyntaxError(e.msg.to_string(), e.range)

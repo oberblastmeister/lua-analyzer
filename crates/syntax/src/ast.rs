@@ -1,5 +1,7 @@
 pub mod generated;
 
+use rowan::TextRange;
+
 pub use self::generated::{nodes::*, tokens::*};
 
 use std::marker::PhantomData;
@@ -20,6 +22,10 @@ pub trait AstNode {
         Self: Sized;
 
     fn syntax(&self) -> &SyntaxNode;
+
+    fn range(&self) -> TextRange {
+        self.syntax().text_range()
+    }
 }
 
 /// Like `AstNode`, but wraps tokens rather than interior nodes.
@@ -36,6 +42,10 @@ pub trait AstToken {
 
     fn text(&self) -> &str {
         self.syntax().text()
+    }
+
+    fn range(&self) -> TextRange {
+        self.syntax().text_range()
     }
 }
 

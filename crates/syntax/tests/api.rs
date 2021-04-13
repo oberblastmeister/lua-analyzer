@@ -7,6 +7,33 @@ fn stmt(program: ast::Program) -> ast::Stmt {
     program.stmts().next().unwrap()
 }
 
+#[test]
+#[ignore]
+fn learning() {
+    let prog = ast::Program::parse(r#"
+local hello = "a string"
+local function testing(first, second, third)
+    local new = first + second
+    return new^324 .. "adfadsf"
+end"#);
+    // for (i, it) in prog.syntax_node().descendants().enumerate() {
+    //     println!("{}: {:#?}", i, it);
+    // }
+    //
+    // for (i, it) in prog.syntax_node().ancestors().enumerate() {
+    //     println!("{}: {:#?}", i, it);
+    // }
+    //
+    // for (i, it) in prog.syntax_node().children().enumerate() {
+    //     println!("{}: {:#?}", i, it);
+    // }
+    //
+    for (i, it) in prog.syntax_node().children_with_tokens().enumerate() {
+        println!("{}: {:#?}", i, it);
+    }
+    panic!("Just to test")
+}
+
 // #[test]
 // fn literal_api() {
 //     let prog = ast::Program::parse(r#"local hello = "a string""#).tree();

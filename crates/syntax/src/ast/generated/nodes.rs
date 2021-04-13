@@ -43,7 +43,7 @@ impl LocalAssignStmt {
     pub fn eq_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![=])
     }
-    pub fn expr(&self) -> Option<Expr> {
+    pub fn multival_expr(&self) -> Option<MultivalExpr> {
         support::child(&self.syntax)
     }
 }
