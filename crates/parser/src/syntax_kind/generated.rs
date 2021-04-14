@@ -93,7 +93,7 @@ pub enum SyntaxKind {
     MultivalExpr,
     Arglist,
     Paramlist,
-    Body,
+    Block,
     ParenExpr,
     KeyValue,
     PositionalValue,

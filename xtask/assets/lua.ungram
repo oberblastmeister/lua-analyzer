@@ -54,7 +54,7 @@ Literal =
 FunctionExpr =
   'function'
   params:Paramlist
-  body:Body
+  body:Block
   'end'
 
 TableExpr =
@@ -115,12 +115,12 @@ BreakStmt =
 
 DoStmt =
   'do'
-  body:Body
+  body:Block
   'end'
 
 FunctionDefStmt =
   'local'? 'function' Name Paramlist
-  body:Body
+  body:Block
   'end'
 
 Paramlist =
@@ -134,26 +134,26 @@ IfStmt =
   'if'
   cond:Expr
   'then'
-  Body
+  Block
   (ElseBranch | ElseIfBranch)?
   'end'
 
 ElseBranch =
   'else'
-  Body
+  Block
 
 ElseIfBranch =
   'elseif'
   cond:Expr
   'then'
-  Body
+  Block
   (ElseIfBranch | ElseBranch)?
 
 WhileStmt =
   'while'
   cond:Expr
   'do'
-  body:Body
+  body:Block
   'end'
 
 ReturnStmt =
@@ -161,7 +161,7 @@ ReturnStmt =
   expr:Expr
 
 ForStmt =
-  'for' content:ForContent 'do' Body 'end'
+  'for' content:ForContent 'do' Block 'end'
 
 ForContent =
   NumericFor
@@ -177,12 +177,12 @@ GenericFor =
   'in'
   expr:MultivalExpr
   
-Body =
+Block =
   Stmt*
 
 RepeatUntilStmt =
   'repeat'
-  Body
+  Block
   'until'
   Expr
   

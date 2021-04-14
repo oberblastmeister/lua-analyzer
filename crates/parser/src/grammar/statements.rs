@@ -1,5 +1,5 @@
 use super::{
-    body, expr_single,
+    block, expr_single,
     expressions::{expr, LITERAL},
     multi_name, name, name_ref, param_list,
 };
@@ -41,7 +41,7 @@ fn if_stmt(p: &mut Parser) -> MarkerComplete {
     p.bump(T![if]);
     expr_single(p);
     p.expect(T![then]);
-    body(p);
+    block(p);
     match p.current() {
         T![elseif] => {
             elseif_branch(p);
@@ -60,7 +60,7 @@ fn elseif_branch(p: &mut Parser) -> MarkerComplete {
     p.bump(T![elseif]);
     expr_single(p);
     p.expect(T![then]);
-    body(p);
+    block(p);
     match p.current() {
         T![elseif] => {
             elseif_branch(p);
@@ -76,7 +76,7 @@ fn elseif_branch(p: &mut Parser) -> MarkerComplete {
 fn else_branch(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![else]);
-    body(p);
+    block(p);
     m.complete(p, ElseBranch)
 }
 
@@ -107,7 +107,7 @@ fn while_stmt(p: &mut Parser) -> MarkerComplete {
     p.bump(T![while]);
     expr_single(p);
     p.expect(T![do]);
-    body(p);
+    block(p);
     p.expect(T![end]);
     m.complete(p, WhileStmt)
 }
@@ -117,7 +117,7 @@ fn for_stmt(p: &mut Parser) -> MarkerComplete {
     p.bump(T![for]);
     for_content(p);
     p.expect(T![do]);
-    body(p);
+    block(p);
     p.expect(T![end]);
     m.complete(p, ForStmt)
 }
@@ -153,7 +153,7 @@ fn numeric_for(p: &mut Parser) -> MarkerComplete {
 fn repeat_until_stmt(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![repeat]);
-    body(p);
+    block(p);
     p.expect(T![until]);
     expr_single(p);
     m.complete(p, RepeatUntilStmt)
@@ -197,7 +197,7 @@ fn function_def_stmt(p: &mut Parser, is_local: bool) -> MarkerComplete {
     p.expect(T![function]);
     name(p);
     param_list(p);
-    body(p);
+    block(p);
     p.expect(T![end]);
     m.complete(p, FunctionDefStmt)
 }
@@ -205,7 +205,7 @@ fn function_def_stmt(p: &mut Parser, is_local: bool) -> MarkerComplete {
 fn do_stmt(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![do]);
-    body(p);
+    block(p);
     p.expect(T![end]);
     m.complete(p, DoStmt)
 }

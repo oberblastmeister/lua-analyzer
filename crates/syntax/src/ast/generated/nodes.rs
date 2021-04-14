@@ -58,7 +58,7 @@ impl FunctionDefStmt {
     pub fn paramlist(&self) -> Option<Paramlist> {
         support::child(&self.syntax)
     }
-    pub fn body(&self) -> Option<Body> {
+    pub fn body(&self) -> Option<Block> {
         support::child(&self.syntax)
     }
     pub fn end_token(&self) -> Option<SyntaxToken> {
@@ -79,7 +79,7 @@ impl ForStmt {
     pub fn do_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![do])
     }
-    pub fn body(&self) -> Option<Body> {
+    pub fn block(&self) -> Option<Block> {
         support::child(&self.syntax)
     }
     pub fn end_token(&self) -> Option<SyntaxToken> {
@@ -100,7 +100,7 @@ impl IfStmt {
     pub fn then_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![then])
     }
-    pub fn body(&self) -> Option<Body> {
+    pub fn block(&self) -> Option<Block> {
         support::child(&self.syntax)
     }
     pub fn else_branch(&self) -> Option<ElseBranch> {
@@ -139,7 +139,7 @@ impl WhileStmt {
     pub fn do_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![do])
     }
-    pub fn body(&self) -> Option<Body> {
+    pub fn body(&self) -> Option<Block> {
         support::child(&self.syntax)
     }
     pub fn end_token(&self) -> Option<SyntaxToken> {
@@ -187,7 +187,7 @@ impl RepeatUntilStmt {
     pub fn repeat_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![repeat])
     }
-    pub fn body(&self) -> Option<Body> {
+    pub fn block(&self) -> Option<Block> {
         support::child(&self.syntax)
     }
     pub fn until_token(&self) -> Option<SyntaxToken> {
@@ -282,7 +282,7 @@ impl FunctionExpr {
     pub fn params(&self) -> Option<Paramlist> {
         support::child(&self.syntax)
     }
-    pub fn body(&self) -> Option<Body> {
+    pub fn body(&self) -> Option<Block> {
         support::child(&self.syntax)
     }
     pub fn end_token(&self) -> Option<SyntaxToken> {
@@ -404,10 +404,10 @@ impl Paramlist {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Body {
+pub struct Block {
     pub(crate) syntax: SyntaxNode,
 }
-impl Body {
+impl Block {
     pub fn stmts(&self) -> AstChildren<Stmt> {
         support::children(&self.syntax)
     }
@@ -510,7 +510,7 @@ impl DoStmt {
     pub fn do_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![do])
     }
-    pub fn body(&self) -> Option<Body> {
+    pub fn body(&self) -> Option<Block> {
         support::child(&self.syntax)
     }
     pub fn end_token(&self) -> Option<SyntaxToken> {
@@ -534,7 +534,7 @@ impl ElseBranch {
     pub fn else_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![else])
     }
-    pub fn body(&self) -> Option<Body> {
+    pub fn block(&self) -> Option<Block> {
         support::child(&self.syntax)
     }
 }
@@ -552,7 +552,7 @@ impl ElseIfBranch {
     pub fn then_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![then])
     }
-    pub fn body(&self) -> Option<Body> {
+    pub fn block(&self) -> Option<Block> {
         support::child(&self.syntax)
     }
     pub fn else_if_branch(&self) -> Option<ElseIfBranch> {
@@ -1040,9 +1040,9 @@ impl AstNode for Paramlist {
         &self.syntax
     }
 }
-impl AstNode for Body {
+impl AstNode for Block {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Body
+        kind == SyntaxKind::Block
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1733,7 +1733,7 @@ impl std::fmt::Display for Paramlist {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for Body {
+impl std::fmt::Display for Block {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

@@ -41,14 +41,14 @@ fn name(p: &mut Parser) -> MarkerComplete {
     m.complete(p, Name)
 }
 
-fn body(p: &mut Parser) -> MarkerComplete {
+fn block(p: &mut Parser) -> MarkerComplete {
     const END: TokenSet = TS![eof, end, elseif, else, until];
 
     let m = p.start();
     while !p.at_ts(END) {
         stmt(p);
     }
-    m.complete(p, Body)
+    m.complete(p, Block)
 }
 
 fn param_list(p: &mut Parser) -> MarkerComplete {

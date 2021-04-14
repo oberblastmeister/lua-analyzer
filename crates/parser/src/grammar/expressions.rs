@@ -1,6 +1,6 @@
 use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP_INFIX, NOT_AN_OP_PREFIX};
 
-use super::{body, name_ref, param_list};
+use super::{block, name_ref, param_list};
 use crate::{
     parser::{MarkerComplete, MarkerRegular, Parser},
     SyntaxKind::{self, *},
@@ -288,7 +288,7 @@ fn function_expr(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![function]);
     param_list(p);
-    body(p);
+    block(p);
     p.expect(T![end]);
     m.complete(p, FunctionExpr)
 }
