@@ -7,6 +7,7 @@ use crate::{
     TokenSet, TS,
 };
 use expressions::expr_single;
+pub use expressions::LuaOp;
 use statements::stmt;
 
 pub(crate) fn root(p: &mut Parser) {

@@ -3,7 +3,7 @@ source: crates/syntax/src/tests.rs
 expression: s
 
 ---
-Program@0..84
+Program@0..137
   LocalAssignStmt@0..24
     LocalKw@0..5 "local"
     Whitespace@5..6 " "
@@ -65,6 +65,45 @@ Program@0..84
           Literal@78..83
             FalseKw@78..83 "false"
   Whitespace@83..84 "\n"
+  LocalAssignStmt@84..136
+    LocalKw@84..89 "local"
+    Whitespace@89..90 " "
+    MultiName@90..97
+      Name@90..97
+        Ident@90..97 "another"
+    Whitespace@97..98 " "
+    Eq@98..99 "="
+    Whitespace@99..100 " "
+    MultivalExpr@100..136
+      InfixExpr@100..136
+        InfixExpr@100..130
+          InfixExpr@100..118
+            Literal@100..104
+              TrueKw@100..104 "true"
+            Whitespace@104..105 " "
+            AndKw@105..108 "and"
+            Whitespace@108..109 " "
+            PrefixExpr@109..118
+              NotKw@109..112 "not"
+              Whitespace@112..113 " "
+              Literal@113..118
+                FalseKw@113..118 "false"
+          Whitespace@118..119 " "
+          OrKw@119..121 "or"
+          Whitespace@121..122 " "
+          PrefixExpr@122..130
+            NotKw@122..125 "not"
+            Whitespace@125..126 " "
+            Literal@126..130
+              TrueKw@126..130 "true"
+        Whitespace@130..131 " "
+        OrKw@131..133 "or"
+        Whitespace@133..134 " "
+        PrefixExpr@134..136
+          Minus@134..135 "-"
+          Literal@135..136
+            Number@135..136 "1"
+  Whitespace@136..137 "\n"
 
 =============================
 Errors:

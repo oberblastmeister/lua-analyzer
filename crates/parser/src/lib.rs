@@ -12,6 +12,7 @@ pub use lexer::{first_token, tokenize, tokenize_iter, LexError, LexErrorMsg, Tok
 pub use parse_error::ParseError;
 pub use syntax_kind::SyntaxKind;
 pub use token_set::TokenSet;
+pub use grammar::LuaOp;
 
 #[macro_export]
 #[doc(hidden)]

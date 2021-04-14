@@ -41,6 +41,21 @@ pub(crate) enum Field {
     },
 }
 
+fn is_manually_implemented(label: &str) -> bool {
+    matches!(
+        label,
+        "lhs" | "rhs" | "op" // | "index"
+                             //     | "then_branch"
+                             //     | "else_branch"
+                             //     | "start"
+                             //     | "end"
+                             // | "base"
+                             // | "value"
+                             // | "trait"
+                             // | "self_ty"
+    )
+}
+
 impl Field {
     pub fn is_many(&self) -> bool {
         matches!(
@@ -215,24 +230,10 @@ fn lower_rule(acc: &mut Vec<Field>, grammar: &Grammar, label: Option<&String>, r
         Rule::Labeled { label: l, rule } => {
             assert!(label.is_none());
 
-            // let manually_implemented = matches!(
-            //     l.as_str(),
-            //     "lhs"
-            //         | "rhs"
-            //         | "then_branch"
-            //         | "else_branch"
-            //         | "start"
-            //         | "end"
-            //         | "op"
-            //         | "index"
-            //         | "base"
-            //         | "value"
-            //         | "trait"
-            //         | "self_ty"
-            // );
-            // if manually_implemented {
-            //     return;
-            // }
+            if is_manually_implemented(l) {
+                return;
+            }
+
             lower_rule(acc, grammar, Some(l), rule);
         }
         Rule::Seq(rules) | Rule::Alt(rules) => {

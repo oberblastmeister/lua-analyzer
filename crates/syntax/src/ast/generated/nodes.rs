@@ -19,14 +19,8 @@ pub struct AssignStmt {
     pub(crate) syntax: SyntaxNode,
 }
 impl AssignStmt {
-    pub fn lhs(&self) -> Option<MultivalExpr> {
-        support::child(&self.syntax)
-    }
     pub fn eq_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![=])
-    }
-    pub fn rhs(&self) -> Option<MultivalExpr> {
-        support::child(&self.syntax)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -132,6 +126,27 @@ impl ReturnStmt {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct WhileStmt {
+    pub(crate) syntax: SyntaxNode,
+}
+impl WhileStmt {
+    pub fn while_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![while])
+    }
+    pub fn cond(&self) -> Option<Expr> {
+        support::child(&self.syntax)
+    }
+    pub fn do_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![do])
+    }
+    pub fn body(&self) -> Option<Body> {
+        support::child(&self.syntax)
+    }
+    pub fn end_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![end])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ExprStmt {
     pub(crate) syntax: SyntaxNode,
 }
@@ -219,25 +234,12 @@ impl TableExpr {
 pub struct InfixExpr {
     pub(crate) syntax: SyntaxNode,
 }
-impl InfixExpr {
-    pub fn lhs(&self) -> Option<Expr> {
-        support::child(&self.syntax)
-    }
-    pub fn op(&self) -> Option<InfixOp> {
-        support::child(&self.syntax)
-    }
-    pub fn rhs(&self) -> Option<Expr> {
-        support::child(&self.syntax)
-    }
-}
+impl InfixExpr {}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct PrefixExpr {
     pub(crate) syntax: SyntaxNode,
 }
 impl PrefixExpr {
-    pub fn bang_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![!])
-    }
     pub fn expr(&self) -> Option<Expr> {
         support::child(&self.syntax)
     }
@@ -471,57 +473,6 @@ impl IdentKey {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct InfixOp {
-    pub(crate) syntax: SyntaxNode,
-}
-impl InfixOp {
-    pub fn caret_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![^])
-    }
-    pub fn not_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![not])
-    }
-    pub fn asterisk_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![*])
-    }
-    pub fn slash_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![/])
-    }
-    pub fn plus_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![+])
-    }
-    pub fn minus_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![-])
-    }
-    pub fn double_dot_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![..])
-    }
-    pub fn lt_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![<])
-    }
-    pub fn gt_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![>])
-    }
-    pub fn lt_eq_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![<=])
-    }
-    pub fn gt_eq_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![>=])
-    }
-    pub fn not_eq_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![~=])
-    }
-    pub fn eq_eq_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![==])
-    }
-    pub fn and_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![and])
-    }
-    pub fn or_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![or])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct LabelDelim {
     pub(crate) syntax: SyntaxNode,
 }
@@ -612,27 +563,6 @@ impl ElseIfBranch {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct WhileStmt {
-    pub(crate) syntax: SyntaxNode,
-}
-impl WhileStmt {
-    pub fn while_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![while])
-    }
-    pub fn cond(&self) -> Option<Expr> {
-        support::child(&self.syntax)
-    }
-    pub fn do_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![do])
-    }
-    pub fn body(&self) -> Option<Body> {
-        support::child(&self.syntax)
-    }
-    pub fn end_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![end])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct NumericFor {
     pub(crate) syntax: SyntaxNode,
 }
@@ -670,6 +600,7 @@ pub enum Stmt {
     ForStmt(ForStmt),
     IfStmt(IfStmt),
     ReturnStmt(ReturnStmt),
+    WhileStmt(WhileStmt),
     ExprStmt(ExprStmt),
     BreakStmt(BreakStmt),
     LabelStmt(LabelStmt),
@@ -797,6 +728,21 @@ impl AstNode for IfStmt {
 impl AstNode for ReturnStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ReturnStmt
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for WhileStmt {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::WhileStmt
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1184,21 +1130,6 @@ impl AstNode for IdentKey {
         &self.syntax
     }
 }
-impl AstNode for InfixOp {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::InfixOp
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
 impl AstNode for LabelDelim {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::LabelDelim
@@ -1304,21 +1235,6 @@ impl AstNode for ElseIfBranch {
         &self.syntax
     }
 }
-impl AstNode for WhileStmt {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::WhileStmt
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
 impl AstNode for NumericFor {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::NumericFor
@@ -1379,6 +1295,11 @@ impl From<ReturnStmt> for Stmt {
         Stmt::ReturnStmt(node)
     }
 }
+impl From<WhileStmt> for Stmt {
+    fn from(node: WhileStmt) -> Stmt {
+        Stmt::WhileStmt(node)
+    }
+}
 impl From<ExprStmt> for Stmt {
     fn from(node: ExprStmt) -> Stmt {
         Stmt::ExprStmt(node)
@@ -1408,6 +1329,7 @@ impl AstNode for Stmt {
             | SyntaxKind::ForStmt
             | SyntaxKind::IfStmt
             | SyntaxKind::ReturnStmt
+            | SyntaxKind::WhileStmt
             | SyntaxKind::ExprStmt
             | SyntaxKind::BreakStmt
             | SyntaxKind::LabelStmt
@@ -1423,6 +1345,7 @@ impl AstNode for Stmt {
             SyntaxKind::ForStmt => Stmt::ForStmt(ForStmt { syntax }),
             SyntaxKind::IfStmt => Stmt::IfStmt(IfStmt { syntax }),
             SyntaxKind::ReturnStmt => Stmt::ReturnStmt(ReturnStmt { syntax }),
+            SyntaxKind::WhileStmt => Stmt::WhileStmt(WhileStmt { syntax }),
             SyntaxKind::ExprStmt => Stmt::ExprStmt(ExprStmt { syntax }),
             SyntaxKind::BreakStmt => Stmt::BreakStmt(BreakStmt { syntax }),
             SyntaxKind::LabelStmt => Stmt::LabelStmt(LabelStmt { syntax }),
@@ -1439,6 +1362,7 @@ impl AstNode for Stmt {
             Stmt::ForStmt(it) => &it.syntax,
             Stmt::IfStmt(it) => &it.syntax,
             Stmt::ReturnStmt(it) => &it.syntax,
+            Stmt::WhileStmt(it) => &it.syntax,
             Stmt::ExprStmt(it) => &it.syntax,
             Stmt::BreakStmt(it) => &it.syntax,
             Stmt::LabelStmt(it) => &it.syntax,
@@ -1709,6 +1633,11 @@ impl std::fmt::Display for ReturnStmt {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
+impl std::fmt::Display for WhileStmt {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
 impl std::fmt::Display for ExprStmt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
@@ -1834,11 +1763,6 @@ impl std::fmt::Display for IdentKey {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for InfixOp {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
 impl std::fmt::Display for LabelDelim {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
@@ -1870,11 +1794,6 @@ impl std::fmt::Display for ElseBranch {
     }
 }
 impl std::fmt::Display for ElseIfBranch {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for WhileStmt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

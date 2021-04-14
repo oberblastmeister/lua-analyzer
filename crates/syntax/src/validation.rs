@@ -24,7 +24,6 @@ pub(crate) fn validate(root: &SyntaxNode) -> Vec<SyntaxError> {
         match_ast! {
             match node {
                 ast::ExprStmt(it)
-                    | ast::LocalAssignStmt(it)
                     | ast::AssignStmt(it)
                     | ast::Literal(it) => it.validate(acc),
                 _ => (),
@@ -73,49 +72,6 @@ impl Validate for ast::ExprStmt {
     }
 }
 
-impl Validate for ast::LocalAssignStmt {
-    fn validate(self, acc: &mut Vec<SyntaxError>) {
-        let multi_name = try_acc!(
-            acc,
-            self.multi_name().ok_or_else(|| SyntaxError::new(
-                "Must have at least one name".to_string(),
-                self.range()
-            ))
-        );
-
-        let multi_expr = if let Some(it) = self.multival_expr() {
-            it
-        } else {
-            return;
-        };
-
-        if self.eq_token().is_none() {
-            return;
-        }
-
-        let names_len = multi_name.names().count();
-        let exprs_len = multi_expr.exprs().count();
-
-        if exprs_len != names_len {
-            acc.push(SyntaxError::new(
-                format!(
-                    "The multival length was not the same as the amount of names, got {}",
-                    names_len
-                ),
-                multi_name.range(),
-            ));
-
-            acc.push(SyntaxError::new(
-                format!(
-                    "The multival length was not the same as the amount of names, got {}",
-                    exprs_len
-                ),
-                multi_expr.range(),
-            ))
-        }
-    }
-}
-
 impl Validate for ast::AssignStmt {
     fn validate(self, acc: &mut Vec<SyntaxError>) {
         let lhs = try_acc!(
@@ -134,31 +90,26 @@ impl Validate for ast::AssignStmt {
             ))
         );
 
-        let lhs_count = lhs.exprs().map(|expr| {
-            let node = expr.syntax();
-            match_ast! {
-                match node {
-                    ast::CallExpr(_)
-                        | ast::TableCallExpr(_)
-                        | ast::StringCallExpr(_)
-                        | ast::MethodCallExpr(_)
-                        | ast::DotExpr(_)
-                        | ast::IndexExpr(_) => (),
-                    _ => acc.push(SyntaxError::new("Can only assign to a function call or index expression".to_string(), expr.range()))
-                }
+        for expr in lhs.exprs() {
+            match expr {
+                ast::Expr::CallExpr(_)
+                | ast::Expr::TableCallExpr(_)
+                | ast::Expr::StringCallExpr(_)
+                | ast::Expr::MethodCallExpr(_)
+                | ast::Expr::DotExpr(_)
+                | ast::Expr::IndexExpr(_) => (),
+                _ => acc.push(SyntaxError::new(
+                    "Can only assign to a function call or index expression".to_string(),
+                    expr.range(),
+                )),
             }
-        }).count();
-
-        let rhs_count = rhs.exprs().count();
-
-        if lhs_count != rhs_count {
-            let mut add_error = |multival: ast::MultivalExpr| {
-                acc.push(SyntaxError::new("The multival length was not the same for the right and the left side of assignment".to_string(), multival.range()))
-            };
-
-            add_error(lhs);
-            add_error(rhs);
         }
+    }
+}
+
+impl Validate for ast::Expr {
+    fn validate(self, acc: &mut Vec<SyntaxError>) {
+        // TODO: should we validate if we can call literals
     }
 }
 

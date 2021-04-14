@@ -1,4 +1,6 @@
 pub mod generated;
+mod expr_ext;
+mod stmt_ext;
 
 use rowan::TextRange;
 

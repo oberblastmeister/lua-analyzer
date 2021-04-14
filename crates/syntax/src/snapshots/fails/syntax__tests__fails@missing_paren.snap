@@ -28,12 +28,4 @@ Errors:
         "Expected RParen, got Eof",
         15..15,
     ),
-    SyntaxError(
-        "The multival length was not the same as the amount of names, got 1",
-        6..10,
-    ),
-    SyntaxError(
-        "The multival length was not the same as the amount of names, got 0",
-        13..15,
-    ),
 ]

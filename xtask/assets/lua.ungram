@@ -8,6 +8,7 @@ Stmt =
   | ForStmt
   | IfStmt
   | ReturnStmt
+  | WhileStmt
   | ExprStmt
   | BreakStmt
   | LabelStmt
@@ -91,14 +92,11 @@ IdentKey =
 
 InfixExpr =
   lhs:Expr
-  op:InfixOp
+  op:('^' | '*' | '/' | '+' | '-' | '..' | '<' | '>' | '<=' | '>=' | '~=' | '==' | 'and' | 'or')
   rhs:Expr
 
-InfixOp =
-  '^' | 'not' | '*' | '/' | '+' | '-' | '..' | '<' | '>' | '<=' | '>=' | '~=' | '==' | 'and' | 'or'
-
 PrefixExpr =
-  '!' Expr
+  op:('not' | '-') Expr
 
 IndexExpr =
   base:Expr Index

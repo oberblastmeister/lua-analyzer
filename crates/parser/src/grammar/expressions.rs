@@ -8,7 +8,7 @@ use crate::{
 };
 
 precedences! {
-    enum LuaOp {
+    pub enum LuaOp {
         #[Infix, Left]
         Or,
 
@@ -152,6 +152,14 @@ fn expr_bp(p: &mut Parser, min_bp: u8) -> Option<MarkerComplete> {
 }
 
 fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
+    let ((), r_bp) = prefix_binding_power(p.current());
+    if r_bp > 0 {
+        let m = p.start();
+        p.bump_any();
+        expr_bp(p, r_bp);
+        return Some(m.complete(p, PrefixExpr))
+    }
+
     let (lhs, can_call) = atom_expr(p)?;
     Some(postfix_expr(p, lhs, can_call))
 }
