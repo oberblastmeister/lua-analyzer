@@ -190,6 +190,9 @@ impl Literal {
     pub fn number_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![number])
     }
+    pub fn str_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![str])
+    }
     pub fn true_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![true])
     }
@@ -321,6 +324,9 @@ pub struct StringCallExpr {
 impl StringCallExpr {
     pub fn fun(&self) -> Option<Expr> {
         support::child(&self.syntax)
+    }
+    pub fn str_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![str])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

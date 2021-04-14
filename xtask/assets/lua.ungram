@@ -33,7 +33,7 @@ TableCallExpr =
   fun:Expr tbl:TableExpr
 
 StringCallExpr =
-  fun:Expr 'string'
+  fun:Expr 'str'
 
 MethodCallExpr =
   fun:Expr ':' NameRef '(' (args:Expr)? ')'
@@ -46,7 +46,7 @@ Arglist =
 
 Literal =
   'number'
-  | 'string'
+  | 'str'
   | 'true'
   | 'false'
 

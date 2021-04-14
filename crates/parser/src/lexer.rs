@@ -253,13 +253,6 @@ impl<'a> Lexer<'a> {
         Ok(kind)
     }
 
-    // fn label(&mut self) -> LexResult<SyntaxKind> {
-    // assert!(self.at(':'));
-    // self.bump();
-    // self.chars.find(|c| *c == ':');
-    // todo!()
-    // }
-
     fn number(&mut self) -> LexResult<SyntaxKind> {
         assert!(self.at(is_number));
 
