@@ -20,7 +20,7 @@ Program@0..128
           LParen@26..27 "("
           RParen@27..28 ")"
         Whitespace@28..31 "\n  "
-        Body@31..63
+        Block@31..63
           LocalAssignStmt@31..46
             LocalKw@31..36 "local"
             Whitespace@36..37 " "
@@ -70,7 +70,7 @@ Program@0..128
               Ident@103..109 "second"
           RParen@109..110 ")"
         Whitespace@110..113 "\n  "
-        Body@113..123
+        Block@113..123
           ReturnStmt@113..123
             ReturnKw@113..119 "return"
             Whitespace@119..120 " "

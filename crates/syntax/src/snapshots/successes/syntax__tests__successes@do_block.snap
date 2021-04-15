@@ -7,7 +7,7 @@ Program@0..102
   DoStmt@0..101
     DoKw@0..2 "do"
     Whitespace@2..5 "\n  "
-    Body@5..97
+    Block@5..97
       LocalAssignStmt@5..19
         LocalKw@5..10 "local"
         Whitespace@10..11 " "
@@ -24,7 +24,7 @@ Program@0..102
       DoStmt@23..97
         DoKw@23..25 "do"
         Whitespace@25..30 "\n    "
-        Body@30..91
+        Block@30..91
           LocalAssignStmt@30..91
             LocalKw@30..35 "local"
             Whitespace@35..36 " "
@@ -41,7 +41,7 @@ Program@0..102
                   LParen@53..54 "("
                   RParen@54..55 ")"
                 Whitespace@55..62 "\n      "
-                Body@62..83
+                Block@62..83
                   ExprStmt@62..83
                     MultivalExpr@62..83
                       CallExpr@62..83

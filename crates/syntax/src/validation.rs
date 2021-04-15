@@ -1,6 +1,10 @@
+use std::str::{CharIndices, Chars};
+
+use rowan::{TextLen, TextRange, TextSize};
+
 use crate::{
     ast::{self, AstNode},
-    match_ast, SyntaxError, SyntaxNode,
+    match_ast, SyntaxError, SyntaxNode, T,
 };
 
 /// A helper macro to like the ? operator but pushes to acc when there is an error.
@@ -34,7 +38,9 @@ pub(crate) fn validate(root: &SyntaxNode) -> Vec<SyntaxError> {
     errors
 }
 
-pub trait Validate {
+/// A trait to validate parts of an ast
+trait Validate: AstNode {
+    /// Validate this part of the ast
     fn validate(self, acc: &mut Vec<SyntaxError>);
 }
 
@@ -115,6 +121,177 @@ impl Validate for ast::Expr {
 
 impl Validate for ast::Literal {
     fn validate(self, acc: &mut Vec<SyntaxError>) {
-        // TODO: handle escaped strings
+        let node = self.syntax();
+        let kind = node.kind();
+        let text = node.text().to_string();
+        match kind {
+            T![str] => {
+                if text.starts_with("\'") {
+
+                }
+                // unescape(unquote(&text, 0, end_delimiter), node.text_range().start(), acc)
+            },
+            _ => (),
+        }
+    }
+}
+
+fn unquote(text: &str, prefix_len: usize, end_delimiter: char) -> Option<&str> {
+    text.rfind(end_delimiter)
+        .and_then(|end| text.get(prefix_len..end))
+}
+
+const ESCAPE_MSG: &str = "Invalid escape sequence";
+
+fn unescape(s: &str, start: TextSize, acc: &mut Vec<SyntaxError>) {
+    let text_size = s.text_len();
+    let mut chars = s.chars();
+
+    // to avoid borrowing issues
+    while let Some(c) = chars.next() {
+        unescape_once(c, &mut chars, text_size, start, acc);
+    }
+}
+
+fn unescape_once(
+    first: char,
+    chars: &mut Chars<'_>,
+    text_size: TextSize,
+    offset: TextSize,
+    acc: &mut Vec<SyntaxError>,
+) {
+    let pos = text_size - chars.as_str().text_len() - first.text_len();
+
+    let make_range = |second: Option<TextSize>| {
+        TextRange::at(pos, TextSize::from(1) + second.unwrap_or(0.into())) + offset
+    };
+
+    if first == '\\' {
+        match chars.next() {
+            None => acc.push(SyntaxError::new(ESCAPE_MSG.to_string(), make_range(None))),
+            Some(second) => match second {
+                'a' | 'b' | 'f' | 'n' | 'r' | 't' | 'v' | '\\' | '\"' | '\'' | '[' | ']' => (),
+                _ => acc.push(SyntaxError::new(
+                    ESCAPE_MSG.to_string(),
+                    make_range(Some(second.text_len())),
+                )),
+            },
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::array;
+
+    fn check_unescape_once(s: &str, expected_errors: Vec<SyntaxError>) {
+        let mut chars = s.chars();
+        let first = chars.next().unwrap();
+        let mut actual_errors = Vec::new();
+        unescape_once(
+            first,
+            &mut chars,
+            s.text_len(),
+            0.into(),
+            &mut actual_errors,
+        );
+        assert_eq!(expected_errors, actual_errors);
+    }
+
+    fn check_unescape_str(s: &str, expected_ranges: Vec<TextRange>) {
+        let mut actual_errors = vec![];
+        unescape(s, 0.into(), &mut actual_errors);
+        let actual_ranges = actual_errors
+            .into_iter()
+            .map(|e| e.range())
+            .collect::<Vec<_>>();
+        assert_eq!(actual_ranges, expected_ranges);
+    }
+
+    #[test]
+    fn no_escapes() {
+        check_unescape_once("a", vec![]);
+    }
+
+    #[test]
+    fn valid_escapes() {
+        let escapes = [
+            r"\a", r"\b", r"\f", r"\n", r"\r", r"\t", r"\v", r"\\", r#"\""#, r"\'", r"\[", r"\]",
+        ];
+
+        for escape in escapes.iter() {
+            check_unescape_once(escape, vec![]);
+        }
+    }
+
+    #[test]
+    fn text_range_smoke() {
+        let res = TextRange::new(3.into(), 9.into()) + TextSize::from(4);
+        assert_eq!(TextRange::new(7.into(), 13.into()), res)
+    }
+
+    #[test]
+    fn invalid_escapes() {
+        let one = TextRange::new(0.into(), 1.into());
+        let two = TextRange::new(0.into(), 2.into());
+
+        let escapes = [
+            (r"\", one),
+            (r"\w", two),
+            (r"\u", two),
+            (r"\p", two),
+            (r"\l", two),
+            (r"\{", two),
+        ];
+
+        for (escape, range) in escapes.iter() {
+            check_unescape_once(
+                escape,
+                vec![SyntaxError::new(ESCAPE_MSG.to_string(), *range)],
+            );
+        }
+    }
+
+    #[test]
+    fn escape_nothing() {
+        check_unescape_str("", vec![])
+    }
+
+    #[test]
+    fn valid_escapes_string() {
+        let strs = [r"\a aasdfas\tas asdf\r\n", r#"\t\\asdf"#, r"\[\]as"];
+
+        for s in strs.iter() {
+            check_unescape_str(s, vec![])
+        }
+    }
+
+    #[test]
+    fn invalid_escapes_string() {
+        macro_rules! r {
+            ($s:expr, $e:expr) => {
+                TextRange::new($s.into(), $e.into())
+            };
+        }
+
+        let strs = [
+            (r"\uasd\qs\", vec![r!(0, 2), r!(5, 7), r!(8, 9)]),
+            (r"\", vec![r!(0, 1)]),
+            (r"  ads\w", vec![r!(5, 7)]),
+        ];
+
+        for (s, ranges) in array::IntoIter::new(strs) {
+            check_unescape_str(s, ranges);
+        }
+    }
+
+    #[test]
+    fn smoke_escape() {
+        let mut chars = r"\w\t".chars();
+        assert_eq!(chars.next().unwrap(), '\\');
+        assert_eq!(chars.next().unwrap(), 'w');
+        assert_eq!(chars.next().unwrap(), '\\');
+        assert_eq!(chars.next().unwrap(), 't');
     }
 }

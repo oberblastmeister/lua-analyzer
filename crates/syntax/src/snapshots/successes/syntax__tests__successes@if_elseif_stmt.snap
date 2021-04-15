@@ -22,7 +22,7 @@ Program@0..166
     Whitespace@16..17 " "
     ThenKw@17..21 "then"
     Whitespace@21..24 "\n  "
-    Body@24..49
+    Block@24..49
       ExprStmt@24..49
         MultivalExpr@24..49
           CallExpr@24..49
@@ -53,7 +53,7 @@ Program@0..166
       Whitespace@67..68 " "
       ThenKw@68..72 "then"
       Whitespace@72..75 "\n  "
-      Body@75..96
+      Block@75..96
         ExprStmt@75..96
           MultivalExpr@75..96
             CallExpr@75..96
@@ -84,7 +84,7 @@ Program@0..166
         Whitespace@114..115 " "
         ThenKw@115..119 "then"
         Whitespace@119..122 "\n  "
-        Body@122..140
+        Block@122..140
           ExprStmt@122..140
             MultivalExpr@122..140
               CallExpr@122..140
@@ -100,7 +100,7 @@ Program@0..166
         ElseBranch@141..161
           ElseKw@141..145 "else"
           Whitespace@145..148 "\n  "
-          Body@148..161
+          Block@148..161
             ExprStmt@148..161
               MultivalExpr@148..161
                 CallExpr@148..161

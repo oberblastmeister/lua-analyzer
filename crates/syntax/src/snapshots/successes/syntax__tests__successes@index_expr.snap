@@ -98,7 +98,7 @@ Program@0..191
                   Ident@123..127 "this"
               RParen@127..128 ")"
             Whitespace@128..129 " "
-            Body@129..143
+            Block@129..143
               ExprStmt@129..143
                 MultivalExpr@129..143
                   CallExpr@129..143

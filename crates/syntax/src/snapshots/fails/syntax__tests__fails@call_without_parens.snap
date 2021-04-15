@@ -21,7 +21,7 @@ Program@0..31
             LParen@22..23 "("
             RParen@23..24 ")"
           Whitespace@24..25 " "
-          Body@25..25
+          Block@25..25
           EndKw@25..28 "end"
         Arglist@28..30
           LParen@28..29 "("

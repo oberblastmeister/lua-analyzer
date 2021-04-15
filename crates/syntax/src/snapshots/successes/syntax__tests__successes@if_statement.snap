@@ -25,7 +25,7 @@ Program@0..57
     Whitespace@26..27 " "
     ThenKw@27..31 "then"
     Whitespace@31..34 "\n  "
-    Body@34..52
+    Block@34..52
       ExprStmt@34..52
         MultivalExpr@34..52
           CallExpr@34..52

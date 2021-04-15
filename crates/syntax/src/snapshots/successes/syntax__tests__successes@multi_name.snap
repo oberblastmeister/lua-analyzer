@@ -79,7 +79,7 @@ Program@0..129
               Ident@88..91 "asd"
           RParen@91..92 ")"
         Whitespace@92..93 "\n"
-        Body@93..93
+        Block@93..93
         EndKw@93..96 "end"
       Comma@96..97 ","
       Whitespace@97..98 "\n"
@@ -96,7 +96,7 @@ Program@0..129
               Ident@116..123 "another"
           RParen@123..124 ")"
         Whitespace@124..125 "\n"
-        Body@125..125
+        Block@125..125
         EndKw@125..128 "end"
   Whitespace@128..129 "\n"
 

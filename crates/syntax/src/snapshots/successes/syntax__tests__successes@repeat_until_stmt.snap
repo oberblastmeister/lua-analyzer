@@ -7,7 +7,7 @@ Program@0..65
   RepeatUntilStmt@0..64
     RepeatKw@0..6 "repeat"
     Whitespace@6..9 "\n  "
-    Body@9..42
+    Block@9..42
       LocalAssignStmt@9..24
         LocalKw@9..14 "local"
         Whitespace@14..15 " "

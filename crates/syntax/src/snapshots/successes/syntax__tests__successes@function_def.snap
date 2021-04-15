@@ -15,7 +15,7 @@ Program@0..89
       LParen@20..21 "("
       RParen@21..22 ")"
     Whitespace@22..25 "\n  "
-    Body@25..84
+    Block@25..84
       LocalAssignStmt@25..40
         LocalKw@25..30 "local"
         Whitespace@30..31 " "

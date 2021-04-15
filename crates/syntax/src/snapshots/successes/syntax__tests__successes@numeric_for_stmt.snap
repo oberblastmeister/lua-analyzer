@@ -24,7 +24,7 @@ Program@0..82
     Whitespace@16..17 " "
     DoKw@17..19 "do"
     Whitespace@19..22 "\n  "
-    Body@22..42
+    Block@22..42
       ExprStmt@22..42
         MultivalExpr@22..42
           CallExpr@22..42
@@ -63,7 +63,7 @@ Program@0..82
     Whitespace@63..64 " "
     DoKw@64..66 "do"
     Whitespace@66..69 "\n  "
-    Body@69..77
+    Block@69..77
       ExprStmt@69..77
         MultivalExpr@69..77
           CallExpr@69..77

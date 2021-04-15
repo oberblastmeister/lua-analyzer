@@ -62,7 +62,7 @@ Program@0..190
               LParen@78..79 "("
               RParen@79..80 ")"
             Whitespace@80..81 " "
-            Body@81..81
+            Block@81..81
             EndKw@81..84 "end"
           RParen@84..85 ")"
         Dot@85..86 "."
@@ -95,7 +95,7 @@ Program@0..190
               LParen@138..139 "("
               RParen@139..140 ")"
             Whitespace@140..141 " "
-            Body@141..141
+            Block@141..141
             EndKw@141..144 "end"
           RParen@144..145 ")"
         Index@145..150

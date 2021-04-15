@@ -31,7 +31,7 @@ Program@0..45
     Whitespace@23..24 " "
     DoKw@24..26 "do"
     Whitespace@26..29 "\n  "
-    Body@29..40
+    Block@29..40
       ExprStmt@29..40
         MultivalExpr@29..40
           CallExpr@29..40

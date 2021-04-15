@@ -1,5 +1,7 @@
+use std::fmt;
+
 use parser::{LexError, LexErrorMsg, ParseError};
-use rowan::{GreenNodeBuilder, Language, TextRange};
+use rowan::{GreenNodeBuilder, Language, TextRange, TextSize};
 
 use crate::{Parse, SyntaxKind};
 
@@ -24,14 +26,28 @@ impl Language for RustLanguage {
 pub struct SyntaxError(String, TextRange);
 
 impl SyntaxError {
-    pub(crate) fn new(msg: String, range: TextRange) -> SyntaxError {
+    pub fn new(msg: String, range: TextRange) -> SyntaxError {
         SyntaxError(msg, range)
+    }
+
+    pub fn new_at_offset(message: impl Into<String>, offset: TextSize) -> SyntaxError {
+        SyntaxError(message.into(), TextRange::empty(offset))
+    }
+
+    pub fn range(&self) -> TextRange {
+        self.1
     }
 }
 
 impl From<LexError> for SyntaxError {
     fn from(e: LexError) -> SyntaxError {
         SyntaxError(e.msg.to_string(), e.range)
+    }
+}
+
+impl fmt::Display for SyntaxError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.0.fmt(f)
     }
 }
 

@@ -64,7 +64,7 @@ Program@0..131
               LParen@109..110 "("
               RParen@110..111 ")"
             Whitespace@111..112 " "
-            Body@112..112
+            Block@112..112
             EndKw@112..115 "end"
           RParen@115..116 ")"
         Literal@116..130

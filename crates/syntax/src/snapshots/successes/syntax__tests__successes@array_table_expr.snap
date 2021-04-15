@@ -37,7 +37,7 @@ Program@0..67
                 LParen@44..45 "("
                 RParen@45..46 ")"
               Whitespace@46..47 " "
-              Body@47..47
+              Block@47..47
               EndKw@47..50 "end"
         Comma@50..51 ","
         Whitespace@51..54 "\n  "

@@ -16,9 +16,9 @@ local function testing(first, second, third)
     local new = first + second
     return new^324 .. "adfadsf"
 end"#);
-    // for (i, it) in prog.syntax_node().descendants().enumerate() {
-    //     println!("{}: {:#?}", i, it);
-    // }
+    for (i, it) in prog.syntax_node().descendants().enumerate() {
+        println!("{}: {:#?}", i, it);
+    }
     //
     // for (i, it) in prog.syntax_node().ancestors().enumerate() {
     //     println!("{}: {:#?}", i, it);
@@ -28,9 +28,9 @@ end"#);
     //     println!("{}: {:#?}", i, it);
     // }
     //
-    for (i, it) in prog.syntax_node().children_with_tokens().enumerate() {
-        println!("{}: {:#?}", i, it);
-    }
+    // for (i, it) in prog.syntax_node().children_with_tokens().enumerate() {
+    //     println!("{}: {:#?}", i, it);
+    // }
     panic!("Just to test")
 }
 
