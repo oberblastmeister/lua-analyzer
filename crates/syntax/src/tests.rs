@@ -73,3 +73,8 @@ fn nothing() {
 fn fuzz1() {
     Program::parse("e,,");
 }
+
+#[test]
+fn local_only() {
+    Program::parse("local");
+}

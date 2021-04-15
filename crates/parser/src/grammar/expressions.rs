@@ -165,7 +165,6 @@ fn atom_expr(p: &mut Parser) -> Option<(MarkerComplete, bool)> {
     }
 
     if p.at_ts(LITERAL) {
-        println!("Got to literal with current: {:?}", p.current());
         return literal(p).map(|it| (it, false));
     }
 

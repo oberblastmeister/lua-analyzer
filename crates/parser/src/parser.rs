@@ -81,7 +81,6 @@ impl<'a> Parser<'a> {
         }
 
         let m = self.start_error();
-        self.error(message);
         self.bump_any();
         m.complete(self, ParseError::Message(message));
     }

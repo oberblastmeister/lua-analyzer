@@ -53,8 +53,6 @@ pub enum LiteralKind {
 
 impl ast::Literal {
     pub fn token(&self) -> SyntaxToken {
-        println!("in token: {:#?}", self);
-
         self.syntax()
             .children_with_tokens()
             .find(|e| !e.kind().is_trivia())
@@ -77,7 +75,7 @@ impl ast::Literal {
             T![true] => LiteralKind::Bool(true),
             T![false] => LiteralKind::Bool(false),
             T![nil] => LiteralKind::Nil,
-            _ => panic!("Got unreachable kind {:?}", token.kind()),
+            _ => unreachable!(),
         }
     }
 }

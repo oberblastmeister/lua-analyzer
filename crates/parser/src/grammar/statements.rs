@@ -5,7 +5,7 @@ use super::{
 };
 use crate::parser::{MarkerComplete, Parser};
 use crate::SyntaxKind::*;
-use crate::{TokenSet, TS};
+use crate::{ParseError, TokenSet, TS};
 
 macro_rules! none {
     ($expr:expr) => {{
@@ -30,7 +30,7 @@ pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
         T![ident] => expr_stmt(p),
         T!['('] => expr_stmt(p),
         _ if p.at_ts(LITERAL) => {
-            none!(p.err_recover("A literal cannot be the start of an statement"))
+            none!(p.err_recover("A literal cannot be the start of a statement"))
         }
         _ => none!(p.err_recover("Expected a statement")),
     })
@@ -174,7 +174,14 @@ fn local_stmt(p: &mut Parser) -> Option<MarkerComplete> {
         T![function] => function_def_stmt(p, true),
         T![ident] => local_assign_stmt(p),
         _ => {
-            p.err_recover("Expected a local function or local assignment");
+            // we can't do err_recover here because local is a recovery token
+            // so it will just infinately loop because the parser is never advanced
+            let e = p.start_error();
+            p.bump_any();
+            e.complete(
+                p,
+                ParseError::Message("Expected a local function or local assignment"),
+            );
             return None;
         }
     })

@@ -19,16 +19,8 @@ Errors:
 =============================
 [
     SyntaxError(
-        "A literal cannot be the start of an statement",
-        0..0,
-    ),
-    SyntaxError(
-        "A literal cannot be the start of an statement",
+        "A literal cannot be the start of a statement",
         0..2,
-    ),
-    SyntaxError(
-        "Expected an expression",
-        3..3,
     ),
     SyntaxError(
         "Expected an expression",
