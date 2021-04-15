@@ -25,11 +25,18 @@ pub(crate) fn validate(root: &SyntaxNode) -> Vec<SyntaxError> {
     let acc = &mut errors;
 
     for node in root.descendants() {
+        println!("Got node {:#?}", node);
+        // NOTE: make sure not to match on enums because they will always cast properly
+        // and therefore they will always match, making stuff under unreachable
         match_ast! {
             match node {
-                ast::ExprStmt(it)
+                ast::ExprStmt(it) |
+                ast::Literal(it)
                     | ast::AssignStmt(it)
-                    | ast::Literal(it) => it.validate(acc),
+                    => {
+                        println!("Validating {:#?}", it);
+                        it.validate(acc)
+                    },
                 _ => (),
             }
         }
@@ -121,24 +128,30 @@ impl Validate for ast::Expr {
 
 impl Validate for ast::Literal {
     fn validate(self, acc: &mut Vec<SyntaxError>) {
-        let node = self.syntax();
-        let kind = node.kind();
-        let text = node.text().to_string();
-        match kind {
-            T![str] => {
-                if text.starts_with("\'") {
-
-                }
-                // unescape(unquote(&text, 0, end_delimiter), node.text_range().start(), acc)
-            },
-            _ => (),
+        let token = self.token();
+        let text = token.text();
+        match self.kind() {
+            ast::LiteralKind::Str(s) => {
+                let (start, unquoted) = unquote(&text).expect("String was not properly quoted");
+                unescape(unquoted, start, acc)
+            }
+            ast::LiteralKind::Number(_) => (),
+            ast::LiteralKind::Bool(_) => (),
         }
     }
 }
 
-fn unquote(text: &str, prefix_len: usize, end_delimiter: char) -> Option<&str> {
-    text.rfind(end_delimiter)
-        .and_then(|end| text.get(prefix_len..end))
+fn unquote(text: &str) -> Option<(TextSize, &str)> {
+    let delimit = text.chars().next()?;
+
+    if delimit == '\'' || delimit == '\"' {
+        assert!(text.ends_with(delimit));
+        text.get(1..text.len() - 1).map(|it| (1.into(), it))
+    } else if delimit == '[' {
+        todo!();
+    } else {
+        None
+    }
 }
 
 const ESCAPE_MSG: &str = "Invalid escape sequence";
@@ -293,5 +306,15 @@ mod tests {
         assert_eq!(chars.next().unwrap(), 'w');
         assert_eq!(chars.next().unwrap(), '\\');
         assert_eq!(chars.next().unwrap(), 't');
+    }
+
+    #[test]
+    fn unquote_str() {
+        assert_eq!(unquote(r#""a string""#), Some((1.into(), "a string")));
+        assert_eq!(unquote(r#""""#), Some((1.into(), "")));
+        assert_eq!(unquote(r"'a string'"), Some((1.into(), "a string")));
+        assert_eq!(unquote(r"''"), Some((1.into(), "")));
+        assert_eq!(unquote(r""), None);
+        assert_eq!(unquote(r"'"), None);
     }
 }

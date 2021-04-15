@@ -32,6 +32,8 @@ keywords = [
 literals = [
     "Number",
     "Str",
+    "True",
+    "False",
 ]
 
 tokens = [

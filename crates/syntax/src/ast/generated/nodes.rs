@@ -1,6 +1,7 @@
 //! Generated file, do not edit by hand, see `xtask/src/codegen`
 
 #![allow(dead_code)]
+use super::tokens::*;
 use crate::{
     ast::{support, AstChildren, AstNode},
     SyntaxKind, SyntaxNode, SyntaxToken, T,

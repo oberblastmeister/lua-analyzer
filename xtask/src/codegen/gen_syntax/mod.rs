@@ -389,6 +389,7 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
     let ast = quote! {
         #![allow(dead_code)]
 
+        use super::tokens::*;
         use crate::{
             SyntaxNode, SyntaxToken, SyntaxKind,
             ast::{AstNode, AstChildren, support},

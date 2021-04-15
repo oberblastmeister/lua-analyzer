@@ -138,7 +138,7 @@ pub(crate) fn lower(grammar: &Grammar) -> AstSrc {
         let name = grammar[node].name.clone();
         let rule = &grammar[node].rule;
 
-        eprintln!("Lowering name: {}", name);
+        eprintln!("Lowering name and rule {}, {:?}", name, rule);
 
         match lower_enum(grammar, rule) {
             Some(variants) => {
@@ -172,8 +172,9 @@ fn lower_enum(grammar: &Grammar, rule: &Rule) -> Option<Vec<String>> {
     let mut variants = Vec::new();
     for alternative in alternatives {
         match alternative {
+            // we do both nodes and tokens
             Rule::Node(it) => variants.push(grammar[*it].name.clone()),
-            // Rule::Token(it) if grammar[*it].name == ";" => (),
+            // Rule::Token(it) => variants.push(grammar[*it].name.clone()),
             _ => return None,
         }
     }

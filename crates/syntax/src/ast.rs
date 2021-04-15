@@ -2,9 +2,10 @@ pub mod generated;
 mod expr_ext;
 mod stmt_ext;
 
-use rowan::TextRange;
-
 pub use self::generated::{nodes::*, tokens::*};
+pub use expr_ext::LiteralKind;
+
+use rowan::TextRange;
 
 use std::marker::PhantomData;
 

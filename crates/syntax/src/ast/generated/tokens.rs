@@ -129,6 +129,56 @@ impl AstToken for Str {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct True {
+    pub(crate) syntax: SyntaxToken,
+}
+impl std::fmt::Display for True {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(&self.syntax, f)
+    }
+}
+impl AstToken for True {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::True
+    }
+    fn cast(syntax: SyntaxToken) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxToken {
+        &self.syntax
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct False {
+    pub(crate) syntax: SyntaxToken,
+}
+impl std::fmt::Display for False {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(&self.syntax, f)
+    }
+}
+impl AstToken for False {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::False
+    }
+    fn cast(syntax: SyntaxToken) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxToken {
+        &self.syntax
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Comment {
     pub(crate) syntax: SyntaxToken,
 }

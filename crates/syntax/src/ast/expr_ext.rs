@@ -1,5 +1,5 @@
 use crate::{
-    ast::{self, support, AstNode},
+    ast::{self, support, AstNode, AstToken},
     SyntaxToken, T,
 };
 use parser::LuaOp;
@@ -40,5 +40,39 @@ impl ast::InfixExpr {
         let first = children.next();
         let second = children.next();
         (first, second)
+    }
+}
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum LiteralKind {
+    Str(ast::Str),
+    Number(ast::Number),
+    Bool(bool),
+}
+
+impl ast::Literal {
+    pub fn token(&self) -> SyntaxToken {
+        self.syntax()
+            .children_with_tokens()
+            .find(|e| !e.kind().is_trivia())
+            .and_then(|e| e.into_token())
+            .unwrap()
+    }
+
+    pub fn kind(&self) -> LiteralKind {
+        let token = self.token();
+
+        if let Some(t) = ast::Number::cast(token.clone()) {
+            return LiteralKind::Number(t);
+        }
+
+        if let Some(t) = ast::Str::cast(token.clone()) {
+            return LiteralKind::Str(t);
+        }
+
+        match token.kind() {
+            T![true] => LiteralKind::Bool(true),
+            T![false] => LiteralKind::Bool(false),
+            _ => unreachable!(),
+        }
     }
 }
