@@ -31,7 +31,7 @@ fn multi_name(p: &mut Parser) -> MarkerComplete {
 
 fn name_ref(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
-    p.bump(T![ident]);
+    p.expect(T![ident]);
     m.complete(p, NameRef)
 }
 

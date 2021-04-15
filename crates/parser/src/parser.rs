@@ -101,6 +101,15 @@ impl<'a> Parser<'a> {
         self.nth_at(0, kind)
     }
 
+    pub(crate) fn expect_at(&mut self, kind: SyntaxKind) -> bool {
+        let current = self.current();
+        if current != kind {
+            self.push_event(Event::Error(ParseError::expected(kind, current)));
+            return false;
+        }
+        true
+    }
+
     pub(crate) fn accept(&mut self, kind: SyntaxKind) -> bool {
         if !self.at(kind) {
             return false;

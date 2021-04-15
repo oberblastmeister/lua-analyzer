@@ -124,10 +124,14 @@ fn for_stmt(p: &mut Parser) -> MarkerComplete {
 
 fn for_content(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
-    if p.at(T![ident]) && p.nth(1) == T![=] {
-        numeric_for(p);
+    if p.at(T![ident]) {
+        if p.nth(1) == T![=] {
+            numeric_for(p);
+        } else {
+            generic_for(p);
+        }
     } else {
-        generic_for(p);
+        p.error("Expected an identifier");
     }
     m.complete(p, ForContent)
 }
@@ -136,7 +140,7 @@ fn generic_for(p: &mut Parser) -> MarkerComplete {
     assert!(p.at(T![ident]));
     let m = p.start();
     multi_name(p);
-    p.bump(T![in]);
+    p.expect(T![in]);
     expr_single(p);
     m.complete(p, GenericFor)
 }

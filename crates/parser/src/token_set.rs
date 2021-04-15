@@ -4,13 +4,13 @@ use crate::SyntaxKind;
 
 #[macro_export]
 macro_rules! TS {
-    ($($stuff:tt)*) => {
+    ($($stuff:tt),* $(,)?) => {
         TokenSet::new(&[$( T![$stuff], )*])
     };
 }
 
 /// A bit-set of `SyntaxKind`s
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TokenSet(u128);
 
 impl TokenSet {
@@ -46,4 +46,12 @@ fn token_set_works_for_tokens() {
     assert!(ts.contains(T![+]));
     assert!(ts.contains(T![-]));
     assert!(!ts.contains(T![comment]));
+}
+
+#[test]
+fn comma_not_in_literal() {
+    let ts_m = TS![true, false, number, str, nil];
+    let ts = TokenSet::new(&[T![true], T![false], T![number], T![str], T![nil]]);
+    assert_eq!(ts_m, ts);
+    assert!(!ts.contains(T![,]));
 }

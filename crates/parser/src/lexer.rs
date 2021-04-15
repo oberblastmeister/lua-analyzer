@@ -89,6 +89,15 @@ pub struct LexError {
     pub range: TextRange,
 }
 
+impl LexError {
+    pub fn to_unknown(&self) -> Token {
+        Token {
+            kind: T![unknown],
+            range: self.range,
+        }
+    }
+}
+
 #[derive(Debug, Error, PartialEq, Eq)]
 #[error("{0}")]
 pub struct LexErrorMsg(&'static str);

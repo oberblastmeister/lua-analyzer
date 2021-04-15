@@ -1,6 +1,5 @@
 use super::*;
-use core::fmt;
-use std::fs;
+use std::{fmt, fs, str};
 
 fn dump_parse<T: AstNode + fmt::Debug>(parse: Parse<T>) -> String {
     let mut s = String::new();
@@ -23,7 +22,7 @@ fn dump_parse_no_errors(parse: Parse<Program>) -> Result<String, String> {
 
 #[test]
 fn successes() {
-   insta::glob!("snapshot_inputs/successes/*.lua", |path| {
+    insta::glob!("snapshot_inputs/successes/*.lua", |path| {
         let input = fs::read_to_string(path).unwrap();
         let suffix = path.file_stem().unwrap().to_str().unwrap();
         insta::with_settings!({snapshot_path => "snapshots/successes", snapshot_suffix => suffix}, {
@@ -39,7 +38,7 @@ fn successes() {
 
 #[test]
 fn luajit() {
-   insta::glob!("snapshot_inputs/luajit/*.lua", |path| {
+    insta::glob!("snapshot_inputs/luajit/*.lua", |path| {
         let input = fs::read_to_string(path).unwrap();
         let suffix = path.file_stem().unwrap().to_str().unwrap();
         insta::with_settings!({snapshot_path => "snapshots/luajit", snapshot_suffix => suffix}, {
@@ -67,6 +66,10 @@ fn fails() {
 
 #[test]
 fn nothing() {
-    insta::assert_debug_snapshot!(Program::parse("").syntax_node(), @"Program@0..0
-                                  ");
+    insta::assert_debug_snapshot!(Program::parse("").syntax_node(), @"Program@0..0")
+}
+
+#[test]
+fn fuzz1() {
+    Program::parse("e,,");
 }

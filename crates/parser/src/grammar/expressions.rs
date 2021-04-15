@@ -1,4 +1,4 @@
-use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP_INFIX, NOT_AN_OP_PREFIX};
+use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP, NOT_AN_OP_INFIX, NOT_AN_OP_PREFIX};
 
 use super::{block, name_ref, param_list};
 use crate::{
@@ -111,18 +111,10 @@ pub(super) fn expr(p: &mut Parser) -> MarkerComplete {
 fn expr_multi(p: &mut Parser, in_function: bool) -> MarkerComplete {
     let m = p.start();
     expr_single(p);
-    if p.at(T![,]) && !p.at(T![')']) {
-        while !p.at(T![eof]) && !(in_function && p.at(T![')'])) {
-            p.bump(T![,]);
+    while p.at(T![,]) && !(in_function && p.at(T![')'])) {
+        p.bump(T![,]);
 
-            if expr_single(p).is_none() {
-                break;
-            }
-
-            if !p.at(T![,]) {
-                break;
-            }
-        }
+        expr_single(p);
     }
     m.complete(p, MultivalExpr)
 }
@@ -153,11 +145,11 @@ fn expr_bp(p: &mut Parser, min_bp: u8) -> Option<MarkerComplete> {
 
 fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
     let ((), r_bp) = prefix_binding_power(p.current());
-    if r_bp > 0 {
+    if r_bp > NOT_AN_OP {
         let m = p.start();
         p.bump_any();
         expr_bp(p, r_bp);
-        return Some(m.complete(p, PrefixExpr))
+        return Some(m.complete(p, PrefixExpr));
     }
 
     let (lhs, can_call) = atom_expr(p)?;
@@ -173,6 +165,7 @@ fn atom_expr(p: &mut Parser) -> Option<(MarkerComplete, bool)> {
     }
 
     if p.at_ts(LITERAL) {
+        println!("Got to literal with current: {:?}", p.current());
         return literal(p).map(|it| (it, false));
     }
 
@@ -333,7 +326,9 @@ fn method_call_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
     let m = lhs.precede(p);
     p.bump(T![:]);
     name_ref(p);
-    arg_list(p);
+    if p.expect_at(T!['(']) {
+        arg_list(p);
+    }
     m.complete(p, MethodCallExpr)
 }
 

@@ -10,11 +10,17 @@ use text_tree_sink::TextTreeSink;
 use crate::SyntaxError;
 
 pub(crate) fn parse_text(text: &str) -> (GreenNode, Vec<SyntaxError>) {
-    let (tokens, errors): (Vec<Token>, Vec<SyntaxError>) =
-        tokenize_iter(&text).partition_map(|r| match r {
-            Ok(v) => Either::Left(v),
-            Err(v) => Either::Right(v.into()),
-        });
+    let mut tokens = vec![];
+    let mut errors = vec![];
+    for res in tokenize_iter(&text) {
+        match res {
+            Ok(v) => tokens.push(v),
+            Err(v) => {
+                tokens.push(v.to_unknown());
+                errors.push(v.into());
+            }
+        }
+    }
 
     let mut token_source = TextTokenSource::new(text, &tokens);
     let mut tree_sink = TextTreeSink::new(text, &tokens);

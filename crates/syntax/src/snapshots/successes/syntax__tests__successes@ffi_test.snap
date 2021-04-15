@@ -3,18 +3,16 @@ source: crates/syntax/src/tests.rs
 expression: s
 
 ---
-Program@0..274
-  ExprStmt@0..273
-    MultivalExpr@0..273
-      StringCallExpr@0..273
-        DotExpr@0..8
-          NameRef@0..3
-            Ident@0..3 "ffi"
-          Dot@3..4 "."
-          Ident@4..8 "cdef"
-        Literal@8..273
-          Str@8..273 "[[\ntypedef enum enum_ ..."
-  Whitespace@273..274 "\n"
+Program@0..298
+  Comment@0..14 "-- ffi.cdef[[\n"
+  Comment@14..69 "-- typedef enum enum_ ..."
+  Comment@69..123 "-- typedef enum enum_ ..."
+  Whitespace@123..124 "\n"
+  Comment@124..166 "-- enum_i call_ei_i(i ..."
+  Comment@166..208 "-- enum_u call_eu_i(i ..."
+  Comment@208..250 "-- int call_i_ei(enum ..."
+  Comment@250..292 "-- int call_i_eu(enum ..."
+  Comment@292..298 "-- ]]\n"
 
 =============================
 Errors:

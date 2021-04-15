@@ -25,18 +25,14 @@ pub(crate) fn validate(root: &SyntaxNode) -> Vec<SyntaxError> {
     let acc = &mut errors;
 
     for node in root.descendants() {
-        println!("Got node {:#?}", node);
         // NOTE: make sure not to match on enums because they will always cast properly
         // and therefore they will always match, making stuff under unreachable
         match_ast! {
             match node {
-                ast::ExprStmt(it) |
-                ast::Literal(it)
+                ast::ExprStmt(it)
+                    | ast::Literal(it)
                     | ast::AssignStmt(it)
-                    => {
-                        println!("Validating {:#?}", it);
-                        it.validate(acc)
-                    },
+                    => it.validate(acc),
                 _ => (),
             }
         }
@@ -137,6 +133,7 @@ impl Validate for ast::Literal {
             }
             ast::LiteralKind::Number(_) => (),
             ast::LiteralKind::Bool(_) => (),
+            ast::LiteralKind::Nil => (),
         }
     }
 }

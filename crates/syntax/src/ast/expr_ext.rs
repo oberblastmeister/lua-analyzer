@@ -42,15 +42,19 @@ impl ast::InfixExpr {
         (first, second)
     }
 }
+
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum LiteralKind {
     Str(ast::Str),
     Number(ast::Number),
     Bool(bool),
+    Nil,
 }
 
 impl ast::Literal {
     pub fn token(&self) -> SyntaxToken {
+        println!("in token: {:#?}", self);
+
         self.syntax()
             .children_with_tokens()
             .find(|e| !e.kind().is_trivia())
@@ -72,7 +76,8 @@ impl ast::Literal {
         match token.kind() {
             T![true] => LiteralKind::Bool(true),
             T![false] => LiteralKind::Bool(false),
-            _ => unreachable!(),
+            T![nil] => LiteralKind::Nil,
+            _ => panic!("Got unreachable kind {:?}", token.kind()),
         }
     }
 }
