@@ -201,7 +201,7 @@ impl<'a> Lexer<'a> {
                     done!(T![~=]);
                 }
                 _ => done!(T![unknown]),
-            }
+            },
 
             '(' => T!['('],
             ')' => T![')'],
@@ -302,6 +302,7 @@ impl<'a> Lexer<'a> {
     fn bracket_enclosed(&mut self) -> LexResult<()> {
         fn close(l: &mut Lexer<'_>, count: u32) -> LexResult<()> {
             let mut err = Ok(());
+
             let mut set_err = || {
                 if err.is_ok() {
                     err = Err(LexErrorMsg("Invalid bracket notation"));
@@ -309,21 +310,26 @@ impl<'a> Lexer<'a> {
             };
 
             macro_rules! expect {
-                ($it:expr, $e:ident) => {
+                ($it:expr) => {
                     if !$it {
                         set_err()
                     }
                 };
             }
 
-            expect!(l.accept('['), NotCorrectEqualAmount);
+            expect!(l.accept('['));
 
-            // might need to fix this
             l.accept_while(|c| c != ']');
 
-            expect!(l.accept(']'), InvalidBracketNotation);
-            expect!(l.accept_repeat('=', count), NotCorrectEqualAmount);
-            expect!(l.accept(']'), InvalidBracketNotation);
+            expect!(l.accept(']'));
+
+            let close_count = l.accept_while_count('=');
+            if count != close_count {
+                set_err();
+                l.accept_while('=');
+            }
+
+            expect!(l.accept(']'));
 
             err
         }
@@ -747,7 +753,24 @@ asdf()
     }
 
     #[test]
-    fn hex_numbers() { 
+    fn hex_numbers() {
         check("0xffffffff hello 0x12345678")
+    }
+
+    #[test]
+    fn multi_string() {
+        check("[[this is a long string]] [[another]]")
+    }
+
+    #[test]
+    fn multi_string_with_equals() {
+        check("[=====[s]=====] [==[an]==]")
+    }
+
+    #[test]
+    fn multi_string_fail() {
+        check("[===[sdf]==]");
+        check("[=[adf]]");
+        check("[[asdf]====]")
     }
 }

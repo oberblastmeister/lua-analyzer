@@ -1,0 +1,18 @@
+---
+source: crates/parser/src/lexer.rs
+expression: tokens
+
+---
+[
+    Err(
+        (
+            LexError {
+                msg: LexErrorMsg(
+                    "Invalid bracket notation",
+                ),
+                range: 0..12,
+            },
+            "[[asdf]====]",
+        ),
+    ),
+]

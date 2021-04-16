@@ -1,0 +1,34 @@
+---
+source: crates/parser/src/lexer.rs
+expression: tokens
+
+---
+[
+    Ok(
+        (
+            Token {
+                kind: Str,
+                range: 0..25,
+            },
+            "[[this is a long string]]",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Whitespace,
+                range: 25..26,
+            },
+            " ",
+        ),
+    ),
+    Ok(
+        (
+            Token {
+                kind: Str,
+                range: 26..37,
+            },
+            "[[another]]",
+        ),
+    ),
+]
