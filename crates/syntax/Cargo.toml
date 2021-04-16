@@ -3,6 +3,9 @@ name = "syntax"
 version = "0.0.0"
 authors = ["Brian Shu <littlebubu.shu@gmail.com>"]
 edition = "2018"
+description = "lossless parser for the lua language"
+license = "MIT/Apache-2.0"
+repository = "https://github.com/oberblastmeister/lua-analyzer"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
