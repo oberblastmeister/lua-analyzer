@@ -4,7 +4,10 @@ use crate::SyntaxKind;
 
 #[macro_export]
 macro_rules! TS {
-    ($($stuff:tt),* $(,)?) => {
+    [] => {
+        TokenSet::EMPTY
+    };
+    [$( $stuff:tt ),* $(,)?] => {
         TokenSet::new(&[$( T![$stuff], )*])
     };
 }
@@ -54,4 +57,10 @@ fn comma_not_in_literal() {
     let ts = TokenSet::new(&[T![true], T![false], T![number], T![str], T![nil]]);
     assert_eq!(ts_m, ts);
     assert!(!ts.contains(T![,]));
+}
+
+#[test]
+fn correct_empty() {
+    let ts = TS![];
+    assert_eq!(TS![], TokenSet::EMPTY);
 }

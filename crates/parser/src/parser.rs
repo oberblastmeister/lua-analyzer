@@ -4,7 +4,7 @@ use drop_bomb::DropBomb;
 
 use crate::{assert_matches, Event, ParseError, SyntaxKind, TokenSet, TokenSource, T, TS};
 
-const RECOVERY: TokenSet = TS![local];
+const RECOVERY: TokenSet = TS![end];
 
 pub struct Parser<'a> {
     token_source: &'a mut dyn TokenSource,
@@ -74,8 +74,16 @@ impl<'a> Parser<'a> {
     }
 
     /// Create an error node and consume the next token.
-    pub(crate) fn err_recover(&mut self, message: &'static str) {
-        if self.at_ts(RECOVERY) {
+    pub(crate) fn err_recover(&mut self, message: &'static str, recovery: TokenSet) {
+        match self.current() {
+            T![end] => {
+                self.error(message);
+                return;
+            }
+            _ => (),
+        }
+
+        if self.at_ts(recovery) {
             self.error(message);
             return;
         }
@@ -83,6 +91,10 @@ impl<'a> Parser<'a> {
         let m = self.start_error();
         self.bump_any();
         m.complete(self, ParseError::Message(message));
+    }
+
+    pub(crate) fn err_and_bump(&mut self, message: &'static str) {
+        self.err_recover(message, TS![])
     }
 
     fn do_bump(&mut self) {

@@ -7,6 +7,8 @@ use crate::{
     TokenSet, TS,
 };
 
+pub(super) const EXPR_RECOVERY_SET: TokenSet = TS![local];
+
 precedences! {
     pub enum LuaOp {
         #[Infix, Left]
@@ -174,7 +176,7 @@ fn atom_expr(p: &mut Parser) -> Option<(MarkerComplete, bool)> {
         T![ident] => name_ref(p),
         T!['('] => paren_expr(p),
         _ => {
-            p.err_recover("Expected an expression");
+            p.err_recover("Expected an expression", EXPR_RECOVERY_SET);
             return None;
         }
     };

@@ -1,39 +1,65 @@
 use super::{
     block, expr_single,
     expressions::{expr, LITERAL},
-    multi_name, name, name_ref, param_list,
+    multi_name_r, name, name_r, name_ref, param_list,
 };
 use crate::parser::{MarkerComplete, Parser};
 use crate::SyntaxKind::*;
 use crate::{ParseError, TokenSet, TS};
 
-macro_rules! none {
-    ($expr:expr) => {{
-        $expr;
-        return None;
-    }};
-}
+pub(super) const STMT_RECOVERY: TokenSet = TS![function, do, ::];
 
-pub(super) fn stmt(p: &mut Parser) -> Option<MarkerComplete> {
-    Some(match p.current() {
-        T![if] => if_stmt(p),
-        T![::] => label_stmt(p),
-        T![goto] => goto_stmt(p),
-        T![local] => local_stmt(p)?,
-        T![repeat] => repeat_until_stmt(p),
-        T![function] => function_def_stmt(p, false),
-        T![return] => return_stmt(p),
-        T![do] => do_stmt(p),
-        T![while] => while_stmt(p),
-        T![for] => for_stmt(p),
-        T![break] => break_stmt(p),
-        T![ident] => expr_stmt(p),
-        T!['('] => expr_stmt(p),
-        _ if p.at_ts(LITERAL) => {
-            none!(p.err_recover("A literal cannot be the start of a statement"))
+pub(super) fn stmt(p: &mut Parser) {
+    match p.current() {
+        T![if] => {
+            if_stmt(p);
         }
-        _ => none!(p.err_recover("Expected a statement")),
-    })
+        T![::] => {
+            label_stmt(p);
+        }
+        T![goto] => {
+            goto_stmt(p);
+        }
+        T![local] => {
+            local_stmt(p);
+        }
+        T![repeat] => {
+            repeat_until_stmt(p);
+        }
+        T![function] => {
+            function_def_stmt(p, false);
+        }
+        T![return] => {
+            return_stmt(p);
+        }
+        T![do] => {
+            do_stmt(p);
+        }
+        T![while] => {
+            while_stmt(p);
+        }
+        T![for] => {
+            for_stmt(p);
+        }
+        T![break] => {
+            break_stmt(p);
+        }
+        T![ident] => {
+            expr_stmt(p);
+        }
+        T!['('] => {
+            expr_stmt(p);
+        }
+        _ if p.at_ts(LITERAL) => {
+            p.err_and_bump("A literal cannot be the start of a statement");
+        }
+        T![end] => {
+            let e = p.start_error();
+            p.bump(T![end]);
+            e.complete(p, ParseError::Message("Unmatched end token"));
+        }
+        _ => p.err_and_bump("Expected a statement"),
+    };
 }
 
 fn if_stmt(p: &mut Parser) -> MarkerComplete {
@@ -91,7 +117,7 @@ fn label_stmt(p: &mut Parser) -> MarkerComplete {
     assert!(p.at(T![::]));
     let m = p.start();
     label_delim(p);
-    name(p);
+    name_r(p, STMT_RECOVERY);
     label_delim(p);
     m.complete(p, LabelStmt)
 }
@@ -139,7 +165,7 @@ fn for_content(p: &mut Parser) -> MarkerComplete {
 fn generic_for(p: &mut Parser) -> MarkerComplete {
     assert!(p.at(T![ident]));
     let m = p.start();
-    multi_name(p);
+    multi_name_r(p, STMT_RECOVERY);
     p.expect(T![in]);
     expr_single(p);
     m.complete(p, GenericFor)
@@ -172,18 +198,7 @@ fn break_stmt(p: &mut Parser) -> MarkerComplete {
 fn local_stmt(p: &mut Parser) -> Option<MarkerComplete> {
     Some(match p.nth(1) {
         T![function] => function_def_stmt(p, true),
-        T![ident] => local_assign_stmt(p),
-        _ => {
-            // we can't do err_recover here because local is a recovery token
-            // so it will just infinately loop because the parser is never advanced
-            let e = p.start_error();
-            p.bump_any();
-            e.complete(
-                p,
-                ParseError::Message("Expected a local function or local assignment"),
-            );
-            return None;
-        }
+        _ => local_assign_stmt(p),
     })
 }
 
@@ -206,7 +221,7 @@ fn function_def_stmt(p: &mut Parser, is_local: bool) -> MarkerComplete {
     }
 
     p.expect(T![function]);
-    name(p);
+    name_r(p, STMT_RECOVERY);
     param_list(p);
     block(p);
     p.expect(T![end]);
@@ -231,7 +246,7 @@ fn return_stmt(p: &mut Parser) -> MarkerComplete {
 fn local_assign_stmt(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![local]);
-    multi_name(p);
+    multi_name_r(p, STMT_RECOVERY);
     if p.accept(T![=]) {
         expr(p);
     }

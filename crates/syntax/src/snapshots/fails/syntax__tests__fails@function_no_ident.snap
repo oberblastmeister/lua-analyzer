@@ -1,0 +1,33 @@
+---
+source: crates/syntax/src/tests.rs
+expression: dump_parse(parse)
+
+---
+Program@0..22
+  FunctionDefStmt@0..21
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    FunctionKw@6..14 "function"
+    Whitespace@14..15 " "
+    Error@15..16
+      LParen@15..16 "("
+    Paramlist@16..17
+      RParen@16..17 ")"
+    Whitespace@17..18 "\n"
+    Block@18..18
+    EndKw@18..21 "end"
+  Whitespace@21..22 "\n"
+
+=============================
+Errors:
+=============================
+[
+    SyntaxError(
+        "expected a name",
+        15..16,
+    ),
+    SyntaxError(
+        "Expected LParen, got RParen",
+        16..16,
+    ),
+]

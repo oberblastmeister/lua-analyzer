@@ -1,0 +1,49 @@
+---
+source: crates/syntax/src/tests.rs
+expression: dump_parse(parse)
+
+---
+Program@0..46
+  LocalAssignStmt@0..44
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    MultiName@6..31
+      Error@6..9
+        Number@6..9 "123"
+      Comma@9..10 ","
+      Whitespace@10..11 " "
+      Error@11..17
+        Str@11..17 "\"adsf\""
+      Comma@17..18 ","
+      Whitespace@18..19 " "
+      Name@19..24
+        Ident@19..24 "hello"
+      Comma@24..25 ","
+      Whitespace@25..26 " "
+      Error@26..31
+        Str@26..31 "\"asd\""
+    Whitespace@31..32 " "
+    Eq@32..33 "="
+    Whitespace@33..34 " "
+    MultivalExpr@34..44
+      Literal@34..44
+        Str@34..44 "\"asdfasdf\""
+  Whitespace@44..46 "\n\n"
+
+=============================
+Errors:
+=============================
+[
+    SyntaxError(
+        "expected a name",
+        6..9,
+    ),
+    SyntaxError(
+        "expected a name",
+        11..17,
+    ),
+    SyntaxError(
+        "expected a name",
+        26..31,
+    ),
+]

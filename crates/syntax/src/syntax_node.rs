@@ -1,6 +1,6 @@
 use std::fmt;
 
-use parser::{LexError, LexErrorMsg, ParseError};
+use parser::{LexError, ParseError};
 use rowan::{GreenNodeBuilder, Language, TextRange, TextSize};
 
 use crate::{Parse, SyntaxKind};
@@ -8,9 +8,9 @@ use crate::{Parse, SyntaxKind};
 pub(crate) use rowan::GreenNode;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum RustLanguage {}
+pub enum LuaLanguage {}
 
-impl Language for RustLanguage {
+impl Language for LuaLanguage {
     type Kind = SyntaxKind;
 
     fn kind_from_raw(raw: rowan::SyntaxKind) -> SyntaxKind {
@@ -51,11 +51,11 @@ impl fmt::Display for SyntaxError {
     }
 }
 
-pub type SyntaxNode = rowan::SyntaxNode<RustLanguage>;
-pub type SyntaxToken = rowan::SyntaxToken<RustLanguage>;
-pub type SyntaxElement = rowan::SyntaxElement<RustLanguage>;
-pub type SyntaxNodeChildren = rowan::SyntaxNodeChildren<RustLanguage>;
-pub type SyntaxElementChildren = rowan::SyntaxElementChildren<RustLanguage>;
+pub type SyntaxNode = rowan::SyntaxNode<LuaLanguage>;
+pub type SyntaxToken = rowan::SyntaxToken<LuaLanguage>;
+pub type SyntaxElement = rowan::SyntaxElement<LuaLanguage>;
+pub type SyntaxNodeChildren = rowan::SyntaxNodeChildren<LuaLanguage>;
+pub type SyntaxElementChildren = rowan::SyntaxElementChildren<LuaLanguage>;
 
 #[derive(Default)]
 pub struct SyntaxTreeBuilder {
@@ -75,12 +75,12 @@ impl SyntaxTreeBuilder {
     }
 
     pub fn token(&mut self, kind: SyntaxKind, text: &str) {
-        let kind = RustLanguage::kind_to_raw(kind);
+        let kind = LuaLanguage::kind_to_raw(kind);
         self.inner.token(kind, text)
     }
 
     pub fn start_node(&mut self, kind: SyntaxKind) {
-        let kind = RustLanguage::kind_to_raw(kind);
+        let kind = LuaLanguage::kind_to_raw(kind);
         self.inner.start_node(kind)
     }
 
