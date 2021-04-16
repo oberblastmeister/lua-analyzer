@@ -2,6 +2,7 @@
 name = "parser"
 version = "0.0.0"
 authors = ["Brian Shu <littlebubu.shu@gmail.com>"]
+license = "MIT/Apache-2.0"
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
