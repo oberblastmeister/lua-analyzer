@@ -31,14 +31,14 @@ dependencies = [
 
 [[package]]
 name = "binding_powers"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "binding_powers_impl",
 ]
 
 [[package]]
 name = "binding_powers_impl"
-version = "0.1.0"
+version = "0.0.2"
 
 [[package]]
 name = "bitflags"
@@ -495,7 +495,7 @@ dependencies = [
 
 [[package]]
 name = "parser"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "binding_powers",
  "drop_bomb",
