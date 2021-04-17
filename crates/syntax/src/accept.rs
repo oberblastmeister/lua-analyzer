@@ -12,13 +12,6 @@ pub trait Lexable {
     {
         self.nth(p, 0)
     }
-
-    fn bump(self, l: &mut Lexer<'_>)
-    where
-        Self: Sized,
-    {
-        l.bump().unwrap();
-    }
 }
 
 pub trait Accept: Lexable {
@@ -27,11 +20,18 @@ pub trait Accept: Lexable {
         Self: Lexable + Sized + Copy,
     {
         if self.peek(l) && !l.eof() {
-            self.bump(l);
+            l.bump().unwrap();
             true
         } else {
             false
         }
+    }
+
+    fn bump(self, l: &mut Lexer<'_>)
+    where
+        Self: Lexable + Sized + Copy,
+    {
+        assert!(self.accept(l), "Failed to accept");
     }
 
     fn accept_while(self, l: &mut Lexer<'_>)
@@ -108,16 +108,23 @@ macro_rules! tuple_seq {
                     fn nth(self, l: &Lexer<'_>, n: u32) -> bool {
                         $( self.0.$n.nth(l, $n + n) )&&+
                     }
-
-                    fn bump(self, l: &mut Lexer<'_>) {
-                        $( self.0.$n.bump(l); )+
-                    }
                 }
 
             impl<$($name),+> Accept for Seq<($($name),+)>
             where
                 $($name: Lexable + Copy + Accept,)+
             {
+                fn accept(self, l: &mut Lexer<'_>) -> bool
+                    where
+                        Self: Lexable + Sized + Copy,
+                {
+                    if self.peek(l) && !l.eof() {
+                        $( self.0.$n.accept(l); )+
+                        true
+                    } else {
+                        false
+                    }
+                }
             }
         )+
     };
@@ -180,13 +187,6 @@ impl<T: Lexable + Copy> Lexable for Not<T> {
         Self: Sized,
     {
         !T::nth(self.0, p, n)
-    }
-
-    fn bump(self, l: &mut Lexer<'_>)
-    where
-        Self: Sized,
-    {
-        self.0.bump(l)
     }
 }
 
