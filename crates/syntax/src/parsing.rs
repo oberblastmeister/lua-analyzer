@@ -13,10 +13,10 @@ pub(crate) fn parse_text(text: &str) -> (GreenNode, Vec<SyntaxError>) {
     let mut errors = vec![];
     for res in tokenize_iter(&text) {
         match res {
-            Ok(v) => tokens.push(v),
-            Err(v) => {
-                tokens.push(v.to_unknown());
-                errors.push(v.into());
+            Ok(tok) => tokens.push(tok),
+            Err(e) => {
+                tokens.push(e.to_unknown_token());
+                errors.push(e.into());
             }
         }
     }

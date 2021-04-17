@@ -1,17 +1,17 @@
 pub mod ast;
 #[doc(hidden)]
 pub mod fuzz;
+mod lexer;
 mod parsing;
 mod syntax_node;
-mod lexer;
 #[cfg(test)]
 mod tests;
 mod validation;
 
-use std::{fmt, marker::PhantomData, sync::Arc};
+use std::{marker::PhantomData, sync::Arc};
 
 use ast::AstNode;
-pub use parser::{SyntaxKind, T, Token};
+pub use parser::{SyntaxKind, Token, T};
 use rowan::GreenNode;
 
 pub use syntax_node::{

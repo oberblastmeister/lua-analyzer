@@ -1,10 +1,10 @@
 use std::fmt;
 
 use crate::lexer::LexError;
-use parser::ParseError;
+use parser::{ParseError, Token};
 use rowan::{GreenNodeBuilder, Language, TextRange, TextSize};
 
-use crate::{Parse, SyntaxKind};
+use crate::{Parse, SyntaxKind, T};
 
 pub(crate) use rowan::GreenNode;
 
@@ -37,6 +37,10 @@ impl SyntaxError {
 
     pub fn range(&self) -> TextRange {
         self.1
+    }
+
+    pub fn to_unknown_token(&self) -> Token {
+        Token::new(T![unknown], self.range())
     }
 }
 

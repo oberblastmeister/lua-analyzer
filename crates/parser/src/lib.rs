@@ -30,6 +30,12 @@ pub struct Token {
     pub range: TextRange,
 }
 
+impl Token {
+    pub fn new(kind: SyntaxKind, range: TextRange) -> Token {
+        Token { kind, range }
+    }
+}
+
 pub trait TokenSource {
     fn current(&self) -> Token;
 

@@ -5,7 +5,7 @@ use itertools::{Either, Itertools};
 use rowan::{TextRange, TextSize};
 use thiserror::Error;
 
-use crate::{SyntaxKind, T};
+use crate::{SyntaxError, SyntaxKind, T};
 use parser::Token;
 
 pub(crate) const EOF_CHAR: char = '\0';
@@ -22,15 +22,25 @@ macro_rules! assert_matches {
     };
 }
 
+struct WithLen<T> {
+    inner: T,
+    len: TextSize,
+}
 
-pub fn tokenize(input: &str) -> (Vec<Token>, Vec<LexError>) {
+impl<T> WithLen<T> {
+    fn new(t: T, len: TextSize) -> Self {
+        Self { inner: t, len }
+    }
+}
+
+pub fn tokenize(input: &str) -> (Vec<Token>, Vec<SyntaxError>) {
     tokenize_iter(input).partition_map(|r| match r {
         Ok(v) => Either::Left(v),
         Err(v) => Either::Right(v),
     })
 }
 
-pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = Result<Token, LexError>> + '_ {
+pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = Result<Token, SyntaxError>> + '_ {
     let mut pos = TextSize::from(0);
 
     iter::from_fn(move || {
@@ -40,29 +50,21 @@ pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = Result<Token, LexE
 
         match first_token(input) {
             Ok(token) => {
-                let len = token.1;
-                let end = pos + len;
+                let len = token.len;
 
-                let token = Token {
-                    kind: token.0,
-                    range: TextRange::new(pos, end),
-                };
+                let token = Token::new(token.inner, TextRange::at(pos, len));
 
-                pos = end;
+                pos += len;
                 input = &input[len.into()..];
 
                 Some(Ok(token))
             }
             Err(err) => {
-                let len = err.1;
-                let end = pos + len;
+                let len = err.len;
 
-                let e = LexError {
-                    msg: err.0,
-                    range: TextRange::new(pos, end),
-                };
+                let e = SyntaxError::new(err.inner.0, TextRange::at(pos, len));
 
-                pos = end;
+                pos += len;
                 input = &input[len.into()..];
 
                 Some(Err(e))
@@ -71,7 +73,7 @@ pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = Result<Token, LexE
     })
 }
 
-pub fn first_token(input: &str) -> Result<(SyntaxKind, TextSize), (LexErrorMsg, TextSize)> {
+fn first_token(input: &str) -> Result<WithLen<SyntaxKind>, WithLen<LexErrorMsg>> {
     Lexer::new(input).next_token()
 }
 
@@ -93,7 +95,7 @@ impl LexError {
 
 #[derive(Debug, Error, PartialEq, Eq)]
 #[error("{0}")]
-pub struct LexErrorMsg(&'static str);
+pub struct LexErrorMsg(String);
 
 type LexResult<T, E = LexErrorMsg> = Result<T, E>;
 
@@ -154,10 +156,10 @@ impl<'a> Lexer<'a> {
         self.current()
     }
 
-    fn next_token(&mut self) -> Result<(SyntaxKind, TextSize), (LexErrorMsg, TextSize)> {
+    fn next_token(mut self) -> Result<WithLen<SyntaxKind>, WithLen<LexErrorMsg>> {
         self.lex_main()
-            .map(|kind| (kind, self.pos().into()))
-            .map_err(|e| (e, self.pos().into()))
+            .map(|kind| WithLen::new(kind, self.pos().into()))
+            .map_err(|e| WithLen::new(e, self.pos().into()))
     }
 
     fn accept<T: Accept + Copy>(&mut self, t: T) -> bool {
@@ -298,7 +300,7 @@ impl<'a> Lexer<'a> {
 
             let mut set_err = || {
                 if err.is_ok() {
-                    err = Err(LexErrorMsg("Invalid bracket notation"));
+                    err = Err(LexErrorMsg("Invalid bracket notation".to_string()));
                 }
             };
 

@@ -153,6 +153,7 @@ dependencies = [
  "itertools",
  "parser",
  "rowan",
+ "thiserror",
 ]
 
 [[package]]
