@@ -1,0 +1,47 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/err/multiline_strings.lua
+
+---
+[
+    Token {
+        kind: Unknown,
+        range: 0..12,
+    },
+    Token {
+        kind: Whitespace,
+        range: 12..13,
+    },
+    Token {
+        kind: Unknown,
+        range: 13..21,
+    },
+    Token {
+        kind: Whitespace,
+        range: 21..22,
+    },
+    Token {
+        kind: Unknown,
+        range: 22..34,
+    },
+    Token {
+        kind: Whitespace,
+        range: 34..35,
+    },
+]
+
+[
+    SyntaxError(
+        "Invalid bracket notation",
+        0..12,
+    ),
+    SyntaxError(
+        "Invalid bracket notation",
+        13..21,
+    ),
+    SyntaxError(
+        "Invalid bracket notation",
+        22..34,
+    ),
+]

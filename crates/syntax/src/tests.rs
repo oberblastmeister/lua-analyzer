@@ -1,4 +1,4 @@
-use super::lexer::{tokenize_iter, LexError};
+use super::lexer::{tokenize, tokenize_iter, LexError};
 use super::*;
 use std::{
     fmt, fs,
@@ -20,6 +20,21 @@ fn parser() {
         let errors = parse.errors();
         assert_errors_are_present(errors, path);
         dump_parse(parse)
+    })
+}
+
+#[test]
+fn lexer() {
+    dir_tests(snapshots_dir(), &["lexer/ok"], |path, text| {
+        let (tokens, errors) = tokenize(text);
+        assert_errors_are_absent(&errors, path);
+        format!("{:#?}", tokens)
+    });
+
+    dir_tests(snapshots_dir(), &["lexer/err"], |path, text| {
+        let (tokens, errors) = tokenize(text);
+        assert_errors_are_present(&errors, path);
+        format!("{:#?}\n\n{:#?}", tokens, errors)
     })
 }
 
@@ -151,30 +166,6 @@ fn project_root() -> PathBuf {
 }
 
 #[test]
-#[ignore]
-fn lexer() {
-    fn get_text(
-        input: &str,
-        tokens: impl Iterator<Item = Result<Token, LexError>>,
-    ) -> Vec<Result<(Token, &str), (LexError, &str)>> {
-        tokens
-            .into_iter()
-            .map(|res| match res {
-                Ok(token) => {
-                    let text = &input[token.range];
-                    Ok((token, text))
-                }
-                Err(e) => {
-                    let text = &input[e.range];
-                    Err((e, text))
-                }
-            })
-            .collect()
-    }
-}
-
-#[test]
-#[ignore]
 fn nothing() {
     insta::assert_debug_snapshot!(Program::parse("").syntax_node(), @"Program@0..0")
 }

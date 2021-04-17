@@ -1,0 +1,40 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/assignment.lua
+
+---
+[
+    Token {
+        kind: LocalKw,
+        range: 0..5,
+    },
+    Token {
+        kind: Whitespace,
+        range: 5..6,
+    },
+    Token {
+        kind: Ident,
+        range: 6..11,
+    },
+    Token {
+        kind: Whitespace,
+        range: 11..12,
+    },
+    Token {
+        kind: Eq,
+        range: 12..13,
+    },
+    Token {
+        kind: Whitespace,
+        range: 13..14,
+    },
+    Token {
+        kind: Number,
+        range: 14..15,
+    },
+    Token {
+        kind: Whitespace,
+        range: 15..16,
+    },
+]

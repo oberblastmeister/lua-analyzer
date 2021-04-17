@@ -1,0 +1,7 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/empty.lua
+
+---
+[]

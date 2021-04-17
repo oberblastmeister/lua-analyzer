@@ -1,0 +1,16 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/concat.lua
+
+---
+[
+    Token {
+        kind: DoubleDot,
+        range: 0..2,
+    },
+    Token {
+        kind: Whitespace,
+        range: 2..3,
+    },
+]

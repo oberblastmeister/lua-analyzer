@@ -1,0 +1,32 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/multiline_strings.lua
+
+---
+[
+    Token {
+        kind: Str,
+        range: 0..33,
+    },
+    Token {
+        kind: Whitespace,
+        range: 33..34,
+    },
+    Token {
+        kind: Str,
+        range: 34..59,
+    },
+    Token {
+        kind: Whitespace,
+        range: 59..60,
+    },
+    Token {
+        kind: Str,
+        range: 60..71,
+    },
+    Token {
+        kind: Whitespace,
+        range: 71..72,
+    },
+]

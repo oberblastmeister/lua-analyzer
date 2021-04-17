@@ -1,0 +1,60 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/numbers.lua
+
+---
+[
+    Token {
+        kind: Whitespace,
+        range: 0..13,
+    },
+    Token {
+        kind: Number,
+        range: 13..14,
+    },
+    Token {
+        kind: Whitespace,
+        range: 14..15,
+    },
+    Token {
+        kind: Number,
+        range: 15..18,
+    },
+    Token {
+        kind: Whitespace,
+        range: 18..21,
+    },
+    Token {
+        kind: Number,
+        range: 21..27,
+    },
+    Token {
+        kind: Whitespace,
+        range: 27..31,
+    },
+    Token {
+        kind: Number,
+        range: 31..40,
+    },
+    Token {
+        kind: Whitespace,
+        range: 40..47,
+    },
+    Token {
+        kind: Number,
+        range: 47..55,
+    },
+    Token {
+        kind: Whitespace,
+        range: 55..57,
+    },
+    Token {
+        kind: Number,
+        range: 57..61,
+    },
+    Token {
+        kind: Whitespace,
+        range: 61..62,
+    },
+]

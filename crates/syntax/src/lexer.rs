@@ -33,11 +33,19 @@ impl<T> WithLen<T> {
     }
 }
 
-pub fn tokenize(input: &str) -> (Vec<Token>, Vec<SyntaxError>) {
-    tokenize_iter(input).partition_map(|r| match r {
-        Ok(v) => Either::Left(v),
-        Err(v) => Either::Right(v),
-    })
+pub fn tokenize(text: &str) -> (Vec<Token>, Vec<SyntaxError>) {
+    let mut tokens = vec![];
+    let mut errors = vec![];
+    for res in tokenize_iter(text) {
+        match res {
+            Ok(tok) => tokens.push(tok),
+            Err(e) => {
+                tokens.push(e.to_unknown_token());
+                errors.push(e.into());
+            }
+        }
+    }
+    (tokens, errors)
 }
 
 pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = Result<Token, SyntaxError>> + '_ {
@@ -517,255 +525,49 @@ const fn is_hex(c: char) -> bool {
     matches!(c, '0'..='9' | 'A'..='F' | 'a'..='f')
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use std::str;
+#[cfg(test)]
+mod tests {
+    use std::str;
 
-//     use super::*;
+    use super::*;
 
-//     fn get_text(
-//         input: &str,
-//         tokens: impl Iterator<Item = Result<Token, LexError>>,
-//     ) -> Vec<Result<(Token, &str), (LexError, &str)>> {
-//         let mut pos: usize = 0;
-//         tokens
-//             .into_iter()
-//             .map(|res| match res {
-//                 Ok(token) => {
-//                     let text = &input[token.range];
-//                     Ok((token, text))
-//                 }
-//                 Err(e) => {
-//                     let text = &input[e.range];
-//                     Err((e, text))
-//                 }
-//             })
-//             .collect()
-//     }
+    #[test]
+    fn accept_tuple() {
+        let mut lexer = Lexer::new("[=");
+        lexer.accept(('[', '='));
+        assert!(lexer.eof());
+    }
 
-//     fn check(input: &str) {
-//         let tokens = get_text(input, tokenize_iter(input));
-//         insta::assert_debug_snapshot!(tokens);
-//     }
+    #[test]
+    fn accept_tuple_fail() {
+        let mut lexer = Lexer::new("[]");
+        lexer.accept(('[', '='));
+        assert_eq!(lexer.pos(), 0);
+        assert_eq!(lexer.current(), '[');
+        lexer.bump().unwrap();
+        assert_eq!(lexer.current(), ']');
+    }
 
-//     fn lex(input: &str) {
-//         let tokens = get_text(input, tokenize_iter(input));
-//     }
+    #[test]
+    fn accept_repeat() {
+        let mut lexer = Lexer::new("===================");
+        lexer.accept_repeat('=', 19);
+        assert!(lexer.eof());
+    }
 
-//     #[test]
-//     fn accept_tuple() {
-//         let mut lexer = Lexer::new("[=");
-//         lexer.accept(('[', '='));
-//         assert!(lexer.eof());
-//     }
+    #[test]
+    fn accept_repeat_not_enough() {
+        let mut lexer = Lexer::new("==");
+        lexer.accept_repeat('=', 4);
+        assert_eq!(lexer.pos(), 0);
+        lexer.accept_repeat('=', 2);
+        assert!(lexer.eof());
+    }
 
-//     #[test]
-//     fn accept_tuple_fail() {
-//         let mut lexer = Lexer::new("[]");
-//         lexer.accept(('[', '='));
-//         assert_eq!(lexer.pos(), 0);
-//         assert_eq!(lexer.current(), '[');
-//         lexer.bump().unwrap();
-//         assert_eq!(lexer.current(), ']');
-//     }
-
-//     #[test]
-//     fn accept_repeat() {
-//         let mut lexer = Lexer::new("===================");
-//         lexer.accept_repeat('=', 19);
-//         assert!(lexer.eof());
-//     }
-
-//     #[test]
-//     fn accept_repeat_not_enough() {
-//         let mut lexer = Lexer::new("==");
-//         lexer.accept_repeat('=', 4);
-//         assert_eq!(lexer.pos(), 0);
-//         lexer.accept_repeat('=', 2);
-//         assert!(lexer.eof());
-//     }
-
-//     #[test]
-//     fn accept_repeat_none() {
-//         let mut lexer = Lexer::new("not");
-//         assert!(lexer.accept_repeat('=', 0));
-//         assert_eq!(lexer.pos(), 0);
-//     }
-
-//     #[test]
-//     fn first_token_test() {
-//         insta::assert_debug_snapshot!(first_token("hello"))
-//     }
-
-//     #[test]
-//     fn empty() {
-//         check("")
-//     }
-
-//     #[test]
-//     fn idents() {
-//         check(
-//             "hello
-//    world yes
-//               ",
-//         )
-//     }
-
-//     #[test]
-//     fn numbers() {
-//         check(
-//             "3 3.0
-//   3.1416    314.16e-2
-//       3.1416E1  0xff",
-//         )
-//     }
-
-//     #[test]
-//     fn strings() {
-//         check(
-//             r#"
-// "str
-// "
-// "this is a string"
-
-// '
-// another string
-// '
-//               "#,
-//         )
-//     }
-
-//     #[test]
-//     fn multiline_strings() {
-//         check(
-//             r#"
-// [[
-// bracketd string134 asd
-// asdf
-// ]]
-//             "#,
-//         )
-//     }
-
-//     #[test]
-//     fn multiline_equals() {
-//         check(
-//             r#"
-// [=====[
-// bracketd string134 asd
-
-// ]=====]
-//             "#,
-//         )
-//     }
-
-//     #[test]
-//     fn math() {
-//         check(
-//             "
-// 5 + 1
-// 12 * 3
-// 34 - 23
-// 2/1
-// 5 % 1
-// 5^6
-//               ",
-//         )
-//     }
-
-//     #[test]
-//     fn operators() {
-//         check(
-//             "
-// !13 !true
-//             ",
-//         )
-//     }
-
-//     #[test]
-//     fn keywords() {
-//         check(
-//             r#"
-// -- taken from the lua reference
-//  and       break     do        else      elseif    end
-//  false     for       function  goto      if        in
-//  local     nil       not       or        repeat    return
-//  then      true      until     while
-//  local var = "asdf"
-//             "#,
-//         )
-//     }
-
-//     #[test]
-//     fn delimiters() {
-//         check(
-//             r#"
-// {hello = "another"}
-// asdf()
-// [][]
-//             "#,
-//         )
-//     }
-
-//     #[test]
-//     fn punct() {
-//         check(
-//             r#"
-// ,.awe;:!;
-//             "#,
-//         )
-//     }
-
-//     #[test]
-//     fn assignment() {
-//         check("local hello = 5")
-//     }
-
-//     #[test]
-//     fn vararg() {
-//         check("function(...) print(...) end")
-//     }
-
-//     #[test]
-//     fn concat() {
-//         check("..")
-//     }
-
-//     #[test]
-//     fn double_colon() {
-//         check("::continue:: ::has::")
-//     }
-
-//     #[test]
-//     fn null() {
-//         tokenize("\0");
-//         tokenize(str::from_utf8(&[0]).unwrap());
-//     }
-
-//     #[test]
-//     fn weird_91() {
-//         tokenize(str::from_utf8(&[91, 91]).unwrap());
-//     }
-
-//     #[test]
-//     fn hex_numbers() {
-//         check("0xffffffff hello 0x12345678")
-//     }
-
-//     #[test]
-//     fn multi_string() {
-//         check("[[this is a long string]] [[another]]")
-//     }
-
-//     #[test]
-//     fn multi_string_with_equals() {
-//         check("[=====[s]=====] [==[an]==]")
-//     }
-
-//     #[test]
-//     fn multi_string_fail() {
-//         check("[===[sdf]==]");
-//         check("[=[adf]]");
-//         check("[[asdf]====]")
-//     }
-// }
+    #[test]
+    fn accept_repeat_none() {
+        let mut lexer = Lexer::new("not");
+        assert!(lexer.accept_repeat('=', 0));
+        assert_eq!(lexer.pos(), 0);
+    }
+}

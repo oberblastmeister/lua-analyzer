@@ -1,0 +1,36 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/idents.lua
+
+---
+[
+    Token {
+        kind: Whitespace,
+        range: 0..12,
+    },
+    Token {
+        kind: Ident,
+        range: 12..17,
+    },
+    Token {
+        kind: Whitespace,
+        range: 17..21,
+    },
+    Token {
+        kind: Ident,
+        range: 21..26,
+    },
+    Token {
+        kind: Whitespace,
+        range: 26..27,
+    },
+    Token {
+        kind: Ident,
+        range: 27..30,
+    },
+    Token {
+        kind: Whitespace,
+        range: 30..31,
+    },
+]

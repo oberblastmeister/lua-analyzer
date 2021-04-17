@@ -1,0 +1,32 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/hex_numbers.lua
+
+---
+[
+    Token {
+        kind: Number,
+        range: 0..10,
+    },
+    Token {
+        kind: Whitespace,
+        range: 10..11,
+    },
+    Token {
+        kind: Ident,
+        range: 11..16,
+    },
+    Token {
+        kind: Whitespace,
+        range: 16..17,
+    },
+    Token {
+        kind: Number,
+        range: 17..27,
+    },
+    Token {
+        kind: Whitespace,
+        range: 27..28,
+    },
+]

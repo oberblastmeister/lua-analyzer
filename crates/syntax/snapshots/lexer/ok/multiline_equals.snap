@@ -1,0 +1,24 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/multiline_equals.lua
+
+---
+[
+    Token {
+        kind: Str,
+        range: 0..15,
+    },
+    Token {
+        kind: Whitespace,
+        range: 15..16,
+    },
+    Token {
+        kind: Str,
+        range: 16..26,
+    },
+    Token {
+        kind: Whitespace,
+        range: 26..27,
+    },
+]

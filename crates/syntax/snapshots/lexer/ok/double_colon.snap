@@ -1,0 +1,40 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/double_colon.lua
+
+---
+[
+    Token {
+        kind: DoubleColon,
+        range: 0..2,
+    },
+    Token {
+        kind: Ident,
+        range: 2..10,
+    },
+    Token {
+        kind: DoubleColon,
+        range: 10..12,
+    },
+    Token {
+        kind: Whitespace,
+        range: 12..13,
+    },
+    Token {
+        kind: DoubleColon,
+        range: 13..15,
+    },
+    Token {
+        kind: Ident,
+        range: 15..18,
+    },
+    Token {
+        kind: DoubleColon,
+        range: 18..20,
+    },
+    Token {
+        kind: Whitespace,
+        range: 20..21,
+    },
+]

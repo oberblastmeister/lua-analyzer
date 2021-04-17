@@ -1,0 +1,40 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/punct.lua
+
+---
+[
+    Token {
+        kind: Comma,
+        range: 0..1,
+    },
+    Token {
+        kind: Dot,
+        range: 1..2,
+    },
+    Token {
+        kind: Ident,
+        range: 2..5,
+    },
+    Token {
+        kind: Semicolon,
+        range: 5..6,
+    },
+    Token {
+        kind: Colon,
+        range: 6..7,
+    },
+    Token {
+        kind: Bang,
+        range: 7..8,
+    },
+    Token {
+        kind: Semicolon,
+        range: 8..9,
+    },
+    Token {
+        kind: Whitespace,
+        range: 9..10,
+    },
+]
