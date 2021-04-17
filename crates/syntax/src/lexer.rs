@@ -16,6 +16,12 @@ macro_rules! done {
     };
 }
 
+macro_rules! bail {
+    ($( $stuff:tt )*) => {
+        return Err(LexErrorMsg(format!($( $stuff )*)))
+    };
+}
+
 macro_rules! assert_matches {
     ($expr:expr, $($stuff:tt)+) => {
         assert!(matches!($expr, $($stuff)+))
@@ -366,9 +372,18 @@ impl<'a> Lexer<'a> {
         assert_eq!(self.current(), delimit);
         self.bump().unwrap();
 
-        self.chars
-            .find(|c| *c == delimit)
-            .ok_or(LexErrorMsg("UnfinishedString".into()))?;
+        loop {
+            match self.current() {
+                '\0' => bail!("Could not find closing delimiter `{}`", delimit),
+                '\n' => bail!("Unexpected newline in string"),
+                c if c == delimit => {
+                    self.bump().unwrap();
+                    break;
+                }
+                _ => (),
+            }
+            self.bump().unwrap();
+        }
 
         Ok(T![str])
     }

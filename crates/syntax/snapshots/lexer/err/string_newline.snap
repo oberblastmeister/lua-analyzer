@@ -1,0 +1,39 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/err/string_newline.lua
+
+---
+[
+    Token {
+        kind: Unknown,
+        range: 0..1,
+    },
+    Token {
+        kind: Whitespace,
+        range: 1..2,
+    },
+    Token {
+        kind: Ident,
+        range: 2..10,
+    },
+    Token {
+        kind: Unknown,
+        range: 10..11,
+    },
+    Token {
+        kind: Whitespace,
+        range: 11..12,
+    },
+]
+
+[
+    SyntaxError(
+        "Unexpected newline in string",
+        0..1,
+    ),
+    SyntaxError(
+        "Unexpected newline in string",
+        10..11,
+    ),
+]

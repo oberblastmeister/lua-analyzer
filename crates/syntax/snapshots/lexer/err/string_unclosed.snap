@@ -1,0 +1,23 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/err/string_unclosed.lua
+
+---
+[
+    Token {
+        kind: Unknown,
+        range: 0..9,
+    },
+    Token {
+        kind: Whitespace,
+        range: 9..10,
+    },
+]
+
+[
+    SyntaxError(
+        "Unexpected newline in string",
+        0..9,
+    ),
+]
