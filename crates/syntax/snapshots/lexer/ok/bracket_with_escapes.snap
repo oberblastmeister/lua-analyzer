@@ -1,0 +1,72 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/bracket_with_escapes.lua
+
+---
+[
+    Token {
+        kind: LocalKw,
+        range: 0..5,
+    },
+    Token {
+        kind: Whitespace,
+        range: 5..6,
+    },
+    Token {
+        kind: Ident,
+        range: 6..7,
+    },
+    Token {
+        kind: Whitespace,
+        range: 7..8,
+    },
+    Token {
+        kind: Eq,
+        range: 8..9,
+    },
+    Token {
+        kind: Whitespace,
+        range: 9..10,
+    },
+    Token {
+        kind: Str,
+        range: 10..60,
+    },
+    Token {
+        kind: Whitespace,
+        range: 60..61,
+    },
+    Token {
+        kind: LocalKw,
+        range: 61..66,
+    },
+    Token {
+        kind: Whitespace,
+        range: 66..67,
+    },
+    Token {
+        kind: Ident,
+        range: 67..68,
+    },
+    Token {
+        kind: Whitespace,
+        range: 68..69,
+    },
+    Token {
+        kind: Eq,
+        range: 69..70,
+    },
+    Token {
+        kind: Whitespace,
+        range: 70..71,
+    },
+    Token {
+        kind: Str,
+        range: 71..96,
+    },
+    Token {
+        kind: Whitespace,
+        range: 96..97,
+    },
+]

@@ -1,6 +1,7 @@
 pub mod ast;
 #[doc(hidden)]
 pub mod fuzz;
+mod accept;
 mod lexer;
 mod parsing;
 mod syntax_node;

@@ -4,6 +4,7 @@ use std::{iter, ops::Range};
 use rowan::{TextRange, TextSize};
 use thiserror::Error;
 
+use crate::accept::{Accept, And, Any, Not, Or, Lexable, Seq};
 use crate::{SyntaxError, SyntaxKind, T};
 use parser::Token;
 
@@ -129,11 +130,11 @@ impl<'a> Lexer<'a> {
         self.chars.clone()
     }
 
-    fn nth(&self, n: u32) -> char {
+    pub(crate) fn nth(&self, n: u32) -> char {
         self.chars().nth(n as usize).unwrap_or(EOF_CHAR)
     }
 
-    fn eof(&self) -> bool {
+    pub(crate) fn eof(&self) -> bool {
         self.at('\0')
     }
 
@@ -142,7 +143,7 @@ impl<'a> Lexer<'a> {
         self.nth(0)
     }
 
-    fn at<T: Peek>(&self, t: T) -> bool {
+    fn at<T: Lexable>(&self, t: T) -> bool {
         T::peek(t, self)
     }
 
@@ -160,7 +161,7 @@ impl<'a> Lexer<'a> {
         self.input_len - self.chars_len()
     }
 
-    fn bump(&mut self) -> Option<char> {
+    pub(crate) fn bump(&mut self) -> Option<char> {
         self.chars.next()
     }
 
@@ -181,6 +182,10 @@ impl<'a> Lexer<'a> {
 
     fn accept_while<T: Accept + Copy>(&mut self, t: T) {
         T::accept_while(t, self)
+    }
+
+    fn accept_until<T: Accept + Copy>(&mut self, t: T) {
+        T::accept_until(t, self)
     }
 
     fn accept_while_count<T: Accept + Copy>(&mut self, t: T) -> u32 {
@@ -273,7 +278,7 @@ impl<'a> Lexer<'a> {
     fn number(&mut self) -> LexResult<SyntaxKind> {
         assert!(self.at(is_number));
 
-        if self.accept(('0', 'x')) {
+        if self.accept(Seq(('0', 'x'))) {
             self.accept_while(is_hex);
             done!(T![number]);
         }
@@ -328,9 +333,10 @@ impl<'a> Lexer<'a> {
             expect!(l.accept('['));
 
             loop {
-                l.accept_while(|c| c != ']');
+                l.accept_while(Or((Seq(('\\', ']')), Not(']'))));
 
                 if !l.accept(']') {
+                    // we hit eof
                     bail!("Could not find bracket string close");
                 }
 
@@ -405,125 +411,6 @@ impl<'a> Lexer<'a> {
         SyntaxKind::from_keyword(text).unwrap_or(T![ident])
     }
 }
-
-pub trait Peek {
-    fn nth(self, p: &Lexer<'_>, n: u32) -> bool;
-
-    fn peek(self, p: &Lexer<'_>) -> bool
-    where
-        Self: Sized,
-    {
-        self.nth(p, 0)
-    }
-}
-
-trait Accept: Peek {
-    fn accept(self, l: &mut Lexer<'_>) -> bool
-    where
-        Self: Peek + Sized,
-    {
-        if self.peek(l) && !l.eof() {
-            l.bump().unwrap();
-            true
-        } else {
-            false
-        }
-    }
-
-    fn accept_while(self, l: &mut Lexer<'_>)
-    where
-        Self: Peek + Sized + Copy,
-    {
-        while self.accept(l) {}
-    }
-
-    fn accept_while_count(self, l: &mut Lexer<'_>) -> u32
-    where
-        Self: Peek + Sized + Copy,
-    {
-        let mut count = 0;
-        while self.accept(l) {
-            count += 1;
-        }
-        count
-    }
-
-    fn accept_repeat(self, l: &mut Lexer<'_>, repeat: u32) -> bool
-    where
-        Self: Peek + Sized + Copy,
-    {
-        if (0..repeat).all(|i| self.nth(l, i)) {
-            for _ in 0..repeat {
-                l.bump().unwrap();
-            }
-            true
-        } else {
-            false
-        }
-    }
-}
-
-impl Peek for char {
-    fn nth(self, l: &Lexer<'_>, n: u32) -> bool {
-        l.nth(n) == self
-    }
-}
-impl Accept for char {}
-
-impl<T: Fn(char) -> bool> Peek for T {
-    fn nth(self, l: &Lexer<'_>, n: u32) -> bool {
-        self(l.nth(n))
-    }
-}
-impl<T: Fn(char) -> bool> Accept for T {}
-
-impl Peek for Range<char> {
-    fn nth(self, l: &Lexer<'_>, n: u32) -> bool {
-        self.contains(&l.nth(n))
-    }
-}
-impl Accept for Range<char> {}
-
-macro_rules! tuple_impls {
-    { $( ($( $n:tt $name:ident )+ $(,)?) ),+ $(,)? } => {
-        $(
-            impl<$($name),+> Peek for ($($name),+)
-            where
-                $($name: Peek,)+
-                {
-                    fn nth(self, l: &Lexer<'_>, n: u32) -> bool {
-                        $( self.$n.nth(l, $n + n) )&&+
-                    }
-                }
-
-            impl<$($name),+> Accept for ($($name),+)
-            where
-                $($name: Accept,)+
-                {
-                    fn accept(self, l: &mut Lexer<'_>) -> bool {
-                        if self.peek(l) {
-                            $( $n; l.bump().unwrap(); )+
-                            true
-                        } else {
-                            false
-                        }
-                    }
-                }
-        )+
-    };
-}
-
-tuple_impls! {
-    (0 TO 1 T1),
-    (0 TO 1 T1 2 T2),
-    (0 TO 1 T1 2 T2 3 T3),
-    (0 TO 1 T1 2 T2 3 T3 4 T4),
-    (0 TO 1 T1 2 T2 3 T3 4 T4 5 T5),
-    (0 TO 1 T1 2 T2 3 T3 4 T4 5 T5 6 T6),
-    (0 TO 1 T1 2 T2 3 T3 4 T4 5 T5 6 T6 7 T7),
-    (0 TO 1 T1 2 T2 3 T3 4 T4 5 T5 6 T6 7 T7 8 T8),
-}
-
 const fn is_number(c: char) -> bool {
     matches!(c, '0'..='9')
 }
@@ -546,21 +433,19 @@ const fn is_hex(c: char) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use std::str;
-
     use super::*;
 
     #[test]
     fn accept_tuple() {
         let mut lexer = Lexer::new("[=");
-        lexer.accept(('[', '='));
+        lexer.accept(Seq(('[', '=')));
         assert!(lexer.eof());
     }
 
     #[test]
     fn accept_tuple_fail() {
         let mut lexer = Lexer::new("[]");
-        lexer.accept(('[', '='));
+        lexer.accept(Seq(('[', '=')));
         assert_eq!(lexer.pos(), 0);
         assert_eq!(lexer.current(), '[');
         lexer.bump().unwrap();
@@ -588,5 +473,19 @@ mod tests {
         let mut lexer = Lexer::new("not");
         assert!(lexer.accept_repeat('=', 0));
         assert_eq!(lexer.pos(), 0);
+    }
+
+    #[test]
+    fn not() {
+        let mut lexer = Lexer::new(r"\]");
+        assert!(!lexer.accept(Not(Seq(('\\', ']')))));
+        assert_eq!(lexer.pos(), 0);
+    }
+
+    #[test]
+    fn combinations() {
+        let mut lexer = Lexer::new(r"\]    \]  ]]");
+        lexer.accept_while(Or((Seq(('\\', ']')), Not(']'))));
+        assert_eq!(lexer.pos(), 10);
     }
 }
