@@ -1,7 +1,6 @@
 use std::str::Chars;
 use std::{iter, ops::Range};
 
-use itertools::{Either, Itertools};
 use rowan::{TextRange, TextSize};
 use thiserror::Error;
 
@@ -328,14 +327,19 @@ impl<'a> Lexer<'a> {
 
             expect!(l.accept('['));
 
-            l.accept_while(|c| c != ']');
+            loop {
+                l.accept_while(|c| c != ']');
 
-            expect!(l.accept(']'));
+                if !l.accept(']') {
+                    bail!("Could not find bracket string close");
+                }
 
-            let close_count = l.accept_while_count('=');
-            if count != close_count {
-                set_err();
-                l.accept_while('=');
+                let close_count = l.accept_while_count('=');
+                if count != close_count {
+                    continue;
+                } else {
+                    break;
+                }
             }
 
             expect!(l.accept(']'));

@@ -1,7 +1,7 @@
 ---
 source: crates/syntax/src/tests.rs
 expression: actual
-input_file: crates/syntax/snapshots/lexer/err/multiline_strings.lua
+input_file: crates/syntax/snapshots/lexer/ok/bracket_confusing.lua
 
 ---
 [
@@ -15,29 +15,26 @@ input_file: crates/syntax/snapshots/lexer/err/multiline_strings.lua
     },
     Token {
         kind: Ident,
-        range: 6..7,
+        range: 6..11,
     },
     Token {
         kind: Whitespace,
-        range: 7..8,
+        range: 11..12,
     },
     Token {
         kind: Eq,
-        range: 8..9,
+        range: 12..13,
     },
     Token {
         kind: Whitespace,
-        range: 9..10,
+        range: 13..14,
     },
     Token {
-        kind: Unknown,
-        range: 10..46,
+        kind: Str,
+        range: 14..56,
     },
-]
-
-[
-    SyntaxError(
-        "Could not find bracket string close",
-        10..46,
-    ),
+    Token {
+        kind: Whitespace,
+        range: 56..57,
+    },
 ]

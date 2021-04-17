@@ -139,13 +139,14 @@ impl Validate for ast::Literal {
 }
 
 fn unquote(text: &str) -> Option<(TextSize, &str)> {
-    let delimit = text.chars().next()?;
+    let mut chars = text.chars();
+    let delimit = chars.next()?;
 
     if delimit == '\'' || delimit == '\"' {
         assert!(text.ends_with(delimit));
         text.get(1..text.len() - 1).map(|it| (1.into(), it))
     } else if delimit == '[' {
-        todo!();
+        todo!()
     } else {
         None
     }

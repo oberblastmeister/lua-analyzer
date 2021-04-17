@@ -1,5 +1,9 @@
-use crate::ast::Program;
+use crate::{ast::Program, lexer::tokenize};
 
 pub fn check_parser(text: &str) {
-    let program = Program::parse(text);
+    let _ = Program::parse(text);
+}
+
+pub fn check_lexer(text: &str) {
+    let _ = tokenize(text);
 }
