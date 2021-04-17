@@ -19,8 +19,8 @@ pub trait Accept: Lexable {
     where
         Self: Lexable + Sized + Copy,
     {
-        if self.peek(l) && !l.eof() {
-            l.bump().unwrap();
+        if self.peek(l) {
+            l.bump_raw().expect("Whatever was acceptable did not take into account eof");
             true
         } else {
             false
@@ -65,7 +65,7 @@ pub trait Accept: Lexable {
     {
         if (0..repeat).all(|i| self.nth(l, i)) {
             for _ in 0..repeat {
-                l.bump().unwrap();
+                l.bump_raw().unwrap();
             }
             true
         } else {
@@ -144,6 +144,12 @@ macro_rules! tuple_and {
                         $( self.0.$n.nth(l, n) )&&+
                     }
                 }
+
+            impl<$($name),+> Accept for And<($($name),+)>
+            where
+                $($name: Lexable + Copy + Accept,)+
+            {
+            }
         )+
     };
 }
@@ -205,8 +211,8 @@ macro_rules! tuple_impls {
 pub struct Any;
 
 impl Lexable for Any {
-    fn nth(self, p: &Lexer<'_>, _n: u32) -> bool {
-        !p.eof()
+    fn nth(self, _l: &Lexer<'_>, _n: u32) -> bool {
+        true
     }
 }
 

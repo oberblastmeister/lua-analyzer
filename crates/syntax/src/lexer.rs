@@ -4,7 +4,7 @@ use std::{iter, ops::Range};
 use rowan::{TextRange, TextSize};
 use thiserror::Error;
 
-use crate::accept::{Accept, And, Any, Not, Or, Lexable, Seq};
+use crate::accept::{Accept, And, Any, Lexable, Not, Or, Seq};
 use crate::{SyntaxError, SyntaxKind, T};
 use parser::Token;
 
@@ -144,7 +144,7 @@ impl<'a> Lexer<'a> {
     }
 
     fn at<T: Lexable>(&self, t: T) -> bool {
-        T::peek(t, self)
+        t.peek(self)
     }
 
     /// Checks if there is nothing more to consume.
@@ -161,12 +161,12 @@ impl<'a> Lexer<'a> {
         self.input_len - self.chars_len()
     }
 
-    pub(crate) fn bump(&mut self) -> Option<char> {
+    pub(crate) fn bump_raw(&mut self) -> Option<char> {
         self.chars.next()
     }
 
     fn bump_then(&mut self) -> char {
-        self.bump();
+        self.bump_raw();
         self.current()
     }
 
@@ -176,24 +176,28 @@ impl<'a> Lexer<'a> {
             .map_err(|e| WithLen::new(e, self.pos().into()))
     }
 
+    fn bump<T: Accept + Copy>(&mut self, t: T) {
+        t.bump(self)
+    }
+
     fn accept<T: Accept + Copy>(&mut self, t: T) -> bool {
-        T::accept(t, self)
+        t.accept(self)
     }
 
     fn accept_while<T: Accept + Copy>(&mut self, t: T) {
-        T::accept_while(t, self)
+        t.accept_while(self)
     }
 
     fn accept_until<T: Accept + Copy>(&mut self, t: T) {
-        T::accept_until(t, self)
+        t.accept_until(self)
     }
 
     fn accept_while_count<T: Accept + Copy>(&mut self, t: T) -> u32 {
-        T::accept_while_count(t, self)
+        t.accept_while_count(self)
     }
 
     fn accept_repeat<T: Accept + Copy>(&mut self, t: T, repeat: u32) -> bool {
-        T::accept_repeat(t, self, repeat)
+        t.accept_repeat(self, repeat)
     }
 
     fn lex_main(&mut self) -> LexResult<SyntaxKind> {
@@ -203,14 +207,14 @@ impl<'a> Lexer<'a> {
         let kind = match c {
             '=' => match self.bump_then() {
                 '=' => {
-                    self.bump();
+                    self.bump('=');
                     done!(T![==])
                 }
                 _ => done!(T![=]),
             },
             '~' => match self.bump_then() {
                 '=' => {
-                    self.bump();
+                    self.bump('=');
                     done!(T![~=]);
                 }
                 _ => done!(T![unknown]),
@@ -231,7 +235,7 @@ impl<'a> Lexer<'a> {
             '.' => match self.bump_then() {
                 '.' => match self.bump_then() {
                     '.' => {
-                        self.bump();
+                        self.bump('.');
                         done!(T![...])
                     }
                     _ => done!(T![..]),
@@ -241,7 +245,7 @@ impl<'a> Lexer<'a> {
             ';' => T![;],
             ':' => match self.bump_then() {
                 ':' => {
-                    self.bump();
+                    self.bump(':');
                     done!(T![::]);
                 }
                 _ => done!(T![:]),
@@ -270,7 +274,7 @@ impl<'a> Lexer<'a> {
         };
 
         // if we got here, that means that the token was only length 1
-        self.bump().unwrap();
+        self.bump(Any);
 
         Ok(kind)
     }
@@ -303,9 +307,7 @@ impl<'a> Lexer<'a> {
     }
 
     fn comment(&mut self) -> SyntaxKind {
-        assert!(self.at('-'));
-
-        self.bump().unwrap();
+        self.bump('-');
 
         self.chars.find(|c| *c == '\n');
 
@@ -333,7 +335,8 @@ impl<'a> Lexer<'a> {
             expect!(l.accept('['));
 
             loop {
-                l.accept_while(Or((Seq(('\\', ']')), Not(']'))));
+                let is_inside = And((Not('\0'), Or((Seq(('\\', ']')), Not(']')))));
+                l.accept_while(is_inside);
 
                 if !l.accept(']') {
                     // we hit eof
@@ -379,32 +382,29 @@ impl<'a> Lexer<'a> {
 
     fn string(&mut self, delimit: char) -> LexResult<SyntaxKind> {
         assert!(matches!(delimit, '\'' | '"'));
-        assert_eq!(self.current(), delimit);
-        self.bump().unwrap();
+        self.bump(delimit);
 
         loop {
             match self.current() {
                 '\0' => bail!("Could not find closing delimiter `{}`", delimit),
                 '\n' => bail!("Unexpected newline in string"),
                 c if c == delimit => {
-                    self.bump().unwrap();
+                    self.bump(delimit);
                     break;
                 }
                 _ => (),
             }
-            self.bump().unwrap();
+            self.bump(Any);
         }
 
         Ok(T![str])
     }
 
     fn ident(&mut self) -> SyntaxKind {
-        assert!(self.at(is_ident_start));
-
         let start = self.pos();
         let text = self.chars.as_str();
 
-        self.bump().unwrap();
+        self.bump(is_ident_start);
         self.accept_while(is_ident_continue);
 
         let text = &text[0..(self.pos() - start) as usize];
@@ -448,7 +448,7 @@ mod tests {
         lexer.accept(Seq(('[', '=')));
         assert_eq!(lexer.pos(), 0);
         assert_eq!(lexer.current(), '[');
-        lexer.bump().unwrap();
+        lexer.bump_raw().unwrap();
         assert_eq!(lexer.current(), ']');
     }
 
