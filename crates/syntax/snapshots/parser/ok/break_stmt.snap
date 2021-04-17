@@ -1,0 +1,25 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/break_stmt.lua
+
+---
+Program@0..24
+  BreakStmt@0..5
+    BreakKw@0..5 "break"
+  Whitespace@5..6 "\n"
+  ReturnStmt@6..17
+    ReturnKw@6..12 "return"
+    Whitespace@12..13 " "
+    MultivalExpr@13..17
+      Literal@13..17
+        Number@13..17 "1234"
+  Whitespace@17..18 "\n"
+  BreakStmt@18..23
+    BreakKw@18..23 "break"
+  Whitespace@23..24 "\n"
+
+=============================
+Errors:
+=============================
+[]

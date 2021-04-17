@@ -1,0 +1,50 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/err/invalid_escape.lua
+
+---
+Program@0..37
+  LocalAssignStmt@0..36
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    MultiName@6..7
+      Name@6..7
+        Ident@6..7 "s"
+    Whitespace@7..8 " "
+    Eq@8..9 "="
+    Whitespace@9..10 " "
+    MultivalExpr@10..36
+      Literal@10..36
+        Str@10..36 "\"asdf\\w\\u\\oasd\\q\\z\\a  ..."
+  Whitespace@36..37 "\n"
+
+=============================
+Errors:
+=============================
+[
+    SyntaxError(
+        "Invalid escape sequence",
+        5..7,
+    ),
+    SyntaxError(
+        "Invalid escape sequence",
+        7..9,
+    ),
+    SyntaxError(
+        "Invalid escape sequence",
+        9..11,
+    ),
+    SyntaxError(
+        "Invalid escape sequence",
+        14..16,
+    ),
+    SyntaxError(
+        "Invalid escape sequence",
+        16..18,
+    ),
+    SyntaxError(
+        "Invalid escape sequence",
+        24..25,
+    ),
+]

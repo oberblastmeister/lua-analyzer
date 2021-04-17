@@ -1,0 +1,107 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/multi_name.lua
+
+---
+Program@0..129
+  LocalAssignStmt@0..26
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    MultiName@6..19
+      Name@6..11
+        Ident@6..11 "first"
+      Comma@11..12 ","
+      Whitespace@12..13 " "
+      Name@13..19
+        Ident@13..19 "second"
+    Whitespace@19..20 " "
+    Eq@20..21 "="
+    Whitespace@21..22 " "
+    MultivalExpr@22..26
+      Literal@22..23
+        Number@22..23 "1"
+      Comma@23..24 ","
+      Whitespace@24..25 " "
+      Literal@25..26
+        Number@25..26 "2"
+  Whitespace@26..27 "\n"
+  LocalAssignStmt@27..61
+    LocalKw@27..32 "local"
+    Whitespace@32..33 " "
+    MultiName@33..46
+      Name@33..38
+        Ident@33..38 "third"
+      Comma@38..39 ","
+      Whitespace@39..40 " "
+      Name@40..46
+        Ident@40..46 "fourth"
+    Whitespace@46..47 " "
+    Eq@47..48 "="
+    Whitespace@48..49 " "
+    MultivalExpr@49..61
+      InfixExpr@49..57
+        InfixExpr@49..53
+          Literal@49..50
+            Number@49..50 "1"
+          Caret@50..51 "^"
+          Literal@51..53
+            Number@51..53 "10"
+        Whitespace@53..54 " "
+        Modulo@54..55 "%"
+        Whitespace@55..56 " "
+        Literal@56..57
+          Number@56..57 "1"
+      Comma@57..58 ","
+      Whitespace@58..59 " "
+      Literal@59..61
+        Number@59..61 "12"
+  Whitespace@61..62 "\n"
+  LocalAssignStmt@62..128
+    LocalKw@62..67 "local"
+    Whitespace@67..68 " "
+    MultiName@68..76
+      Name@68..71
+        Ident@68..71 "fn1"
+      Comma@71..72 ","
+      Whitespace@72..73 " "
+      Name@73..76
+        Ident@73..76 "fn2"
+    Whitespace@76..77 " "
+    Eq@77..78 "="
+    Whitespace@78..79 " "
+    MultivalExpr@79..128
+      FunctionExpr@79..96
+        FunctionKw@79..87 "function"
+        Paramlist@87..92
+          LParen@87..88 "("
+          MultiName@88..91
+            Name@88..91
+              Ident@88..91 "asd"
+          RParen@91..92 ")"
+        Whitespace@92..93 "\n"
+        Block@93..93
+        EndKw@93..96 "end"
+      Comma@96..97 ","
+      Whitespace@97..98 "\n"
+      FunctionExpr@98..128
+        FunctionKw@98..106 "function"
+        Paramlist@106..124
+          LParen@106..107 "("
+          MultiName@107..123
+            Name@107..114
+              Ident@107..114 "another"
+            Comma@114..115 ","
+            Whitespace@115..116 " "
+            Name@116..123
+              Ident@116..123 "another"
+          RParen@123..124 ")"
+        Whitespace@124..125 "\n"
+        Block@125..125
+        EndKw@125..128 "end"
+  Whitespace@128..129 "\n"
+
+=============================
+Errors:
+=============================
+[]

@@ -1,0 +1,123 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/if_elseif_stmt.lua
+
+---
+Program@0..166
+  IfStmt@0..165
+    IfKw@0..2 "if"
+    Whitespace@2..3 " "
+    InfixExpr@3..16
+      CallExpr@3..8
+        NameRef@3..6
+          Ident@3..6 "yes"
+        Arglist@6..8
+          LParen@6..7 "("
+          RParen@7..8 ")"
+      Whitespace@8..9 " "
+      NotEq@9..11 "~="
+      Whitespace@11..12 " "
+      Literal@12..16
+        TrueKw@12..16 "true"
+    Whitespace@16..17 " "
+    ThenKw@17..21 "then"
+    Whitespace@21..24 "\n  "
+    Block@24..49
+      ExprStmt@24..49
+        MultivalExpr@24..49
+          CallExpr@24..49
+            NameRef@24..29
+              Ident@24..29 "print"
+            Arglist@29..49
+              LParen@29..30 "("
+              MultivalExpr@30..48
+                Literal@30..48
+                  Str@30..48 "\"yes was not true\""
+              RParen@48..49 ")"
+    Whitespace@49..50 "\n"
+    ElseIfBranch@50..161
+      ElseifKw@50..56 "elseif"
+      Whitespace@56..57 " "
+      InfixExpr@57..67
+        CallExpr@57..62
+          NameRef@57..60
+            Ident@57..60 "yes"
+          Arglist@60..62
+            LParen@60..61 "("
+            RParen@61..62 ")"
+        Whitespace@62..63 " "
+        EqEq@63..65 "=="
+        Whitespace@65..66 " "
+        Literal@66..67
+          Number@66..67 "1"
+      Whitespace@67..68 " "
+      ThenKw@68..72 "then"
+      Whitespace@72..75 "\n  "
+      Block@75..96
+        ExprStmt@75..96
+          MultivalExpr@75..96
+            CallExpr@75..96
+              NameRef@75..80
+                Ident@75..80 "print"
+              Arglist@80..96
+                LParen@80..81 "("
+                MultivalExpr@81..95
+                  Literal@81..95
+                    Str@81..95 "\'yes was true\'"
+                RParen@95..96 ")"
+      Whitespace@96..97 "\n"
+      ElseIfBranch@97..161
+        ElseifKw@97..103 "elseif"
+        Whitespace@103..104 " "
+        InfixExpr@104..114
+          CallExpr@104..109
+            NameRef@104..107
+              Ident@104..107 "yes"
+            Arglist@107..109
+              LParen@107..108 "("
+              RParen@108..109 ")"
+          Whitespace@109..110 " "
+          EqEq@110..112 "=="
+          Whitespace@112..113 " "
+          Literal@113..114
+            Number@113..114 "2"
+        Whitespace@114..115 " "
+        ThenKw@115..119 "then"
+        Whitespace@119..122 "\n  "
+        Block@122..140
+          ExprStmt@122..140
+            MultivalExpr@122..140
+              CallExpr@122..140
+                NameRef@122..127
+                  Ident@122..127 "print"
+                Arglist@127..140
+                  LParen@127..128 "("
+                  MultivalExpr@128..139
+                    Literal@128..139
+                      Str@128..139 "\'yes was 2\'"
+                  RParen@139..140 ")"
+        Whitespace@140..141 "\n"
+        ElseBranch@141..161
+          ElseKw@141..145 "else"
+          Whitespace@145..148 "\n  "
+          Block@148..161
+            ExprStmt@148..161
+              MultivalExpr@148..161
+                CallExpr@148..161
+                  NameRef@148..153
+                    Ident@148..153 "print"
+                  Arglist@153..161
+                    LParen@153..154 "("
+                    MultivalExpr@154..160
+                      Literal@154..160
+                        Str@154..160 "\'else\'"
+                    RParen@160..161 ")"
+    Whitespace@161..162 "\n"
+    EndKw@162..165 "end"
+  Whitespace@165..166 "\n"
+
+=============================
+Errors:
+=============================
+[]

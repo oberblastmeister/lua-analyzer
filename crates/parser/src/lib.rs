@@ -1,4 +1,3 @@
-mod lexer;
 mod parser;
 #[macro_use]
 mod syntax_kind;
@@ -8,11 +7,11 @@ mod parse_error;
 mod token_set;
 
 pub use event::Event;
-pub use lexer::{first_token, tokenize, tokenize_iter, LexError, LexErrorMsg, Token};
+pub use grammar::LuaOp;
 pub use parse_error::ParseError;
+use rowan::TextRange;
 pub use syntax_kind::SyntaxKind;
 pub use token_set::TokenSet;
-pub use grammar::LuaOp;
 
 #[macro_export]
 #[doc(hidden)]
@@ -20,6 +19,15 @@ macro_rules! assert_matches {
     ($expression:expr, $($stuff:tt)+) => {
         assert!(matches!($expression, $($stuff)+));
     };
+}
+
+/// A lua token
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct Token {
+    /// The kind of token.
+    pub kind: SyntaxKind,
+    /// The range of the token.
+    pub range: TextRange,
 }
 
 pub trait TokenSource {

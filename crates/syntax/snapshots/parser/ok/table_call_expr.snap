@@ -1,0 +1,54 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/table_call_expr.lua
+
+---
+Program@0..58
+  LocalAssignStmt@0..57
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    MultiName@6..9
+      Name@6..9
+        Ident@6..9 "res"
+    Whitespace@9..10 " "
+    Eq@10..11 "="
+    Whitespace@11..12 " "
+    MultivalExpr@12..57
+      TableCallExpr@12..57
+        NameRef@12..16
+          Ident@12..16 "call"
+        Whitespace@16..17 " "
+        TableExpr@17..57
+          LBrace@17..18 "{"
+          Whitespace@18..21 "\n  "
+          TableContent@21..28
+            PositionalValue@21..28
+              Literal@21..28
+                Str@21..28 "\"first\""
+          Comma@28..29 ","
+          Whitespace@29..32 "\n  "
+          TableContent@32..40
+            PositionalValue@32..40
+              Literal@32..40
+                Str@32..40 "\"second\""
+          Comma@40..41 ","
+          Whitespace@41..44 "\n  "
+          TableContent@44..55
+            KeyValue@44..55
+              TableKey@44..49
+                IdentKey@44..49
+                  Ident@44..49 "hello"
+              Whitespace@49..50 " "
+              Eq@50..51 "="
+              Whitespace@51..52 " "
+              Literal@52..55
+                Number@52..55 "234"
+          Whitespace@55..56 "\n"
+          RBrace@56..57 "}"
+  Whitespace@57..58 "\n"
+
+=============================
+Errors:
+=============================
+[]

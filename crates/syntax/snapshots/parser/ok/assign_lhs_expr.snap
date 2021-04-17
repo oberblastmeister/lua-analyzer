@@ -1,0 +1,130 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/assign_lhs_expr.lua
+
+---
+Program@0..190
+  AssignStmt@0..42
+    MultivalExpr@0..28
+      DotExpr@0..19
+        CallExpr@0..13
+          NameRef@0..11
+            Ident@0..11 "returns_tbl"
+          Arglist@11..13
+            LParen@11..12 "("
+            RParen@12..13 ")"
+        Dot@13..14 "."
+        Ident@14..19 "hello"
+      Comma@19..20 ","
+      Whitespace@20..21 " "
+      NameRef@21..28
+        Ident@21..28 "another"
+    Whitespace@28..29 " "
+    Eq@29..30 "="
+    Whitespace@30..31 " "
+    MultivalExpr@31..42
+      Literal@31..34
+        Number@31..34 "123"
+      Comma@34..35 ","
+      Whitespace@35..36 " "
+      Literal@36..42
+        Number@36..42 "132423"
+  Whitespace@42..43 "\n"
+  AssignStmt@43..68
+    MultivalExpr@43..59
+      IndexExpr@43..59
+        CallExpr@43..56
+          NameRef@43..54
+            Ident@43..54 "another_tbl"
+          Arglist@54..56
+            LParen@54..55 "("
+            RParen@55..56 ")"
+        Index@56..59
+          LBracket@56..57 "["
+          Literal@57..58
+            Number@57..58 "3"
+          RBracket@58..59 "]"
+    Whitespace@59..60 " "
+    Eq@60..61 "="
+    Whitespace@61..62 " "
+    MultivalExpr@62..68
+      Literal@62..68
+        Str@62..68 "\"asdf\""
+  Whitespace@68..69 "\n"
+  AssignStmt@69..189
+    MultivalExpr@69..150
+      DotExpr@69..97
+        ParenExpr@69..85
+          LParen@69..70 "("
+          FunctionExpr@70..84
+            FunctionKw@70..78 "function"
+            Paramlist@78..80
+              LParen@78..79 "("
+              RParen@79..80 ")"
+            Whitespace@80..81 " "
+            Block@81..81
+            EndKw@81..84 "end"
+          RParen@84..85 ")"
+        Dot@85..86 "."
+        Ident@86..97 "interesting"
+      Comma@97..98 ","
+      Whitespace@98..99 " "
+      IndexExpr@99..117
+        NameRef@99..106
+          Ident@99..106 "another"
+        Index@106..117
+          LBracket@106..107 "["
+          Literal@107..116
+            Str@107..116 "\"asdfasd\""
+          RBracket@116..117 "]"
+      Comma@117..118 ","
+      Whitespace@118..119 " "
+      DotExpr@119..127
+        NameRef@119..123
+          Ident@119..123 "self"
+        Dot@123..124 "."
+        Ident@124..127 "wow"
+      Comma@127..128 ","
+      Whitespace@128..129 " "
+      IndexExpr@129..150
+        ParenExpr@129..145
+          LParen@129..130 "("
+          FunctionExpr@130..144
+            FunctionKw@130..138 "function"
+            Paramlist@138..140
+              LParen@138..139 "("
+              RParen@139..140 ")"
+            Whitespace@140..141 " "
+            Block@141..141
+            EndKw@141..144 "end"
+          RParen@144..145 ")"
+        Index@145..150
+          LBracket@145..146 "["
+          Literal@146..149
+            Number@146..149 "123"
+          RBracket@149..150 "]"
+    Whitespace@150..151 " "
+    Eq@151..152 "="
+    Whitespace@152..153 " "
+    MultivalExpr@153..189
+      Literal@153..160
+        Str@153..160 "\"first\""
+      Comma@160..161 ","
+      Whitespace@161..162 " "
+      Literal@162..170
+        Str@162..170 "\"second\""
+      Comma@170..171 ","
+      Whitespace@171..172 " "
+      Literal@172..179
+        Str@172..179 "\"third\""
+      Comma@179..180 ","
+      Whitespace@180..181 " "
+      Literal@181..189
+        Str@181..189 "\"fourth\""
+  Whitespace@189..190 "\n"
+
+=============================
+Errors:
+=============================
+[]

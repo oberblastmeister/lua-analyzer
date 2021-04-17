@@ -1,0 +1,49 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/repeat_until_stmt.lua
+
+---
+Program@0..65
+  RepeatUntilStmt@0..64
+    RepeatKw@0..6 "repeat"
+    Whitespace@6..9 "\n  "
+    Block@9..42
+      LocalAssignStmt@9..24
+        LocalKw@9..14 "local"
+        Whitespace@14..15 " "
+        MultiName@15..20
+          Name@15..20
+            Ident@15..20 "hello"
+        Whitespace@20..21 " "
+        Eq@21..22 "="
+        Whitespace@22..23 " "
+        MultivalExpr@23..24
+          Literal@23..24
+            Number@23..24 "2"
+      Whitespace@24..27 "\n  "
+      AssignStmt@27..42
+        MultivalExpr@27..34
+          NameRef@27..34
+            Ident@27..34 "another"
+        Whitespace@34..35 " "
+        Eq@35..36 "="
+        Whitespace@36..37 " "
+        MultivalExpr@37..42
+          Literal@37..42
+            FalseKw@37..42 "false"
+    Whitespace@42..43 "\n"
+    UntilKw@43..48 "until"
+    Whitespace@48..49 " "
+    CallExpr@49..64
+      NameRef@49..62
+        Ident@49..62 "should_finish"
+      Arglist@62..64
+        LParen@62..63 "("
+        RParen@63..64 ")"
+  Whitespace@64..65 "\n"
+
+=============================
+Errors:
+=============================
+[]

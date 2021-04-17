@@ -1,8 +1,7 @@
 mod text_token_source;
 mod text_tree_sink;
 
-use itertools::{Either, Itertools};
-use parser::{tokenize_iter, Token};
+use crate::lexer::tokenize_iter;
 use rowan::GreenNode;
 use text_token_source::TextTokenSource;
 use text_tree_sink::TextTreeSink;

@@ -1,0 +1,63 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/err/can_call.lua
+
+---
+Program@0..9
+  Error@0..2
+    Str@0..2 "\"\""
+  ExprStmt@2..4
+    MultivalExpr@2..4
+      ParenExpr@2..4
+        LParen@2..3 "("
+        Error@3..4
+          RParen@3..4 ")"
+  Whitespace@4..5 "\n"
+  Error@5..6
+    Number@5..6 "5"
+  ExprStmt@6..8
+    MultivalExpr@6..8
+      ParenExpr@6..8
+        LParen@6..7 "("
+        Error@7..8
+          RParen@7..8 ")"
+  Whitespace@8..9 "\n"
+
+=============================
+Errors:
+=============================
+[
+    SyntaxError(
+        "A literal cannot be the start of a statement",
+        0..2,
+    ),
+    SyntaxError(
+        "Expected an expression",
+        3..4,
+    ),
+    SyntaxError(
+        "Expected RParen, got Number",
+        4..4,
+    ),
+    SyntaxError(
+        "A literal cannot be the start of a statement",
+        5..6,
+    ),
+    SyntaxError(
+        "Expected an expression",
+        7..8,
+    ),
+    SyntaxError(
+        "Expected RParen, got Eof",
+        8..8,
+    ),
+    SyntaxError(
+        "Only one expression can be present in an expression statement, got 0",
+        2..4,
+    ),
+    SyntaxError(
+        "Only one expression can be present in an expression statement, got 0",
+        6..8,
+    ),
+]

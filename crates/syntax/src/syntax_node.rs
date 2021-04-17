@@ -1,6 +1,7 @@
 use std::fmt;
 
-use parser::{LexError, ParseError};
+use crate::lexer::LexError;
+use parser::ParseError;
 use rowan::{GreenNodeBuilder, Language, TextRange, TextSize};
 
 use crate::{Parse, SyntaxKind};

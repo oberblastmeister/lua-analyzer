@@ -3,6 +3,7 @@ pub mod ast;
 pub mod fuzz;
 mod parsing;
 mod syntax_node;
+mod lexer;
 #[cfg(test)]
 mod tests;
 mod validation;
@@ -10,7 +11,7 @@ mod validation;
 use std::{fmt, marker::PhantomData, sync::Arc};
 
 use ast::AstNode;
-pub use parser::{SyntaxKind, T};
+pub use parser::{SyntaxKind, T, Token};
 use rowan::GreenNode;
 
 pub use syntax_node::{

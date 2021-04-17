@@ -1,0 +1,88 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/function_literal.lua
+
+---
+Program@0..128
+  LocalAssignStmt@0..67
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    MultiName@6..15
+      Name@6..15
+        Ident@6..15 "empty_lit"
+    Whitespace@15..16 " "
+    Eq@16..17 "="
+    Whitespace@17..18 " "
+    MultivalExpr@18..67
+      FunctionExpr@18..67
+        FunctionKw@18..26 "function"
+        Paramlist@26..28
+          LParen@26..27 "("
+          RParen@27..28 ")"
+        Whitespace@28..31 "\n  "
+        Block@31..63
+          LocalAssignStmt@31..46
+            LocalKw@31..36 "local"
+            Whitespace@36..37 " "
+            MultiName@37..42
+              Name@37..42
+                Ident@37..42 "first"
+            Whitespace@42..43 " "
+            Eq@43..44 "="
+            Whitespace@44..45 " "
+            MultivalExpr@45..46
+              Literal@45..46
+                Number@45..46 "1"
+          Whitespace@46..49 "\n  "
+          ReturnStmt@49..63
+            ReturnKw@49..55 "return"
+            Whitespace@55..56 " "
+            MultivalExpr@56..63
+              InfixExpr@56..63
+                Literal@56..57
+                  Number@56..57 "5"
+                Caret@57..58 "^"
+                NameRef@58..63
+                  Ident@58..63 "first"
+        Whitespace@63..64 "\n"
+        EndKw@64..67 "end"
+  Whitespace@67..69 "\n\n"
+  LocalAssignStmt@69..127
+    LocalKw@69..74 "local"
+    Whitespace@74..75 " "
+    MultiName@75..84
+      Name@75..84
+        Ident@75..84 "with_args"
+    Whitespace@84..85 " "
+    Eq@85..86 "="
+    Whitespace@86..87 " "
+    MultivalExpr@87..127
+      FunctionExpr@87..127
+        FunctionKw@87..95 "function"
+        Paramlist@95..110
+          LParen@95..96 "("
+          MultiName@96..109
+            Name@96..101
+              Ident@96..101 "first"
+            Comma@101..102 ","
+            Whitespace@102..103 " "
+            Name@103..109
+              Ident@103..109 "second"
+          RParen@109..110 ")"
+        Whitespace@110..113 "\n  "
+        Block@113..123
+          ReturnStmt@113..123
+            ReturnKw@113..119 "return"
+            Whitespace@119..120 " "
+            MultivalExpr@120..123
+              Literal@120..123
+                Number@120..123 "123"
+        Whitespace@123..124 "\n"
+        EndKw@124..127 "end"
+  Whitespace@127..128 "\n"
+
+=============================
+Errors:
+=============================
+[]
