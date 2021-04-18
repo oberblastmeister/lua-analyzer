@@ -11,9 +11,11 @@ repository = "https://github.com/oberblastmeister/lua-analyzer"
 
 [dependencies]
 itertools = "0.10.0"
-parser = { path = "../parser", version = "0.0.0" }
 rowan = "0.12.6"
 thiserror = "1.0.24"
+
+parser = { path = "../parser", version = "0.0.0" }
+stdx = { path = "../stdx", version = "0.0.0" }
 
 [dev-dependencies]
 glob = "0.3.0"

@@ -126,7 +126,7 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn chars(&self) -> Chars<'a> {
+    pub(crate) fn chars(&self) -> Chars<'a> {
         self.chars.clone()
     }
 
@@ -367,19 +367,19 @@ impl<'a> Lexer<'a> {
     }
 
     fn multiline_string(&mut self) -> LexResult<SyntaxKind> {
-        assert!(self.at('[') || self.at('='));
+        assert!(self.at(or!('[', '=')));
 
         self.bracket_enclosed().map(|()| T![str])
     }
 
     fn multiline_comment(&mut self) -> LexResult<SyntaxKind> {
-        assert!(self.at('[') || self.at('='));
+        assert!(self.at(or!('[', '=')));
 
         self.bracket_enclosed().map(|()| T![comment])
     }
 
     fn string(&mut self, delimit: char) -> LexResult<SyntaxKind> {
-        assert!(matches!(delimit, '\'' | '"'));
+        assert_matches!(delimit, '\'' | '"');
         self.bump(delimit);
 
         loop {

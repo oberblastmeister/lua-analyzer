@@ -750,6 +750,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fe0f37c9e8f3c5a4a66ad655a93c74daac4ad00c441533bf5c6e7990bb42604e"
 
 [[package]]
+name = "stdx"
+version = "0.0.0"
+
+[[package]]
 name = "syn"
 version = "1.0.63"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -770,6 +774,7 @@ dependencies = [
  "parser",
  "rayon",
  "rowan",
+ "stdx",
  "thiserror",
 ]
 

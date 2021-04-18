@@ -220,7 +220,7 @@ impl<T: Lexable + Copy> Lexable for Not<T> {
 macro_rules! _not {
     ($expr:expr) => {
         $crate::accept::Not($expr)
-    }
+    };
 }
 pub(crate) use _not as not;
 
@@ -238,8 +238,8 @@ macro_rules! tuple_impls {
 pub struct Any;
 
 impl Lexable for Any {
-    fn nth(self, _l: &Lexer<'_>, _n: u32) -> bool {
-        true
+    fn nth(self, l: &Lexer<'_>, n: u32) -> bool {
+        l.chars().nth(n as usize).is_some()
     }
 }
 
