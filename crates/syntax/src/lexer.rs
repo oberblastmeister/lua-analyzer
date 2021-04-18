@@ -4,7 +4,7 @@ use std::{iter, ops::Range};
 use rowan::{TextRange, TextSize};
 use thiserror::Error;
 
-use crate::accept::{Accept, And, Any, Lexable, Not, Or, Seq};
+use crate::accept::{and, not, or, seq, Accept, Any, Lexable};
 use crate::{SyntaxError, SyntaxKind, T};
 use parser::Token;
 
@@ -130,12 +130,16 @@ impl<'a> Lexer<'a> {
         self.chars.clone()
     }
 
+    /// Returns nth character relative to the current cursor position.
+    /// If requested position doesn't exist, `EOF_CHAR` is returned.
+    /// However, getting `EOF_CHAR` doesn't always mean actual end of file,
+    /// it should be checked with `is_eof` method.
     pub(crate) fn nth(&self, n: u32) -> char {
         self.chars().nth(n as usize).unwrap_or(EOF_CHAR)
     }
 
-    pub(crate) fn eof(&self) -> bool {
-        self.at('\0')
+    pub(crate) fn is_eof(&self) -> bool {
+        self.chars.as_str().is_empty()
     }
 
     /// Peeks next char from stream without consuming it
@@ -147,16 +151,11 @@ impl<'a> Lexer<'a> {
         t.peek(self)
     }
 
-    /// Checks if there is nothing more to consume.
-    fn is_eof(&self) -> bool {
-        self.chars.as_str().is_empty()
-    }
-
     fn chars_len(&self) -> u32 {
         self.chars.as_str().len() as u32
     }
 
-    /// Returns amount of already consumed symbols.
+    /// Returns amount of already consumed chars.
     fn pos(&self) -> u32 {
         self.input_len - self.chars_len()
     }
@@ -282,7 +281,7 @@ impl<'a> Lexer<'a> {
     fn number(&mut self) -> LexResult<SyntaxKind> {
         assert!(self.at(is_number));
 
-        if self.accept(Seq(('0', 'x'))) {
+        if self.accept(seq!('0', 'x')) {
             self.accept_while(is_hex);
             done!(T![number]);
         }
@@ -335,8 +334,7 @@ impl<'a> Lexer<'a> {
             expect!(l.accept('['));
 
             loop {
-                let is_inside = And((Not('\0'), Or((Seq(('\\', ']')), Not(']')))));
-                l.accept_while(is_inside);
+                l.accept_while(or!(seq!('\\', ']'), not!(']')));
 
                 if !l.accept(']') {
                     // we hit eof
@@ -394,7 +392,7 @@ impl<'a> Lexer<'a> {
                 }
                 _ => (),
             }
-            self.bump(Any);
+            self.bump(or!(seq!('\\', delimit), Any));
         }
 
         Ok(T![str])
@@ -438,14 +436,14 @@ mod tests {
     #[test]
     fn accept_tuple() {
         let mut lexer = Lexer::new("[=");
-        lexer.accept(Seq(('[', '=')));
-        assert!(lexer.eof());
+        lexer.accept(seq!('[', '='));
+        assert!(lexer.is_eof());
     }
 
     #[test]
     fn accept_tuple_fail() {
         let mut lexer = Lexer::new("[]");
-        lexer.accept(Seq(('[', '=')));
+        lexer.accept(seq!('[', '='));
         assert_eq!(lexer.pos(), 0);
         assert_eq!(lexer.current(), '[');
         lexer.bump_raw().unwrap();
@@ -456,7 +454,7 @@ mod tests {
     fn accept_repeat() {
         let mut lexer = Lexer::new("===================");
         lexer.accept_repeat('=', 19);
-        assert!(lexer.eof());
+        assert!(lexer.is_eof());
     }
 
     #[test]
@@ -465,7 +463,7 @@ mod tests {
         lexer.accept_repeat('=', 4);
         assert_eq!(lexer.pos(), 0);
         lexer.accept_repeat('=', 2);
-        assert!(lexer.eof());
+        assert!(lexer.is_eof());
     }
 
     #[test]
@@ -478,14 +476,14 @@ mod tests {
     #[test]
     fn not() {
         let mut lexer = Lexer::new(r"\]");
-        assert!(!lexer.accept(Not(Seq(('\\', ']')))));
+        assert!(!lexer.accept(not!(seq!('\\', ']'))));
         assert_eq!(lexer.pos(), 0);
     }
 
     #[test]
     fn combinations() {
         let mut lexer = Lexer::new(r"\]    \]  ]]");
-        lexer.accept_while(Or((Seq(('\\', ']')), Not(']'))));
+        lexer.accept_while(or!(seq!('\\', ']'), not!(']')));
         assert_eq!(lexer.pos(), 10);
     }
 }

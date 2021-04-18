@@ -15,8 +15,8 @@ Program@0..37
     Eq@8..9 "="
     Whitespace@9..10 " "
     MultivalExpr@10..36
-      Literal@10..36
-        Str@10..36 "\"asdf\\w\\u\\oasd\\q\\z\\a  ..."
+      Error@10..36
+        Unknown@10..36 "\"asdf\\w\\u\\oasd\\q\\z\\a  ..."
   Whitespace@36..37 "\n"
 
 =============================
@@ -24,27 +24,11 @@ Errors:
 =============================
 [
     SyntaxError(
-        "Invalid escape sequence",
-        5..7,
+        "Expected an expression",
+        10..36,
     ),
     SyntaxError(
-        "Invalid escape sequence",
-        7..9,
-    ),
-    SyntaxError(
-        "Invalid escape sequence",
-        9..11,
-    ),
-    SyntaxError(
-        "Invalid escape sequence",
-        14..16,
-    ),
-    SyntaxError(
-        "Invalid escape sequence",
-        16..18,
-    ),
-    SyntaxError(
-        "Invalid escape sequence",
-        24..25,
+        "Unexpected newline in string",
+        10..36,
     ),
 ]

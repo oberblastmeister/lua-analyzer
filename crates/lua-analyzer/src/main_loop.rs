@@ -107,7 +107,6 @@ impl GlobalState {
             })?
             .on::<DidChangeTextDocument>(|this, params| {
                 if let Ok(path) = from_proto::path(&params.text_document.uri) {
-                    apdsofiuapsdoif
                     let vfs = &mut this.vfs.write();
                     let file_id = vfs.file_id(&path).unwrap();
                     let mut text = String::from_utf8(vfs.file_contents(file_id).to_vec()).unwrap();

@@ -31,30 +31,22 @@ input_file: crates/syntax/snapshots/lexer/ok/bracket_with_escapes.lua
     },
     Token {
         kind: Str,
-        range: 10..60,
+        range: 10..62,
     },
     Token {
         kind: Whitespace,
-        range: 60..61,
+        range: 62..63,
     },
     Token {
         kind: LocalKw,
-        range: 61..66,
-    },
-    Token {
-        kind: Whitespace,
-        range: 66..67,
-    },
-    Token {
-        kind: Ident,
-        range: 67..68,
+        range: 63..68,
     },
     Token {
         kind: Whitespace,
         range: 68..69,
     },
     Token {
-        kind: Eq,
+        kind: Ident,
         range: 69..70,
     },
     Token {
@@ -62,11 +54,19 @@ input_file: crates/syntax/snapshots/lexer/ok/bracket_with_escapes.lua
         range: 70..71,
     },
     Token {
-        kind: Str,
-        range: 71..96,
+        kind: Eq,
+        range: 71..72,
     },
     Token {
         kind: Whitespace,
-        range: 96..97,
+        range: 72..73,
+    },
+    Token {
+        kind: Str,
+        range: 73..98,
+    },
+    Token {
+        kind: Whitespace,
+        range: 98..99,
     },
 ]

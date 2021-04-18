@@ -1,4 +1,3 @@
-use std::array::IntoIter;
 use std::ops::Range;
 
 use crate::lexer::Lexer;
@@ -20,7 +19,8 @@ pub trait Accept: Lexable {
         Self: Lexable + Sized + Copy,
     {
         if self.peek(l) {
-            l.bump_raw().expect("Whatever was acceptable did not take into account eof");
+            l.bump_raw()
+                .expect("Whatever was acceptable did not take into account eof");
             true
         } else {
             false
@@ -76,21 +76,21 @@ pub trait Accept: Lexable {
 
 impl Lexable for char {
     fn nth(self, l: &Lexer<'_>, n: u32) -> bool {
-        l.nth(n) == self
+        !l.is_eof() && l.nth(n) == self
     }
 }
 impl Accept for char {}
 
 impl<T: Fn(char) -> bool> Lexable for T {
     fn nth(self, l: &Lexer<'_>, n: u32) -> bool {
-        self(l.nth(n))
+        !l.is_eof() && self(l.nth(n))
     }
 }
 impl<T: Fn(char) -> bool> Accept for T {}
 
 impl Lexable for Range<char> {
     fn nth(self, l: &Lexer<'_>, n: u32) -> bool {
-        self.contains(&l.nth(n))
+        !l.is_eof() && self.contains(&l.nth(n))
     }
 }
 impl Accept for Range<char> {}
@@ -118,7 +118,7 @@ macro_rules! tuple_seq {
                     where
                         Self: Lexable + Sized + Copy,
                 {
-                    if self.peek(l) && !l.eof() {
+                    if self.peek(l) {
                         $( self.0.$n.accept(l); )+
                         true
                     } else {
@@ -129,6 +129,13 @@ macro_rules! tuple_seq {
         )+
     };
 }
+
+macro_rules! _seq {
+    ($( $expr:expr ),* $(,)?) => {
+        $crate::accept::Seq(($( $expr, )*))
+    };
+}
+pub(crate) use _seq as seq;
 
 #[derive(Copy, Clone)]
 pub struct And<T: Copy>(pub T);
@@ -153,6 +160,13 @@ macro_rules! tuple_and {
         )+
     };
 }
+
+macro_rules! _and {
+    ($( $expr:expr ),* $(,)?) => {
+        And(($( $expr, )*))
+    };
+}
+pub(crate) use _and as and;
 
 #[derive(Copy, Clone)]
 pub struct Or<T: Copy>(pub T);
@@ -184,6 +198,13 @@ macro_rules! tuple_or {
     };
 }
 
+macro_rules! _or {
+    ($( $expr:expr ),* $(,)?) => {
+        $crate::accept::Or(($( $expr, )*))
+    };
+}
+pub(crate) use _or as or;
+
 #[derive(Copy, Clone)]
 pub struct Not<T: Copy>(pub T);
 
@@ -192,11 +213,17 @@ impl<T: Lexable + Copy> Lexable for Not<T> {
     where
         Self: Sized,
     {
-        !T::nth(self.0, p, n)
+        !p.is_eof() && !T::nth(self.0, p, n)
     }
 }
 
-// need to fix this soon
+macro_rules! _not {
+    ($expr:expr) => {
+        $crate::accept::Not($expr)
+    }
+}
+pub(crate) use _not as not;
+
 impl<T: Lexable + Copy> Accept for Not<T> {}
 
 macro_rules! tuple_impls {
