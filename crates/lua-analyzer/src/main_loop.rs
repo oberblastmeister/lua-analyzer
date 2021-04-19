@@ -8,6 +8,7 @@ use lsp_server::{Connection, Notification, Request, Response};
 use lsp_types::notification::Notification as _;
 
 use crate::{
+    config::Config,
     dispatch::{NotificationDispatcher, RequestDispatcher},
     from_proto,
     global_state::GlobalState,
@@ -26,8 +27,8 @@ pub(crate) enum Task {
     Diagnostics,
 }
 
-pub fn main_loop(connection: Connection) -> Result<()> {
-    GlobalState::new(connection.sender).run(connection.receiver)
+pub fn main_loop(config: Config, connection: Connection) -> Result<()> {
+    GlobalState::new(connection.sender, config).run(connection.receiver)
 }
 
 impl GlobalState {
@@ -117,6 +118,42 @@ impl GlobalState {
                 Ok(())
             })?
             .on::<DidSaveTextDocument>(|this, params| Ok(()))?
+            .on::<lsp_types::notification::DidChangeConfiguration>(|this, _params| {
+                // As stated in https://github.com/microsoft/language-server-protocol/issues/676,
+                // this notification's parameters should be ignored and the actual config queried separately.
+                this.send_request::<lsp_types::request::WorkspaceConfiguration>(
+                    lsp_types::ConfigurationParams {
+                        items: vec![lsp_types::ConfigurationItem {
+                            scope_uri: None,
+                            section: Some("lua-analyzer".to_string()),
+                        }],
+                    },
+                    |this, resp| {
+                        log::debug!("config update response: '{:?}", resp);
+                        let Response { error, result, .. } = resp;
+
+                        match (error, result) {
+                            (Some(err), _) => {
+                                log::error!("failed to fetch the server settings: {:?}", err)
+                            }
+                            (None, Some(mut configs)) => {
+                                if let Some(json) = configs.get_mut(0) {
+                                    // Note that json can be null according to the spec if the client can't
+                                    // provide a configuration. This is handled in Config::update below.
+                                    let mut config = Config::clone(&*this.config);
+                                    config.update(json.take());
+                                    this.update_configuration(config);
+                                }
+                            }
+                            (None, None) => log::error!(
+                                "received empty server settings response from the client"
+                            ),
+                        }
+                    },
+                );
+
+                return Ok(());
+            })?
             .finish();
 
         Ok(())

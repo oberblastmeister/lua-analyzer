@@ -116,12 +116,6 @@ impl Validate for ast::AssignStmt {
     }
 }
 
-impl Validate for ast::Expr {
-    fn validate(self, acc: &mut Vec<SyntaxError>) {
-        // TODO: should we validate if we can call literals
-    }
-}
-
 impl Validate for ast::Literal {
     fn validate(self, acc: &mut Vec<SyntaxError>) {
         let token = self.token();
@@ -148,15 +142,17 @@ fn unquote(text: &str) -> (TextSize, &str) {
         assert!(text.ends_with(delimit));
         (1.into(), &text[1..text.len() - 1])
     } else if delimit == '[' {
-        let changed = &text[1..];
-        let equals = changed.bytes().take_while(|c| *c == '=' as u8).count();
-        let changed = &changed[equals..];
-        assert_eq!(changed.bytes().next().unwrap(), '[' as u8);
-        let changed = &changed[1..];
+        // unquote front
+        let text = &text[1..];
+        let equals = text.bytes().take_while(|c| *c == '=' as u8).count();
+        let text = &text[equals..];
+        assert_eq!(text.bytes().next().unwrap(), '[' as u8);
+        let text = &text[1..];
 
-        assert_eq!(changed.bytes().last().unwrap(), ']' as u8);
-        let changed = &changed[..changed.len() - 1];
-        let back_equals = changed
+        // unquote back
+        assert_eq!(text.bytes().last().unwrap(), ']' as u8);
+        let text = &text[..text.len() - 1];
+        let back_equals = text
             .bytes()
             .rev()
             .take_while(|c| *c == '=' as u8)
@@ -165,12 +161,12 @@ fn unquote(text: &str) -> (TextSize, &str) {
             equals, back_equals,
             "Front and back equals must be the same"
         );
-        let changed = &changed[..changed.len() - back_equals];
-        assert_eq!(changed.bytes().last().unwrap(), ']' as u8);
-        let changed = &changed[..changed.len() - 1];
+        let text = &text[..text.len() - back_equals];
+        assert_eq!(text.bytes().last().unwrap(), ']' as u8);
+        let text = &text[..text.len() - 1];
 
         let offset = TextSize::from(2 + equals as u32);
-        (offset, changed)
+        (offset, text)
     } else {
         panic!("String was not properly quoted")
     }

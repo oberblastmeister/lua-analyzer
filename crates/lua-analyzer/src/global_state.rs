@@ -9,6 +9,7 @@ use rayon::{ThreadPool, ThreadPoolBuilder};
 use rustc_hash::FxHashMap;
 
 use crate::{
+    config::Config,
     dispatch::{NotificationDispatcher, RequestDispatcher},
     main_loop::{Event, Task},
     thread_pool::TaskPool,
@@ -28,11 +29,12 @@ pub struct GlobalState {
     pub(crate) sender: Sender<lsp_server::Message>,
     pub(crate) task_pool: Handle<TaskPool<Task>, Receiver<Task>>,
     pub(crate) vfs: Arc<RwLock<vfs::Vfs>>,
+    pub(crate) config: Arc<Config>,
     pub(crate) analysis_host: AnalysisHost,
 }
 
 impl GlobalState {
-    pub(crate) fn new(sender: Sender<lsp_server::Message>) -> GlobalState {
+    pub(crate) fn new(sender: Sender<lsp_server::Message>, config: Config) -> GlobalState {
         let task_pool = {
             let (sender, receiver) = unbounded();
             let handle = TaskPool::new(sender);
@@ -44,6 +46,7 @@ impl GlobalState {
             sender,
             vfs: Arc::new(RwLock::new(vfs::Vfs::default())),
             task_pool,
+            config: Arc::new(config),
             analysis_host: AnalysisHost::new(),
         }
     }

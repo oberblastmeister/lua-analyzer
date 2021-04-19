@@ -259,16 +259,18 @@ dependencies = [
 
 [[package]]
 name = "ide"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "ide_db",
 ]
 
 [[package]]
 name = "ide_db"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "base_db",
+ "rustc-hash",
+ "syntax",
 ]
 
 [[package]]
@@ -413,6 +415,7 @@ dependencies = [
  "serde_json",
  "serde_path_to_error",
  "simplelog",
+ "stdx",
  "vfs",
 ]
 
@@ -914,7 +917,7 @@ checksum = "bc5cf98d8186244414c848017f0e2676b3fcb46807f6668a97dfe67359a3c4b7"
 
 [[package]]
 name = "vfs"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "rustc-hash",
 ]

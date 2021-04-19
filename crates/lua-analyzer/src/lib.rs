@@ -5,6 +5,8 @@ mod global_state;
 mod main_loop;
 mod thread_pool;
 mod handlers;
+mod reload;
+pub mod config;
 
 use anyhow::{anyhow, Result};
 use serde::de::DeserializeOwned;

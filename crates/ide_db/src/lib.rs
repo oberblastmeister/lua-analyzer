@@ -1,3 +1,5 @@
+mod line_index;
+
 pub use base_db;
 
 use base_db::{salsa, Canceled, CheckCanceled};

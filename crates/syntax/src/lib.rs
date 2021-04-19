@@ -9,15 +9,16 @@ mod syntax_node;
 mod tests;
 mod validation;
 
-use std::{marker::PhantomData, sync::Arc};
-
-use ast::AstNode;
 pub use parser::{SyntaxKind, Token, T};
-use rowan::GreenNode;
-
 pub use syntax_node::{
     SyntaxElement, SyntaxElementChildren, SyntaxError, SyntaxNode, SyntaxNodeChildren, SyntaxToken,
 };
+pub use rowan::{TextSize, TextRange};
+
+use std::{marker::PhantomData, sync::Arc};
+
+use ast::AstNode;
+use rowan::GreenNode;
 
 /// `Parse` is the result of the parsing: a syntax tree and a collection of
 /// errors.
