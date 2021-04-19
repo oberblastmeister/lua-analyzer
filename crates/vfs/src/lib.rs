@@ -20,6 +20,7 @@ pub struct Vfs {
 }
 
 /// Changed file in the [`Vfs`].
+#[derive(Debug)]
 pub struct ChangedFile {
     /// Id of the changed file
     pub file_id: FileId,

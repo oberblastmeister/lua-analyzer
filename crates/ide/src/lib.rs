@@ -1,3 +1,8 @@
+pub use ide_db::{
+    base_db::Change,
+    line_index::{LineCol, LineColUtf16, LineIndex},
+};
+
 use ide_db::{
     base_db::{salsa, Canceled, CheckCanceled},
     RootDatabase,
@@ -23,6 +28,12 @@ impl AnalysisHost {
         Analysis {
             db: self.db.snapshot(),
         }
+    }
+    
+    /// Applies changes to the current state of the world. If there are
+    /// outstanding snapshots, they will be canceled.
+    pub fn apply_change(&mut self, change: Change) {
+        self.db.apply_change(change)
     }
 }
 

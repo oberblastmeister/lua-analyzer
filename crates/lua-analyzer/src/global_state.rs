@@ -2,7 +2,7 @@ use std::{path::PathBuf, sync::Arc, time::Instant};
 
 use anyhow::Result;
 use crossbeam_channel::{unbounded, Receiver, Sender};
-use ide::{Analysis, AnalysisHost};
+use ide::{Analysis, AnalysisHost, Change};
 use lsp_server::{Notification, Request};
 use parking_lot::RwLock;
 use rayon::{ThreadPool, ThreadPoolBuilder};
@@ -49,6 +49,35 @@ impl GlobalState {
             config: Arc::new(config),
             analysis_host: AnalysisHost::new(),
         }
+    }
+
+    pub(crate) fn process_changes(&mut self) -> bool {
+        let change = {
+            let mut change = Change::new();
+            let vfs = &mut *self.vfs.write();
+            let changed_files = vfs.take_changes();
+            if changed_files.is_empty() {
+                return false;
+            }
+
+            for file in changed_files {
+                let text = if file.exists() {
+                    let bytes = vfs.file_contents(file.file_id).to_vec();
+                    match String::from_utf8(bytes).ok() {
+                        Some(text) => Some(Arc::new(text)),
+                        None => None,
+                    }
+                } else {
+                    None
+                };
+                change.change_file(file.file_id, text);
+            }
+            change
+        };
+
+        self.analysis_host.apply_change(change);
+
+        true
     }
 
     pub(crate) fn snapshot(&self) -> GlobalStateSnapshot {

@@ -26,6 +26,8 @@ name = "base_db"
 version = "0.1.0"
 dependencies = [
  "salsa",
+ "stdx",
+ "syntax",
  "vfs",
 ]
 

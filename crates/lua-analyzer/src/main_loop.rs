@@ -13,6 +13,7 @@ use crate::{
     from_proto,
     global_state::GlobalState,
     handlers,
+    lsp_utils::apply_document_changes,
 };
 
 #[derive(Debug)]
@@ -78,6 +79,8 @@ impl GlobalState {
             },
         }
 
+        let state_changed = self.process_changes();
+
         Ok(())
     }
 
@@ -111,7 +114,7 @@ impl GlobalState {
                     let vfs = &mut this.vfs.write();
                     let file_id = vfs.file_id(&path).unwrap();
                     let mut text = String::from_utf8(vfs.file_contents(file_id).to_vec()).unwrap();
-                    // apply_document_changes(&mut text, params.content_changes);
+                    apply_document_changes(&mut text, params.content_changes);
 
                     vfs.set_file_contents(path.clone(), Some(text.into_bytes()));
                 }

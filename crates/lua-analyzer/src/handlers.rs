@@ -1,5 +1,6 @@
 use anyhow::Result;
-use lsp_types::{CompletionItem, CompletionItemKind, CompletionResponse};
+use lsp_types::{CompletionItem, CompletionItemKind, CompletionResponse, Diagnostic};
+use vfs::FileId;
 
 use crate::global_state::GlobalStateSnapshot;
 
@@ -24,4 +25,8 @@ fn completion_item(s: String) -> CompletionItem {
         kind: Some(CompletionItemKind::Function),
         ..Default::default()
     }
+}
+
+pub(crate) fn publish_diagnostics(snap: GlobalStateSnapshot, file_id: FileId) -> Result<Vec<Diagnostic>> {
+    todo!()
 }

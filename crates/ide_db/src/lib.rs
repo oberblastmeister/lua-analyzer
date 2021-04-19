@@ -1,12 +1,35 @@
 pub mod line_index;
 
+use std::fmt;
+
 pub use base_db;
 
-use base_db::{salsa, Canceled, CheckCanceled};
+use base_db::{
+    salsa::{self, Database},
+    Canceled, Change, CheckCanceled,
+};
 
-#[salsa::database]
+#[salsa::database(base_db::SourceDatabaseStorage)]
 pub struct RootDatabase {
     storage: salsa::Storage<RootDatabase>,
+}
+
+impl RootDatabase {
+    pub fn request_cancellation(&mut self) {
+        self.salsa_runtime_mut()
+            .synthetic_write(salsa::Durability::LOW);
+    }
+
+    pub fn apply_change(&mut self, change: Change) {
+        self.request_cancellation();
+        change.apply(self);
+    }
+}
+
+impl fmt::Debug for RootDatabase {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("RootDatabase").finish()
+    }
 }
 
 impl salsa::Database for RootDatabase {

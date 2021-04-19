@@ -1,8 +1,15 @@
 mod cancellation;
+mod change;
 
 pub use cancellation::Canceled;
 pub use salsa;
 pub use vfs::FileId;
+pub use change::Change;
+
+use syntax::{
+    ast::{self, Program},
+    Parse,
+};
 
 use std::{panic, sync::Arc};
 
@@ -50,10 +57,15 @@ impl<T: salsa::Database> CheckCanceled for T {
 /// model. Everything else in rust-analyzer is derived from these queries.
 #[salsa::query_group(SourceDatabaseStorage)]
 pub trait SourceDatabase: CheckCanceled + std::fmt::Debug {
+    // Parses the file into the syntax tree.
+    #[salsa::invoke(parse_query)]
+    fn parse(&self, file_id: FileId) -> Parse<ast::Program>;
+
     #[salsa::input]
     fn file_text(&self, file_id: FileId) -> Arc<String>;
+}
 
-    // Parses the file into the syntax tree.
-    // #[salsa::invoke(parse_query)]
-    // fn parse(&self, file_id: FileId) -> ();
+fn parse_query(db: &dyn SourceDatabase, file_id: FileId) -> Parse<ast::Program> {
+    let text = db.file_text(file_id);
+    Program::parse(&*text)
 }

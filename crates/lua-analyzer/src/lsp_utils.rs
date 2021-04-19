@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use crate::from_proto;
 
-use ide_db::line_index::LineIndex;
+use ide::LineIndex;
 
 pub(crate) fn apply_document_changes(
     old_text: &mut String,
@@ -100,7 +100,10 @@ mod tests {
             &mut text,
             c![1, 0; 1, 0 => "DREAM", 2, 0; 2, 0 => "they ", 3, 0; 3, 0 => "DON'T THEY?"],
         );
-        assert_eq!(text, "the quick foxes\nDREAM\nthey have quiet dreams\nDON'T THEY?\n");
+        assert_eq!(
+            text,
+            "the quick foxes\nDREAM\nthey have quiet dreams\nDON'T THEY?\n"
+        );
         apply_document_changes(&mut text, c![0, 10; 1, 5 => "", 2, 0; 2, 12 => ""]);
         assert_eq!(text, "the quick \nthey have quiet dreams\n");
 

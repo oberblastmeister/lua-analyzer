@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 use anyhow::{anyhow, Context, Result};
 
-use ide_db::line_index::{LineColUtf16, LineIndex};
+use ide::{LineColUtf16, LineIndex};
 use stdx::paths::AbsPathBuf;
 use syntax::{TextRange, TextSize};
 
