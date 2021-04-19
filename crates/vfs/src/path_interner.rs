@@ -1,23 +1,24 @@
 use std::path::{Path, PathBuf};
 
-use rustc_hash::FxHashMap;
-
 use crate::FileId;
+
+use rustc_hash::FxHashMap;
+use stdx::paths::{AbsPathBuf, AbsPath};
 
 #[derive(Default)]
 pub(crate) struct PathInterner {
     /// path to id
-    map: FxHashMap<PathBuf, FileId>,
+    map: FxHashMap<AbsPathBuf, FileId>,
     /// id to path
-    vec: Vec<PathBuf>,
+    vec: Vec<AbsPathBuf>,
 }
 
 impl PathInterner {
-    pub(crate) fn get(&self, path: &Path) -> Option<FileId> {
+    pub(crate) fn get(&self, path: &AbsPath) -> Option<FileId> {
         self.map.get(path).copied()
     }
 
-    pub(crate) fn intern(&mut self, path: PathBuf) -> FileId {
+    pub(crate) fn intern(&mut self, path: AbsPathBuf) -> FileId {
         if let Some(id) = self.get(&path) {
             return id;
         }
@@ -28,7 +29,7 @@ impl PathInterner {
         id
     }
 
-    pub(crate) fn lookup(&self, id: FileId) -> &Path {
+    pub(crate) fn lookup(&self, id: FileId) -> &AbsPath {
         &self.vec[id.0 as usize]
     }
 }

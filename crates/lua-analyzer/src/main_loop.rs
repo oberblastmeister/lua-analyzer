@@ -98,7 +98,7 @@ impl GlobalState {
 
         self.notification_dispatcher(not)
             .on::<DidOpenTextDocument>(|this, params| {
-                if let Ok(path) = from_proto::path(&params.text_document.uri) {
+                if let Ok(path) = from_proto::abs_path(&params.text_document.uri) {
                     let changed = this
                         .vfs
                         .write()
@@ -107,7 +107,7 @@ impl GlobalState {
                 Ok(())
             })?
             .on::<DidChangeTextDocument>(|this, params| {
-                if let Ok(path) = from_proto::path(&params.text_document.uri) {
+                if let Ok(path) = from_proto::abs_path(&params.text_document.uri) {
                     let vfs = &mut this.vfs.write();
                     let file_id = vfs.file_id(&path).unwrap();
                     let mut text = String::from_utf8(vfs.file_contents(file_id).to_vec()).unwrap();

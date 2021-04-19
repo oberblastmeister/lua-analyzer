@@ -416,6 +416,7 @@ dependencies = [
  "serde_path_to_error",
  "simplelog",
  "stdx",
+ "syntax",
  "vfs",
 ]
 
@@ -920,6 +921,7 @@ name = "vfs"
 version = "0.0.0"
 dependencies = [
  "rustc-hash",
+ "stdx",
 ]
 
 [[package]]

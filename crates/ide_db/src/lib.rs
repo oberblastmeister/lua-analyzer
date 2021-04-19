@@ -1,4 +1,4 @@
-mod line_index;
+pub mod line_index;
 
 pub use base_db;
 

@@ -7,6 +7,8 @@ use std::{
 
 use path_interner::PathInterner;
 
+use stdx::paths::{AbsPathBuf, AbsPath};
+
 #[derive(Copy, Clone, Debug, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct FileId(pub u32);
 
@@ -58,7 +60,7 @@ impl Vfs {
     }
 
     /// Id of the given path if it exists in the `Vfs` and is not deleted.
-    pub fn file_id(&self, path: &Path) -> Option<FileId> {
+    pub fn file_id(&self, path: &AbsPath) -> Option<FileId> {
         self.interner.get(path).filter(|&it| self.get(it).is_some())
     }
 
@@ -84,7 +86,7 @@ impl Vfs {
     /// Returns an iterator over the stored ids and their corresponding paths.
     ///
     /// This will skip deleted files.
-    pub fn iter(&self) -> impl Iterator<Item = (FileId, &Path)> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = (FileId, &AbsPath)> + '_ {
         (0..self.data.len())
             .map(|it| FileId(it as u32))
             .filter(move |&file_id| self.get(file_id).is_some())
@@ -100,7 +102,7 @@ impl Vfs {
     ///
     /// If the path does not currently exists in the `Vfs`, allocates a new
     /// [`FileId`] for it.
-    pub fn set_file_contents(&mut self, path: PathBuf, contents: Option<Vec<u8>>) -> bool {
+    pub fn set_file_contents(&mut self, path: AbsPathBuf, contents: Option<Vec<u8>>) -> bool {
         let file_id = self.alloc_file_id(path);
         let change_kind = match (&self.get(file_id), &contents) {
             (None, None) => return false,
@@ -135,7 +137,7 @@ impl Vfs {
     /// - Else, returns `path`'s id.
     ///
     /// Does not record a change.
-    fn alloc_file_id(&mut self, path: PathBuf) -> FileId {
+    fn alloc_file_id(&mut self, path: AbsPathBuf) -> FileId {
         let file_id = self.interner.intern(path);
         let idx = file_id.0 as usize;
         let len = self.data.len().max(idx + 1);

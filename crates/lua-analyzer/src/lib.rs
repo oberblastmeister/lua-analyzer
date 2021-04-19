@@ -6,6 +6,7 @@ mod main_loop;
 mod thread_pool;
 mod handlers;
 mod reload;
+mod lsp_utils;
 pub mod config;
 
 use anyhow::{anyhow, Result};

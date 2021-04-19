@@ -97,6 +97,10 @@ impl LineIndex {
         }
     }
 
+    pub fn offset(&self, line_col: LineCol) -> TextSize {
+        self.newlines[line_col.line as usize] + TextSize::from(line_col.col)
+    }
+
     pub fn to_utf8(&self, line_col: LineColUtf16) -> LineCol {
         let col = self.utf16_to_utf8_col(line_col.line, line_col.col);
         LineCol { line: line_col.line, col: col.into() }
