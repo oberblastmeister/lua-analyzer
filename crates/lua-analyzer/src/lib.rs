@@ -1,8 +1,11 @@
 mod caps;
 mod dispatch;
 mod from_proto;
+mod to_proto;
 mod global_state;
 mod main_loop;
+mod diagnostics;
+mod document;
 mod thread_pool;
 mod handlers;
 mod reload;

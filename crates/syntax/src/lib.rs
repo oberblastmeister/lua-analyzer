@@ -86,7 +86,7 @@ impl Parse<SyntaxNode> {
     }
 }
 
-use ast::Program;
+pub use ast::Program;
 
 fn format_errors(errors: &[SyntaxError]) -> String {
     let mut s = String::new();

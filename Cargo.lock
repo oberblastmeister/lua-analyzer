@@ -23,7 +23,7 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 
 [[package]]
 name = "base_db"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "salsa",
  "stdx",
@@ -260,10 +260,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "hir"
+version = "0.0.0"
+dependencies = [
+ "base_db",
+ "syntax",
+]
+
+[[package]]
 name = "ide"
 version = "0.0.0"
 dependencies = [
+ "hir",
  "ide_db",
+ "syntax",
 ]
 
 [[package]]
@@ -271,7 +281,9 @@ name = "ide_db"
 version = "0.0.0"
 dependencies = [
  "base_db",
+ "hir",
  "rustc-hash",
+ "stdx",
  "syntax",
 ]
 
@@ -407,6 +419,7 @@ dependencies = [
  "directories-next",
  "ide",
  "ide_db",
+ "itertools",
  "log",
  "lsp-server",
  "lsp-types",

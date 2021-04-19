@@ -1,4 +1,5 @@
 use rustc_hash::FxHashMap;
+use stdx::partition_point;
 use syntax::{TextRange, TextSize};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -97,13 +98,47 @@ impl LineIndex {
         }
     }
 
+    pub fn line_col(&self, offset: TextSize) -> LineCol {
+        let line = partition_point(&self.newlines, |&it| it <= offset) - 1;
+        let line_start_offset = self.newlines[line];
+        let col = offset - line_start_offset;
+        LineCol {
+            line: line as u32,
+            col: col.into(),
+        }
+    }
+
     pub fn offset(&self, line_col: LineCol) -> TextSize {
         self.newlines[line_col.line as usize] + TextSize::from(line_col.col)
     }
 
     pub fn to_utf8(&self, line_col: LineColUtf16) -> LineCol {
         let col = self.utf16_to_utf8_col(line_col.line, line_col.col);
-        LineCol { line: line_col.line, col: col.into() }
+        LineCol {
+            line: line_col.line,
+            col: col.into(),
+        }
+    }
+
+    pub fn to_utf16(&self, line_col: LineCol) -> LineColUtf16 {
+        let col = self.utf8_to_utf16_col(line_col.line, line_col.col.into());
+        LineColUtf16 { line: line_col.line, col: col as u32 }
+    }
+
+    fn utf8_to_utf16_col(&self, line: u32, col: TextSize) -> usize {
+        let mut res: usize = col.into();
+        if let Some(utf16_chars) = self.utf16_lines.get(&line) {
+            for c in utf16_chars {
+                if c.end <= col {
+                    res -= usize::from(c.len()) - c.len_utf16();
+                } else {
+                    // From here on, all utf16 characters come *after* the character we are mapping,
+                    // so we don't need to take them into account
+                    break;
+                }
+            }
+        }
+        res
     }
 
     fn utf16_to_utf8_col(&self, line: u32, mut col: u32) -> TextSize {

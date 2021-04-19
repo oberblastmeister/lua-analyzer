@@ -1,17 +1,42 @@
 pub mod line_index;
 
-use std::fmt;
+use std::{fmt, sync::Arc};
 
 pub use base_db;
 
 use base_db::{
     salsa::{self, Database},
-    Canceled, Change, CheckCanceled,
+    Canceled, Change, CheckCanceled, FileId, SourceDatabase, Upcast,
 };
+use hir::{DefDatabase, HirDatabase};
+use line_index::LineIndex;
 
-#[salsa::database(base_db::SourceDatabaseStorage)]
+#[salsa::database(
+    base_db::SourceDatabaseStorage,
+    LineIndexDatabaseStorage,
+    hir::HirDatabaseStorage,
+    hir::DefDatabaseStorage
+)]
 pub struct RootDatabase {
     storage: salsa::Storage<RootDatabase>,
+}
+
+impl Upcast<dyn SourceDatabase> for RootDatabase {
+    fn upcast(&self) -> &(dyn SourceDatabase + 'static) {
+        &*self
+    }
+}
+
+impl Upcast<dyn DefDatabase> for RootDatabase {
+    fn upcast(&self) -> &(dyn DefDatabase + 'static) {
+        &*self
+    }
+}
+
+impl Upcast<dyn HirDatabase> for RootDatabase {
+    fn upcast(&self) -> &(dyn HirDatabase + 'static) {
+        &*self
+    }
 }
 
 impl RootDatabase {
@@ -62,4 +87,14 @@ impl RootDatabase {
             storage: salsa::Storage::default(),
         }
     }
+}
+
+#[salsa::query_group(LineIndexDatabaseStorage)]
+pub trait LineIndexDatabase: base_db::SourceDatabase + CheckCanceled {
+    fn line_index(&self, file_id: FileId) -> Arc<LineIndex>;
+}
+
+fn line_index(db: &dyn LineIndexDatabase, file_id: FileId) -> Arc<LineIndex> {
+    let text = db.file_text(file_id);
+    Arc::new(LineIndex::new(&*text))
 }

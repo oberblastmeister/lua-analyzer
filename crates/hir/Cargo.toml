@@ -1,5 +1,5 @@
 [package]
-name = "ide"
+name = "hir"
 version = "0.0.0"
 authors = ["Brian Shu <littlebubu.shu@gmail.com>"]
 edition = "2018"
@@ -7,6 +7,5 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ide_db = { path = "../ide_db", version = "0.0.0" }
+base_db = { path = "../base_db", version = "0.0.0" }
 syntax = { path = "../syntax", version = "0.0.0" }
-hir = { path = "../hir", version = "0.0.0" }

@@ -3,15 +3,18 @@ use std::time::Instant;
 use anyhow::{anyhow, bail, Result};
 
 use crossbeam_channel::{select, Receiver};
+use ide::FileId;
 use log::info;
 use lsp_server::{Connection, Notification, Request, Response};
-use lsp_types::notification::Notification as _;
+use lsp_types::{notification::Notification as _, Diagnostic};
 
 use crate::{
     config::Config,
     dispatch::{NotificationDispatcher, RequestDispatcher},
+    document::DocumentData,
     from_proto,
-    global_state::GlobalState,
+    to_proto::{self, url_from_abs_path},
+    global_state::{GlobalState, file_id_to_url},
     handlers,
     lsp_utils::apply_document_changes,
 };
@@ -25,7 +28,7 @@ pub(crate) enum Event {
 #[derive(Debug)]
 pub(crate) enum Task {
     Response(Response),
-    Diagnostics,
+    Diagnostics(Vec<(FileId, Vec<Diagnostic>)>),
 }
 
 pub fn main_loop(config: Config, connection: Connection) -> Result<()> {
@@ -69,7 +72,12 @@ impl GlobalState {
             Event::Task(mut task) => loop {
                 match task {
                     Task::Response(response) => self.respond(response),
-                    Task::Diagnostics => todo!(),
+                    Task::Diagnostics(diagnostics_per_file) => {
+                        for (file_id, diagnostics) in diagnostics_per_file {
+                            self.diagnostics
+                                .set_native_diagnostics(file_id, diagnostics)
+                        }
+                    }
                 }
 
                 task = match self.task_pool.receiver.try_recv() {
@@ -80,6 +88,22 @@ impl GlobalState {
         }
 
         let state_changed = self.process_changes();
+
+        self.maybe_update_diagnostics();
+
+        if let Some(diagnostic_changes) = self.diagnostics.take_changes() {
+            for file_id in diagnostic_changes {
+                let url = file_id_to_url(&self.vfs.read(), file_id);
+                let diagnostics = self.diagnostics.diagnostics_for(file_id).cloned().collect();
+                let version = from_proto::abs_path(&url)
+                    .map(|path| self.mem_docs.get(&path).map(|it| it.version))
+                    .unwrap_or_default();
+
+                self.send_notification::<lsp_types::notification::PublishDiagnostics>(
+                    lsp_types::PublishDiagnosticsParams { uri: url, diagnostics, version },
+                );
+            }
+        }
 
         Ok(())
     }
@@ -102,22 +126,73 @@ impl GlobalState {
         self.notification_dispatcher(not)
             .on::<DidOpenTextDocument>(|this, params| {
                 if let Ok(path) = from_proto::abs_path(&params.text_document.uri) {
+                    if this
+                        .mem_docs
+                        .insert(
+                            path.clone(),
+                            DocumentData::new(params.text_document.version),
+                        )
+                        .is_some()
+                    {
+                        log::error!("duplicate DidOpenTextDocument: {}", path.display())
+                    }
+
                     let changed = this
                         .vfs
                         .write()
                         .set_file_contents(path, Some(params.text_document.text.into_bytes()));
+                    
+                    // If the VFS contents are unchanged, update diagnostics, since `handle_event`
+                    // won't see any changes. This avoids missing diagnostics when opening a file.
+                    //
+                    // If the file *was* changed, `handle_event` will already recompute and send
+                    // diagnostics. We can't do it here, since the *current* file contents might be
+                    // unset in salsa, since the VFS change hasn't been applied to the database yet.
+                    if !changed {
+                        this.maybe_update_diagnostics();
+                    }
                 }
                 Ok(())
             })?
             .on::<DidChangeTextDocument>(|this, params| {
                 if let Ok(path) = from_proto::abs_path(&params.text_document.uri) {
+                    let doc = match this.mem_docs.get_mut(&path) {
+                        Some(doc) => doc,
+                        None => {
+                            log::error!("expected DidChangeTextDocument: {}", path.display());
+                            return Ok(());
+                        }
+                    };
                     let vfs = &mut this.vfs.write();
                     let file_id = vfs.file_id(&path).unwrap();
                     let mut text = String::from_utf8(vfs.file_contents(file_id).to_vec()).unwrap();
                     apply_document_changes(&mut text, params.content_changes);
 
+                    doc.version = params.text_document.version;
+
                     vfs.set_file_contents(path.clone(), Some(text.into_bytes()));
                 }
+                Ok(())
+            })?
+            .on::<DidCloseTextDocument>(|this, params| {
+                let mut version = None;
+                if let Ok(path) = from_proto::abs_path(&params.text_document.uri) {
+                    match this.mem_docs.remove(&path) {
+                        Some(doc) => version = Some(doc.version),
+                        None => log::error!("orphan DidCloseTextDocument: {}", path.display()),
+                    }
+                }
+
+                // Clear the diagnostics for the previously known version of the file.
+                // This prevents stale "cargo check" diagnostics if the file is
+                // closed, "cargo check" is run and then the file is reopened.
+                this.send_notification::<lsp_types::notification::PublishDiagnostics>(
+                    lsp_types::PublishDiagnosticsParams {
+                        uri: params.text_document.uri,
+                        diagnostics: Vec::new(),
+                        version,
+                    },
+                );
                 Ok(())
             })?
             .on::<DidSaveTextDocument>(|this, params| Ok(()))?

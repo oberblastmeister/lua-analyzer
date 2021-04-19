@@ -1,9 +1,15 @@
+use std::error::Error;
 use std::ops::Range;
 use std::sync::Arc;
 
 use crate::from_proto;
 
 use ide::LineIndex;
+use ide_db::base_db::Canceled;
+
+pub(crate) fn is_canceled(e: &(dyn Error + 'static)) -> bool {
+    e.downcast_ref::<Canceled>().is_some()
+}
 
 pub(crate) fn apply_document_changes(
     old_text: &mut String,
