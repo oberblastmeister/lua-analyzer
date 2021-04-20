@@ -7,6 +7,9 @@ macro_rules! TS {
     [] => {
         TokenSet::EMPTY
     };
+    [$stuff:tt] => {
+        TokenSet::new(&[T![$stuff]])
+    };
     [$( $stuff:tt ),* $(,)?] => {
         TokenSet::new(&[$( T![$stuff], )*])
     };

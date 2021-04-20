@@ -1,0 +1,54 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/return_nothing.lua
+
+---
+Program@0..84
+  FunctionDefStmt@0..34
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    FunctionKw@6..14 "function"
+    Whitespace@14..15 " "
+    Name@15..19
+      Ident@15..19 "test"
+    Paramlist@19..21
+      LParen@19..20 "("
+      RParen@20..21 ")"
+    Whitespace@21..24 "\n  "
+    Block@24..30
+      ReturnStmt@24..30
+        ReturnKw@24..30 "return"
+    Whitespace@30..31 "\n"
+    EndKw@31..34 "end"
+  Whitespace@34..36 "\n\n"
+  LocalAssignStmt@36..75
+    LocalKw@36..41 "local"
+    Whitespace@41..42 " "
+    MultiName@42..49
+      Name@42..49
+        Ident@42..49 "another"
+    Whitespace@49..50 " "
+    Eq@50..51 "="
+    Whitespace@51..52 " "
+    MultivalExpr@52..75
+      FunctionExpr@52..75
+        FunctionKw@52..60 "function"
+        Paramlist@60..62
+          LParen@60..61 "("
+          RParen@61..62 ")"
+        Whitespace@62..65 "\n  "
+        Block@65..71
+          ReturnStmt@65..71
+            ReturnKw@65..71 "return"
+        Whitespace@71..72 "\n"
+        EndKw@72..75 "end"
+  Whitespace@75..77 "\n\n"
+  ReturnStmt@77..83
+    ReturnKw@77..83 "return"
+  Whitespace@83..84 "\n"
+
+=============================
+Errors:
+=============================
+[]

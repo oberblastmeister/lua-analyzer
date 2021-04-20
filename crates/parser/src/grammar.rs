@@ -51,6 +51,16 @@ fn name_r(p: &mut Parser, recovery: TokenSet) {
     }
 }
 
+fn name_ref_r(p: &mut Parser, recovery: TokenSet) {
+    if p.at(T![ident]) {
+        let m = p.start();
+        p.bump(T![ident]);
+        m.complete(p, NameRef);
+    } else {
+        p.err_recover("expected a name referencer", recovery);
+    }
+}
+
 fn name_ref(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.expect(T![ident]);

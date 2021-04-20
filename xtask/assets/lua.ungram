@@ -4,6 +4,7 @@ Program =
 Stmt =
   AssignStmt
   | LocalAssignStmt
+  | LocalFunctionDefStmt
   | FunctionDefStmt
   | ForStmt
   | IfStmt
@@ -119,7 +120,32 @@ DoStmt =
   'end'
 
 FunctionDefStmt =
-  'local'? 'function' Name Paramlist
+  'function' 
+  FunctionDefContent
+  Paramlist
+  body:Block
+  'end'
+
+FunctionDefContent =
+  FunctionMethod
+  | FunctionStatic
+  | Name
+
+FunctionNameIndex =
+  (NameRef '.')*
+
+FunctionMethod =
+  FunctionNameIndex
+  ':'
+  Name
+
+FunctionStatic =
+  FunctionNameIndex
+  '.'
+  Name
+
+LocalFunctionDefStmt =
+  'local' 'function' Name Paramlist
   body:Block
   'end'
 
@@ -158,7 +184,7 @@ WhileStmt =
 
 ReturnStmt =
   'return'
-  expr:Expr
+  Expr?
 
 ForStmt =
   'for' content:ForContent 'do' Block 'end'

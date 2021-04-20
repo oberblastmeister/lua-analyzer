@@ -1,0 +1,71 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/method_def.lua
+
+---
+Program@0..116
+  FunctionDefStmt@0..43
+    FunctionKw@0..8 "function"
+    Whitespace@8..9 " "
+    FunctionDefContent@9..20
+      FunctionMethod@9..20
+        FunctionNameIndex@9..15
+          NameRef@9..15
+            Ident@9..15 "Person"
+        Colon@15..16 ":"
+        Name@16..20
+          Ident@16..20 "name"
+    Paramlist@20..22
+      LParen@20..21 "("
+      RParen@21..22 ")"
+    Whitespace@22..25 "\n  "
+    Block@25..39
+      ReturnStmt@25..39
+        ReturnKw@25..31 "return"
+        Whitespace@31..32 " "
+        MultivalExpr@32..39
+          Literal@32..39
+            Str@32..39 "\"hello\""
+    Whitespace@39..40 "\n"
+    EndKw@40..43 "end"
+  Whitespace@43..45 "\n\n"
+  FunctionDefStmt@45..115
+    FunctionKw@45..53 "function"
+    Whitespace@53..54 " "
+    FunctionDefContent@54..85
+      FunctionMethod@54..85
+        FunctionNameIndex@54..79
+          NameRef@54..59
+            Ident@54..59 "hello"
+          Dot@59..60 "."
+          NameRef@60..65
+            Ident@60..65 "world"
+          Dot@65..66 "."
+          NameRef@66..73
+            Ident@66..73 "another"
+          Dot@73..74 "."
+          NameRef@74..79
+            Ident@74..79 "World"
+        Colon@79..80 ":"
+        Name@80..85
+          Ident@80..85 "hello"
+    Paramlist@85..87
+      LParen@85..86 "("
+      RParen@86..87 ")"
+    Whitespace@87..90 "\n  "
+    Block@90..111
+      ReturnStmt@90..111
+        ReturnKw@90..96 "return"
+        Whitespace@96..97 " "
+        MultivalExpr@97..111
+          Literal@97..111
+            Str@97..111 "\"hello person\""
+    Whitespace@111..112 "\n"
+    EndKw@112..115 "end"
+  Whitespace@115..116 "\n"
+
+=============================
+Errors:
+=============================
+[]

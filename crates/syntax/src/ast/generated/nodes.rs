@@ -43,10 +43,10 @@ impl LocalAssignStmt {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FunctionDefStmt {
+pub struct LocalFunctionDefStmt {
     pub(crate) syntax: SyntaxNode,
 }
-impl FunctionDefStmt {
+impl LocalFunctionDefStmt {
     pub fn local_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![local])
     }
@@ -54,6 +54,27 @@ impl FunctionDefStmt {
         support::token(&self.syntax, T![function])
     }
     pub fn name(&self) -> Option<Name> {
+        support::child(&self.syntax)
+    }
+    pub fn paramlist(&self) -> Option<Paramlist> {
+        support::child(&self.syntax)
+    }
+    pub fn body(&self) -> Option<Block> {
+        support::child(&self.syntax)
+    }
+    pub fn end_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![end])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FunctionDefStmt {
+    pub(crate) syntax: SyntaxNode,
+}
+impl FunctionDefStmt {
+    pub fn function_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![function])
+    }
+    pub fn function_def_content(&self) -> Option<FunctionDefContent> {
         support::child(&self.syntax)
     }
     pub fn paramlist(&self) -> Option<Paramlist> {
@@ -519,6 +540,45 @@ impl DoStmt {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FunctionMethod {
+    pub(crate) syntax: SyntaxNode,
+}
+impl FunctionMethod {
+    pub fn function_name_index(&self) -> Option<FunctionNameIndex> {
+        support::child(&self.syntax)
+    }
+    pub fn colon_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![:])
+    }
+    pub fn name(&self) -> Option<Name> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FunctionStatic {
+    pub(crate) syntax: SyntaxNode,
+}
+impl FunctionStatic {
+    pub fn function_name_index(&self) -> Option<FunctionNameIndex> {
+        support::child(&self.syntax)
+    }
+    pub fn dot_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![.])
+    }
+    pub fn name(&self) -> Option<Name> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FunctionNameIndex {
+    pub(crate) syntax: SyntaxNode,
+}
+impl FunctionNameIndex {
+    pub fn name_refs(&self) -> AstChildren<NameRef> {
+        support::children(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct MultiName {
     pub(crate) syntax: SyntaxNode,
 }
@@ -597,6 +657,7 @@ impl GenericFor {
 pub enum Stmt {
     AssignStmt(AssignStmt),
     LocalAssignStmt(LocalAssignStmt),
+    LocalFunctionDefStmt(LocalFunctionDefStmt),
     FunctionDefStmt(FunctionDefStmt),
     ForStmt(ForStmt),
     IfStmt(IfStmt),
@@ -630,6 +691,12 @@ pub enum TableContent {
 pub enum TableKey {
     Index(Index),
     IdentKey(IdentKey),
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum FunctionDefContent {
+    FunctionMethod(FunctionMethod),
+    FunctionStatic(FunctionStatic),
+    Name(Name),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ForContent {
@@ -669,6 +736,21 @@ impl AstNode for AssignStmt {
 impl AstNode for LocalAssignStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::LocalAssignStmt
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for LocalFunctionDefStmt {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::LocalFunctionDefStmt
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1191,6 +1273,51 @@ impl AstNode for DoStmt {
         &self.syntax
     }
 }
+impl AstNode for FunctionMethod {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::FunctionMethod
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for FunctionStatic {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::FunctionStatic
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for FunctionNameIndex {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::FunctionNameIndex
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
 impl AstNode for MultiName {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::MultiName
@@ -1276,6 +1403,11 @@ impl From<LocalAssignStmt> for Stmt {
         Stmt::LocalAssignStmt(node)
     }
 }
+impl From<LocalFunctionDefStmt> for Stmt {
+    fn from(node: LocalFunctionDefStmt) -> Stmt {
+        Stmt::LocalFunctionDefStmt(node)
+    }
+}
 impl From<FunctionDefStmt> for Stmt {
     fn from(node: FunctionDefStmt) -> Stmt {
         Stmt::FunctionDefStmt(node)
@@ -1326,6 +1458,7 @@ impl AstNode for Stmt {
         match kind {
             SyntaxKind::AssignStmt
             | SyntaxKind::LocalAssignStmt
+            | SyntaxKind::LocalFunctionDefStmt
             | SyntaxKind::FunctionDefStmt
             | SyntaxKind::ForStmt
             | SyntaxKind::IfStmt
@@ -1342,6 +1475,9 @@ impl AstNode for Stmt {
         let res = match syntax.kind() {
             SyntaxKind::AssignStmt => Stmt::AssignStmt(AssignStmt { syntax }),
             SyntaxKind::LocalAssignStmt => Stmt::LocalAssignStmt(LocalAssignStmt { syntax }),
+            SyntaxKind::LocalFunctionDefStmt => {
+                Stmt::LocalFunctionDefStmt(LocalFunctionDefStmt { syntax })
+            }
             SyntaxKind::FunctionDefStmt => Stmt::FunctionDefStmt(FunctionDefStmt { syntax }),
             SyntaxKind::ForStmt => Stmt::ForStmt(ForStmt { syntax }),
             SyntaxKind::IfStmt => Stmt::IfStmt(IfStmt { syntax }),
@@ -1359,6 +1495,7 @@ impl AstNode for Stmt {
         match self {
             Stmt::AssignStmt(it) => &it.syntax,
             Stmt::LocalAssignStmt(it) => &it.syntax,
+            Stmt::LocalFunctionDefStmt(it) => &it.syntax,
             Stmt::FunctionDefStmt(it) => &it.syntax,
             Stmt::ForStmt(it) => &it.syntax,
             Stmt::IfStmt(it) => &it.syntax,
@@ -1542,6 +1679,49 @@ impl AstNode for TableKey {
         }
     }
 }
+impl From<FunctionMethod> for FunctionDefContent {
+    fn from(node: FunctionMethod) -> FunctionDefContent {
+        FunctionDefContent::FunctionMethod(node)
+    }
+}
+impl From<FunctionStatic> for FunctionDefContent {
+    fn from(node: FunctionStatic) -> FunctionDefContent {
+        FunctionDefContent::FunctionStatic(node)
+    }
+}
+impl From<Name> for FunctionDefContent {
+    fn from(node: Name) -> FunctionDefContent {
+        FunctionDefContent::Name(node)
+    }
+}
+impl AstNode for FunctionDefContent {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        match kind {
+            SyntaxKind::FunctionMethod | SyntaxKind::FunctionStatic | SyntaxKind::Name => true,
+            _ => false,
+        }
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        let res = match syntax.kind() {
+            SyntaxKind::FunctionMethod => {
+                FunctionDefContent::FunctionMethod(FunctionMethod { syntax })
+            }
+            SyntaxKind::FunctionStatic => {
+                FunctionDefContent::FunctionStatic(FunctionStatic { syntax })
+            }
+            SyntaxKind::Name => FunctionDefContent::Name(Name { syntax }),
+            _ => return None,
+        };
+        Some(res)
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        match self {
+            FunctionDefContent::FunctionMethod(it) => &it.syntax,
+            FunctionDefContent::FunctionStatic(it) => &it.syntax,
+            FunctionDefContent::Name(it) => &it.syntax,
+        }
+    }
+}
 impl From<NumericFor> for ForContent {
     fn from(node: NumericFor) -> ForContent {
         ForContent::NumericFor(node)
@@ -1594,6 +1774,11 @@ impl std::fmt::Display for TableKey {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
+impl std::fmt::Display for FunctionDefContent {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
 impl std::fmt::Display for ForContent {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
@@ -1610,6 +1795,11 @@ impl std::fmt::Display for AssignStmt {
     }
 }
 impl std::fmt::Display for LocalAssignStmt {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for LocalFunctionDefStmt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
@@ -1780,6 +1970,21 @@ impl std::fmt::Display for GotoStmt {
     }
 }
 impl std::fmt::Display for DoStmt {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for FunctionMethod {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for FunctionStatic {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for FunctionNameIndex {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

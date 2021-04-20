@@ -1,0 +1,64 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/static_function.lua
+
+---
+Program@0..76
+  FunctionDefStmt@0..33
+    FunctionKw@0..8 "function"
+    Whitespace@8..9 " "
+    FunctionDefContent@9..16
+      FunctionStatic@9..16
+        FunctionNameIndex@9..11
+          NameRef@9..10
+            Ident@9..10 "M"
+          Dot@10..11 "."
+        Name@11..16
+          Ident@11..16 "first"
+    Paramlist@16..18
+      LParen@16..17 "("
+      RParen@17..18 ")"
+    Whitespace@18..21 "\n  "
+    Block@21..29
+      ReturnStmt@21..29
+        ReturnKw@21..27 "return"
+        Whitespace@27..28 " "
+        MultivalExpr@28..29
+          Literal@28..29
+            Number@28..29 "1"
+    Whitespace@29..30 "\n"
+    EndKw@30..33 "end"
+  Whitespace@33..35 "\n\n"
+  FunctionDefStmt@35..75
+    FunctionKw@35..43 "function"
+    Whitespace@43..44 " "
+    FunctionDefContent@44..69
+      FunctionStatic@44..69
+        FunctionNameIndex@44..65
+          NameRef@44..45
+            Ident@44..45 "M"
+          Dot@45..46 "."
+          NameRef@46..53
+            Ident@46..53 "another"
+          Dot@53..54 "."
+          NameRef@54..58
+            Ident@54..58 "path"
+          Dot@58..59 "."
+          NameRef@59..64
+            Ident@59..64 "hello"
+          Dot@64..65 "."
+        Name@65..69
+          Ident@65..69 "more"
+    Paramlist@69..71
+      LParen@69..70 "("
+      RParen@70..71 ")"
+    Whitespace@71..72 "\n"
+    Block@72..72
+    EndKw@72..75 "end"
+  Whitespace@75..76 "\n"
+
+=============================
+Errors:
+=============================
+[]

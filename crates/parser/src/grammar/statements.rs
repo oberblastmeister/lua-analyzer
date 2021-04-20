@@ -1,7 +1,7 @@
 use super::{
     block, expr_single,
-    expressions::{expr, LITERAL},
-    multi_name_r, name, name_r, name_ref, param_list,
+    expressions::{expr, EXPR_FIRST, LITERAL_FIRST},
+    multi_name_r, name, name_r, name_ref, name_ref_r, param_list,
 };
 use crate::parser::{MarkerComplete, Parser};
 use crate::SyntaxKind::*;
@@ -27,7 +27,7 @@ pub(super) fn stmt(p: &mut Parser) {
             repeat_until_stmt(p);
         }
         T![function] => {
-            function_def_stmt(p, false);
+            function_def_stmt(p);
         }
         T![return] => {
             return_stmt(p);
@@ -50,7 +50,7 @@ pub(super) fn stmt(p: &mut Parser) {
         T!['('] => {
             expr_stmt(p);
         }
-        _ if p.at_ts(LITERAL) => {
+        _ if p.at_ts(LITERAL_FIRST) => {
             p.err_and_bump("A literal cannot be the start of a statement");
         }
         T![end] => {
@@ -197,7 +197,7 @@ fn break_stmt(p: &mut Parser) -> MarkerComplete {
 
 fn local_stmt(p: &mut Parser) -> Option<MarkerComplete> {
     Some(match p.nth(1) {
-        T![function] => function_def_stmt(p, true),
+        T![function] => local_function_def_stmt(p),
         _ => local_assign_stmt(p),
     })
 }
@@ -213,19 +213,72 @@ fn expr_stmt(p: &mut Parser) -> MarkerComplete {
     }
 }
 
-fn function_def_stmt(p: &mut Parser, is_local: bool) -> MarkerComplete {
+fn local_function_def_stmt(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
-
-    if is_local {
-        p.bump(T![local]);
-    }
-
+    p.bump(T![local]);
     p.expect(T![function]);
     name_r(p, STMT_RECOVERY);
     param_list(p);
     block(p);
     p.expect(T![end]);
     m.complete(p, FunctionDefStmt)
+}
+
+fn function_def_stmt(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+
+    p.expect(T![function]);
+    function_def_content(p);
+    param_list(p);
+    block(p);
+    p.expect(T![end]);
+    m.complete(p, FunctionDefStmt)
+}
+
+fn function_def_content(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    if p.at(T![ident]) && p.nth(1) == T!['('] {
+        name_r(p, TS!['('].union(STMT_RECOVERY));
+    } else {
+        let m = function_name_index(p).precede(p);
+        if p.at(T![:]) {
+            p.bump(T![:]);
+            name_r(p, STMT_RECOVERY);
+            m.complete(p, FunctionMethod);
+        } else {
+            name_r(p, STMT_RECOVERY);
+            m.complete(p, FunctionStatic);
+        }
+    }
+    m.complete(p, FunctionDefContent)
+}
+
+fn function_name_index(p: &mut Parser) -> MarkerComplete {
+    const RECOVERY: TokenSet = TS![., :].union(STMT_RECOVERY);
+
+    let m = p.start();
+
+    name_ref_r(p, RECOVERY);
+
+    loop {
+        if p.at(T![:]) {
+            break;
+        }
+
+        if p.at(T![.]) {
+            p.bump(T![.]);
+        } else {
+            break;
+        }
+
+        if p.nth(1) == T!['('] {
+            break;
+        }
+
+        name_ref_r(p, RECOVERY)
+    }
+
+    m.complete(p, FunctionNameIndex)
 }
 
 fn do_stmt(p: &mut Parser) -> MarkerComplete {
@@ -239,7 +292,9 @@ fn do_stmt(p: &mut Parser) -> MarkerComplete {
 fn return_stmt(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![return]);
-    expr(p);
+    if p.at_ts(EXPR_FIRST) {
+        expr(p);
+    }
     m.complete(p, ReturnStmt)
 }
 

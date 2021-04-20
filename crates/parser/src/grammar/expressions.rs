@@ -106,6 +106,8 @@ fn prefix_binding_power(kind: SyntaxKind) -> ((), u8) {
         .unwrap_or(NOT_AN_OP_PREFIX)
 }
 
+pub(super) const EXPR_FIRST: TokenSet = LHS_FIRST;
+
 pub(super) fn expr(p: &mut Parser) -> MarkerComplete {
     expr_multi(p, false)
 }
@@ -145,6 +147,8 @@ fn expr_bp(p: &mut Parser, min_bp: u8) -> Option<MarkerComplete> {
     Some(lhs)
 }
 
+const LHS_FIRST: TokenSet = TS![not, #, -].union(ATOM_EXPR_FIRST);
+
 fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
     let ((), r_bp) = prefix_binding_power(p.current());
     if r_bp > NOT_AN_OP {
@@ -158,6 +162,9 @@ fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
     Some(postfix_expr(p, lhs, can_call))
 }
 
+const ATOM_EXPR_FIRST: TokenSet = TS![function, '{', ident, '(']
+    .union(LITERAL_FIRST);
+
 /// Returns the completed marker and whether we can do a function call on this expression
 fn atom_expr(p: &mut Parser) -> Option<(MarkerComplete, bool)> {
     let ((), r_bp) = prefix_binding_power(p.current());
@@ -166,7 +173,7 @@ fn atom_expr(p: &mut Parser) -> Option<(MarkerComplete, bool)> {
         return Some((completed, false));
     }
 
-    if p.at_ts(LITERAL) {
+    if p.at_ts(LITERAL_FIRST) {
         return literal(p).map(|it| (it, false));
     }
 
@@ -217,10 +224,10 @@ pub(super) fn paren_expr(p: &mut Parser) -> MarkerComplete {
     m.complete(p, ParenExpr)
 }
 
-pub(crate) const LITERAL: TokenSet = TS![true, false, number, str, nil];
+pub(super) const LITERAL_FIRST: TokenSet = TS![true, false, number, str, nil];
 
 fn literal(p: &mut Parser) -> Option<MarkerComplete> {
-    assert!(p.at_ts(LITERAL));
+    assert!(p.at_ts(LITERAL_FIRST));
     let m = p.start();
     p.bump_any();
     Some(m.complete(p, Literal))
