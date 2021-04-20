@@ -53,11 +53,11 @@ Errors:
         8..8,
     ),
     SyntaxError(
-        "Only one expression can be present in an expression statement, got 0",
+        "Expected a call expression",
         2..4,
     ),
     SyntaxError(
-        "Only one expression can be present in an expression statement, got 0",
+        "Expected a call expression",
         6..8,
     ),
 ]

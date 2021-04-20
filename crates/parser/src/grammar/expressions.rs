@@ -109,13 +109,13 @@ fn prefix_binding_power(kind: SyntaxKind) -> ((), u8) {
 pub(super) const EXPR_FIRST: TokenSet = LHS_FIRST;
 
 pub(super) fn expr(p: &mut Parser) -> MarkerComplete {
-    expr_multi(p, false)
+    expr_multi(p)
 }
 
-fn expr_multi(p: &mut Parser, in_function: bool) -> MarkerComplete {
+fn expr_multi(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     expr_single(p);
-    while p.at(T![,]) && !(in_function && p.at(T![')'])) {
+    while p.at(T![,]) {
         p.bump(T![,]);
 
         expr_single(p);
@@ -162,8 +162,7 @@ fn lhs(p: &mut Parser) -> Option<MarkerComplete> {
     Some(postfix_expr(p, lhs, can_call))
 }
 
-const ATOM_EXPR_FIRST: TokenSet = TS![function, '{', ident, '(']
-    .union(LITERAL_FIRST);
+const ATOM_EXPR_FIRST: TokenSet = TS![function, '{', ident, '('].union(LITERAL_FIRST);
 
 /// Returns the completed marker and whether we can do a function call on this expression
 fn atom_expr(p: &mut Parser) -> Option<(MarkerComplete, bool)> {
@@ -236,8 +235,9 @@ fn literal(p: &mut Parser) -> Option<MarkerComplete> {
 fn table_expr(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T!['{']);
-    while !p.at(T!['}']) {
+    while !p.at(T![eof]) && !p.at(T!['}']) {
         table_content(p);
+
         if !p.accept(T![,]) {
             break;
         }
@@ -249,8 +249,15 @@ fn table_expr(p: &mut Parser) -> MarkerComplete {
 fn table_content(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     match p.current() {
-        T![ident] | T!['['] => key_value(p),
-        _ => positional_value(p),
+        T![ident] | T!['['] => {
+            key_value(p);
+        }
+        _ if p.at_ts(EXPR_FIRST) => {
+            positional_value(p);
+        }
+        _ => {
+            p.error("Expected an expression");
+        }
     };
     m.complete(p, TableContent)
 }
@@ -318,7 +325,7 @@ fn arg_list(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T!['(']);
     if !p.at(T![')']) {
-        expr_multi(p, true);
+        expr_multi(p);
     }
     p.expect(T![')']);
     m.complete(p, Arglist)

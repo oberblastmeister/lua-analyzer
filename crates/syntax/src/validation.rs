@@ -69,14 +69,18 @@ impl Validate for ast::ExprStmt {
             })
             .count();
 
-        if expr_count != 1 {
+        if expr_count == 0 {
             acc.push(SyntaxError::new(
-                format!(
-                    "Only one expression can be present in an expression statement, got {}",
-                    expr_count
-                ),
+                "Expected a call expression".to_string(),
                 self.range(),
             ));
+        }
+
+        if expr_count > 1 {
+            acc.push(SyntaxError::new(
+                format!("Expected only one call expression, got {}", expr_count),
+                self.range(),
+            ))
         }
     }
 }
@@ -152,11 +156,7 @@ fn unquote(text: &str) -> (TextSize, &str) {
         // unquote back
         assert_eq!(text.bytes().last().unwrap(), ']' as u8);
         let text = &text[..text.len() - 1];
-        let back_equals = text
-            .bytes()
-            .rev()
-            .take_while(|c| *c == '=' as u8)
-            .count();
+        let back_equals = text.bytes().rev().take_while(|c| *c == '=' as u8).count();
         assert_eq!(
             equals, back_equals,
             "Front and back equals must be the same"

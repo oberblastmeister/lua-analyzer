@@ -32,7 +32,7 @@ Errors:
         4..4,
     ),
     SyntaxError(
-        "Only one expression can be present in an expression statement, got 0",
+        "Expected a call expression",
         2..4,
     ),
 ]

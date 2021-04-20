@@ -221,7 +221,7 @@ fn local_function_def_stmt(p: &mut Parser) -> MarkerComplete {
     param_list(p);
     block(p);
     p.expect(T![end]);
-    m.complete(p, FunctionDefStmt)
+    m.complete(p, LocalFunctionDefStmt)
 }
 
 fn function_def_stmt(p: &mut Parser) -> MarkerComplete {
@@ -236,17 +236,19 @@ fn function_def_stmt(p: &mut Parser) -> MarkerComplete {
 }
 
 fn function_def_content(p: &mut Parser) -> MarkerComplete {
+    const RECOVERY: TokenSet = TS!['('].union(STMT_RECOVERY);
+
     let m = p.start();
     if p.at(T![ident]) && p.nth(1) == T!['('] {
-        name_r(p, TS!['('].union(STMT_RECOVERY));
+        name_r(p, TS!['('].union(RECOVERY));
     } else {
         let m = function_name_index(p).precede(p);
         if p.at(T![:]) {
             p.bump(T![:]);
-            name_r(p, STMT_RECOVERY);
+            name_r(p, RECOVERY);
             m.complete(p, FunctionMethod);
         } else {
-            name_r(p, STMT_RECOVERY);
+            name_r(p, RECOVERY);
             m.complete(p, FunctionStatic);
         }
     }

@@ -5,7 +5,7 @@ input_file: crates/syntax/snapshots/parser/ok/function_def.lua
 
 ---
 Program@0..89
-  FunctionDefStmt@0..88
+  LocalFunctionDefStmt@0..88
     LocalKw@0..5 "local"
     Whitespace@5..6 " "
     FunctionKw@6..14 "function"
