@@ -100,10 +100,7 @@ pub struct LexError {
 
 impl LexError {
     pub fn to_unknown(&self) -> Token {
-        Token {
-            kind: T![unknown],
-            range: self.range,
-        }
+        Token { kind: T![unknown], range: self.range }
     }
 }
 
@@ -120,10 +117,7 @@ pub struct Lexer<'a> {
 
 impl<'a> Lexer<'a> {
     fn new(input: &'a str) -> Lexer<'a> {
-        Lexer {
-            input_len: input.len() as u32,
-            chars: input.chars(),
-        }
+        Lexer { input_len: input.len() as u32, chars: input.chars() }
     }
 
     pub(crate) fn chars(&self) -> Chars<'a> {
@@ -164,8 +158,8 @@ impl<'a> Lexer<'a> {
         self.chars.next()
     }
 
-    fn bump_then(&mut self) -> char {
-        self.bump_raw();
+    fn bump_then(&mut self, accept: impl Accept + Copy) -> char {
+        self.bump(accept);
         self.current()
     }
 
@@ -204,14 +198,14 @@ impl<'a> Lexer<'a> {
 
         // return on special cases
         let kind = match c {
-            '=' => match self.bump_then() {
+            '=' => match self.bump_then(Any) {
                 '=' => {
                     self.bump('=');
                     done!(T![==])
                 }
                 _ => done!(T![=]),
             },
-            '~' => match self.bump_then() {
+            '~' => match self.bump_then(Any) {
                 '=' => {
                     self.bump('=');
                     done!(T![~=]);
@@ -223,7 +217,7 @@ impl<'a> Lexer<'a> {
             ')' => T![')'],
             '{' => T!['{'],
             '}' => T!['}'],
-            '[' => match self.bump_then() {
+            '[' => match self.bump_then(Any) {
                 '[' => done!(self.multiline_string()?),
                 '=' => done!(self.multiline_string()?),
                 _ => done!(T!['[']),
@@ -231,8 +225,8 @@ impl<'a> Lexer<'a> {
             ']' => T![']'],
 
             ',' => T![,],
-            '.' => match self.bump_then() {
-                '.' => match self.bump_then() {
+            '.' => match self.bump_then(Any) {
+                '.' => match self.bump_then(Any) {
                     '.' => {
                         self.bump('.');
                         done!(T![...])
@@ -242,7 +236,7 @@ impl<'a> Lexer<'a> {
                 _ => done!(T![.]),
             },
             ';' => T![;],
-            ':' => match self.bump_then() {
+            ':' => match self.bump_then(Any) {
                 ':' => {
                     self.bump(':');
                     done!(T![::]);
@@ -256,9 +250,28 @@ impl<'a> Lexer<'a> {
             '%' => T![%],
             '^' => T![^],
 
+            '>' => match self.bump_then(Any) {
+                '=' => {
+                    self.bump('=');
+                    done!(T![>=]);
+                }
+                _ => {
+                    done!(T![>]);
+                }
+            },
+            '<' => match self.bump_then(Any) {
+                '=' => {
+                    self.bump('=');
+                    done!(T![<=]);
+                }
+                _ => {
+                    done!(T![<]);
+                }
+            },
+
             '!' => T![!],
 
-            '-' => match self.bump_then() {
+            '-' => match self.bump_then(Any) {
                 '-' => done!(self.comment()),
                 _ => done!(T![-]),
             },

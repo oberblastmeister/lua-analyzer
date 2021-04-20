@@ -1,0 +1,64 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/comparisons.lua
+
+---
+[
+    Token {
+        kind: Ident,
+        range: 0..1,
+    },
+    Token {
+        kind: Whitespace,
+        range: 1..2,
+    },
+    Token {
+        kind: GtEq,
+        range: 2..4,
+    },
+    Token {
+        kind: Whitespace,
+        range: 4..5,
+    },
+    Token {
+        kind: Number,
+        range: 5..6,
+    },
+    Token {
+        kind: Whitespace,
+        range: 6..7,
+    },
+    Token {
+        kind: LtEq,
+        range: 7..9,
+    },
+    Token {
+        kind: Whitespace,
+        range: 9..10,
+    },
+    Token {
+        kind: EqEq,
+        range: 10..12,
+    },
+    Token {
+        kind: Whitespace,
+        range: 12..13,
+    },
+    Token {
+        kind: Gt,
+        range: 13..14,
+    },
+    Token {
+        kind: Whitespace,
+        range: 14..15,
+    },
+    Token {
+        kind: Lt,
+        range: 15..16,
+    },
+    Token {
+        kind: Whitespace,
+        range: 16..17,
+    },
+]

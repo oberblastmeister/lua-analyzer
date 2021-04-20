@@ -28,12 +28,14 @@ fn lexer() {
     dir_tests(snapshots_dir(), &["lexer/ok"], |path, text| {
         let (tokens, errors) = tokenize(text);
         assert_errors_are_absent(&errors, path);
+        assert_unknowns_are_absent(&tokens, path);
         format!("{:#?}", tokens)
     });
 
     dir_tests(snapshots_dir(), &["lexer/err"], |path, text| {
         let (tokens, errors) = tokenize(text);
         assert_errors_are_present(&errors, path);
+        assert_unknowns_are_present(&tokens, path);
         format!("{:#?}\n\n{:#?}", tokens, errors)
     })
 }
@@ -113,6 +115,33 @@ fn assert_errors_are_absent(errors: &[SyntaxError], path: &Path) {
         "There should be no errors in the file {:?}",
         path.display(),
     );
+}
+
+fn collect_unknowns(tokens: &[Token]) -> Vec<Token> {
+    tokens
+        .into_iter()
+        .filter(|t| t.kind == T![unknown])
+        .map(|t| *t)
+        .collect()
+}
+
+fn assert_unknowns_are_absent(tokens: &[Token], path: &Path) {
+    let unknowns = collect_unknowns(tokens);
+    assert_eq!(
+        unknowns,
+        &[] as &[Token],
+        "There should be no unknowns in the file {:?}",
+        path.display()
+    )
+}
+
+fn assert_unknowns_are_present(tokens: &[Token], path: &Path) {
+    let unknowns = collect_unknowns(tokens);
+    assert!(
+        !unknowns.is_empty(),
+        "There should be no unknowns in the file {:?}",
+        path.display()
+    )
 }
 
 fn dump_parse<T: AstNode + fmt::Debug>(parse: Parse<T>) -> String {
