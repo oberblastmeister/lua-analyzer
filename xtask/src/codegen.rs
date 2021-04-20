@@ -2,8 +2,12 @@ mod gen_syntax;
 
 use anyhow::Result;
 
-pub fn run() -> Result<()> {
-    gen_syntax::run()?;
+use crate::flags;
 
-    Ok(())
+impl flags::Codegen {
+    pub fn run(self) -> Result<()> {
+        gen_syntax::run()?;
+
+        Ok(())
+    }
 }

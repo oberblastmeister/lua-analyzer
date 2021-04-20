@@ -1,6 +1,6 @@
+use anyhow::Result;
 use std::path::Path;
 use std::{env, path::PathBuf};
-use anyhow::Result;
 use xshell::cmd;
 use xshell::{read_file, write_file};
 
@@ -12,11 +12,7 @@ pub fn xtask_root() -> PathBuf {
 }
 
 pub fn project_root() -> PathBuf {
-    xtask_root()
-    .ancestors()
-    .nth(1)
-    .unwrap()
-    .to_path_buf()
+    xtask_root().ancestors().nth(1).unwrap().to_path_buf()
 }
 
 pub const PREAMBLE: &str = "Generated file, do not edit by hand, see `xtask/src/codegen`";
