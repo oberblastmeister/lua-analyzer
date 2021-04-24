@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/assign_lhs_expr.lua
 
 ---
-Program@0..190
+SourceFile@0..190
   AssignStmt@0..42
     MultivalExpr@0..28
       DotExpr@0..19

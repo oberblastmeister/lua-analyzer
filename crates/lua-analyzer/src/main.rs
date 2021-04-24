@@ -87,7 +87,7 @@ fn setup_logging() -> Result<()> {
     fs::create_dir_all(data_dir).context("Failed to create data dir")?;
     let file_path = proj_dirs.data_dir().join("server.log");
     let file = File::create(file_path).context("Failed to create log file")?;
-    WriteLogger::init(LevelFilter::Debug, simplelog::Config::default(), file)?;
+    WriteLogger::init(LevelFilter::Warn, simplelog::Config::default(), file)?;
 
     Ok(())
 }

@@ -45,6 +45,7 @@ fn is_manually_implemented(label: &str) -> bool {
     matches!(
         label,
         "lhs" | "rhs" | "op" // | "index"
+        | "table_sep"
                              //     | "then_branch"
                              //     | "else_branch"
                              //     | "start"

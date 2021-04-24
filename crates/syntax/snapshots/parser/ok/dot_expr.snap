@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/dot_expr.lua
 
 ---
-Program@0..74
+SourceFile@0..74
   LocalAssignStmt@0..34
     LocalKw@0..5 "local"
     Whitespace@5..6 " "

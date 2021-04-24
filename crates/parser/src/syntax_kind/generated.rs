@@ -61,6 +61,7 @@ pub enum SyntaxKind {
     RepeatKw,
     UntilKw,
     NilKw,
+    RequireKw,
     Number,
     Str,
     True,
@@ -68,7 +69,7 @@ pub enum SyntaxKind {
     Error,
     Ident,
     Shebang,
-    Program,
+    SourceFile,
     AssignStmt,
     LocalAssignStmt,
     LocalFunctionDefStmt,
@@ -92,6 +93,7 @@ pub enum SyntaxKind {
     TableCallExpr,
     StringCallExpr,
     MethodCallExpr,
+    RequireExpr,
     NameRef,
     MultivalExpr,
     Arglist,
@@ -115,6 +117,7 @@ pub enum SyntaxKind {
     NumericFor,
     GenericFor,
     Stmt,
+    StmtItem,
     Expr,
     TableContent,
     TableKey,
@@ -155,6 +158,7 @@ impl SyntaxKind {
                 | RepeatKw
                 | UntilKw
                 | NilKw
+                | RequireKw
         )
     }
     pub fn is_punct(&self) -> bool {
@@ -216,6 +220,7 @@ impl SyntaxKind {
             "repeat" => RepeatKw,
             "until" => UntilKw,
             "nil" => NilKw,
+            "require" => RequireKw,
             _ => return None,
         };
         Some(kw)
@@ -223,4 +228,4 @@ impl SyntaxKind {
 }
 #[doc = r" A helper macro to get the SyntaxKind"]
 #[macro_export]
-macro_rules ! T { [!] => { $ crate :: SyntaxKind :: Bang } ; [#] => { $ crate :: SyntaxKind :: Hash } ; [%] => { $ crate :: SyntaxKind :: Modulo } ; ['('] => { $ crate :: SyntaxKind :: LParen } ; [')'] => { $ crate :: SyntaxKind :: RParen } ; [*] => { $ crate :: SyntaxKind :: Asterisk } ; [+] => { $ crate :: SyntaxKind :: Plus } ; [,] => { $ crate :: SyntaxKind :: Comma } ; [-] => { $ crate :: SyntaxKind :: Minus } ; [.] => { $ crate :: SyntaxKind :: Dot } ; [..] => { $ crate :: SyntaxKind :: DoubleDot } ; [...] => { $ crate :: SyntaxKind :: TripleDot } ; [/] => { $ crate :: SyntaxKind :: Slash } ; [:] => { $ crate :: SyntaxKind :: Colon } ; [::] => { $ crate :: SyntaxKind :: DoubleColon } ; [;] => { $ crate :: SyntaxKind :: Semicolon } ; [<] => { $ crate :: SyntaxKind :: Lt } ; [<=] => { $ crate :: SyntaxKind :: LtEq } ; [=] => { $ crate :: SyntaxKind :: Eq } ; [==] => { $ crate :: SyntaxKind :: EqEq } ; [>] => { $ crate :: SyntaxKind :: Gt } ; [>=] => { $ crate :: SyntaxKind :: GtEq } ; ['['] => { $ crate :: SyntaxKind :: LBracket } ; [']'] => { $ crate :: SyntaxKind :: RBracket } ; [^] => { $ crate :: SyntaxKind :: Caret } ; ['{'] => { $ crate :: SyntaxKind :: LBrace } ; ['}'] => { $ crate :: SyntaxKind :: RBrace } ; [~=] => { $ crate :: SyntaxKind :: NotEq } ; [function] => { $ crate :: SyntaxKind :: FunctionKw } ; [local] => { $ crate :: SyntaxKind :: LocalKw } ; [true] => { $ crate :: SyntaxKind :: TrueKw } ; [false] => { $ crate :: SyntaxKind :: FalseKw } ; [if] => { $ crate :: SyntaxKind :: IfKw } ; [then] => { $ crate :: SyntaxKind :: ThenKw } ; [else] => { $ crate :: SyntaxKind :: ElseKw } ; [elseif] => { $ crate :: SyntaxKind :: ElseifKw } ; [while] => { $ crate :: SyntaxKind :: WhileKw } ; [for] => { $ crate :: SyntaxKind :: ForKw } ; [in] => { $ crate :: SyntaxKind :: InKw } ; [break] => { $ crate :: SyntaxKind :: BreakKw } ; [do] => { $ crate :: SyntaxKind :: DoKw } ; [goto] => { $ crate :: SyntaxKind :: GotoKw } ; [and] => { $ crate :: SyntaxKind :: AndKw } ; [or] => { $ crate :: SyntaxKind :: OrKw } ; [not] => { $ crate :: SyntaxKind :: NotKw } ; [return] => { $ crate :: SyntaxKind :: ReturnKw } ; [end] => { $ crate :: SyntaxKind :: EndKw } ; [repeat] => { $ crate :: SyntaxKind :: RepeatKw } ; [until] => { $ crate :: SyntaxKind :: UntilKw } ; [nil] => { $ crate :: SyntaxKind :: NilKw } ; [number] => { $ crate :: SyntaxKind :: Number } ; [str] => { $ crate :: SyntaxKind :: Str } ; [true] => { $ crate :: SyntaxKind :: True } ; [false] => { $ crate :: SyntaxKind :: False } ; [error] => { $ crate :: SyntaxKind :: Error } ; [ident] => { $ crate :: SyntaxKind :: Ident } ; [shebang] => { $ crate :: SyntaxKind :: Shebang } ; [comment] => { $ crate :: SyntaxKind :: Comment } ; [whitespace] => { $ crate :: SyntaxKind :: Whitespace } ; [__] => { $ crate :: SyntaxKind :: Tombstone } ; [eof] => { $ crate :: SyntaxKind :: Eof } ; [unknown] => { $ crate :: SyntaxKind :: Unknown } ; }
+macro_rules ! T { [!] => { $ crate :: SyntaxKind :: Bang } ; [#] => { $ crate :: SyntaxKind :: Hash } ; [%] => { $ crate :: SyntaxKind :: Modulo } ; ['('] => { $ crate :: SyntaxKind :: LParen } ; [')'] => { $ crate :: SyntaxKind :: RParen } ; [*] => { $ crate :: SyntaxKind :: Asterisk } ; [+] => { $ crate :: SyntaxKind :: Plus } ; [,] => { $ crate :: SyntaxKind :: Comma } ; [-] => { $ crate :: SyntaxKind :: Minus } ; [.] => { $ crate :: SyntaxKind :: Dot } ; [..] => { $ crate :: SyntaxKind :: DoubleDot } ; [...] => { $ crate :: SyntaxKind :: TripleDot } ; [/] => { $ crate :: SyntaxKind :: Slash } ; [:] => { $ crate :: SyntaxKind :: Colon } ; [::] => { $ crate :: SyntaxKind :: DoubleColon } ; [;] => { $ crate :: SyntaxKind :: Semicolon } ; [<] => { $ crate :: SyntaxKind :: Lt } ; [<=] => { $ crate :: SyntaxKind :: LtEq } ; [=] => { $ crate :: SyntaxKind :: Eq } ; [==] => { $ crate :: SyntaxKind :: EqEq } ; [>] => { $ crate :: SyntaxKind :: Gt } ; [>=] => { $ crate :: SyntaxKind :: GtEq } ; ['['] => { $ crate :: SyntaxKind :: LBracket } ; [']'] => { $ crate :: SyntaxKind :: RBracket } ; [^] => { $ crate :: SyntaxKind :: Caret } ; ['{'] => { $ crate :: SyntaxKind :: LBrace } ; ['}'] => { $ crate :: SyntaxKind :: RBrace } ; [~=] => { $ crate :: SyntaxKind :: NotEq } ; [function] => { $ crate :: SyntaxKind :: FunctionKw } ; [local] => { $ crate :: SyntaxKind :: LocalKw } ; [true] => { $ crate :: SyntaxKind :: TrueKw } ; [false] => { $ crate :: SyntaxKind :: FalseKw } ; [if] => { $ crate :: SyntaxKind :: IfKw } ; [then] => { $ crate :: SyntaxKind :: ThenKw } ; [else] => { $ crate :: SyntaxKind :: ElseKw } ; [elseif] => { $ crate :: SyntaxKind :: ElseifKw } ; [while] => { $ crate :: SyntaxKind :: WhileKw } ; [for] => { $ crate :: SyntaxKind :: ForKw } ; [in] => { $ crate :: SyntaxKind :: InKw } ; [break] => { $ crate :: SyntaxKind :: BreakKw } ; [do] => { $ crate :: SyntaxKind :: DoKw } ; [goto] => { $ crate :: SyntaxKind :: GotoKw } ; [and] => { $ crate :: SyntaxKind :: AndKw } ; [or] => { $ crate :: SyntaxKind :: OrKw } ; [not] => { $ crate :: SyntaxKind :: NotKw } ; [return] => { $ crate :: SyntaxKind :: ReturnKw } ; [end] => { $ crate :: SyntaxKind :: EndKw } ; [repeat] => { $ crate :: SyntaxKind :: RepeatKw } ; [until] => { $ crate :: SyntaxKind :: UntilKw } ; [nil] => { $ crate :: SyntaxKind :: NilKw } ; [require] => { $ crate :: SyntaxKind :: RequireKw } ; [number] => { $ crate :: SyntaxKind :: Number } ; [str] => { $ crate :: SyntaxKind :: Str } ; [true] => { $ crate :: SyntaxKind :: True } ; [false] => { $ crate :: SyntaxKind :: False } ; [error] => { $ crate :: SyntaxKind :: Error } ; [ident] => { $ crate :: SyntaxKind :: Ident } ; [shebang] => { $ crate :: SyntaxKind :: Shebang } ; [comment] => { $ crate :: SyntaxKind :: Comment } ; [whitespace] => { $ crate :: SyntaxKind :: Whitespace } ; [__] => { $ crate :: SyntaxKind :: Tombstone } ; [eof] => { $ crate :: SyntaxKind :: Eof } ; [unknown] => { $ crate :: SyntaxKind :: Unknown } ; }

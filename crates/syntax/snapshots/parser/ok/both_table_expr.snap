@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/both_table_expr.lua
 
 ---
-Program@0..105
+SourceFile@0..105
   LocalAssignStmt@0..104
     LocalKw@0..5 "local"
     Whitespace@5..6 " "

@@ -1,23 +1,41 @@
+mod ast_id_map;
+mod item_tree;
 mod semantics;
 
+use std::sync::Arc;
+
+use ast_id_map::AstIdMap;
+use item_tree::ItemTree;
 pub use semantics::Semantics;
 
-use base_db::{salsa, SourceDatabase, Upcast};
+use base_db::{salsa, FileId, SourceDatabase, Upcast};
+use syntax::ast::AstNode;
 
-#[salsa::query_group(HirDatabaseStorage)]
-pub trait HirDatabase: DefDatabase + Upcast<dyn DefDatabase> {
-    fn place(&self, n: u32) -> u32;
+#[salsa::query_group(InternDatabaseStorage)]
+pub trait InternDatabase: SourceDatabase {
+    // fn intern_function(&self, loc: ItemTreeId<Function>) -> FunctionId
 }
 
-fn place(db: &dyn HirDatabase, n: u32) -> u32 {
-    0
+#[salsa::query_group(AstDatabaseStorage)]
+pub trait AstDatabase: SourceDatabase {
+    fn ast_id_map(&self, file_id: FileId) -> Arc<AstIdMap>;
+}
+
+fn ast_id_map(db: &dyn AstDatabase, file_id: FileId) -> Arc<AstIdMap> {
+    let map = db
+        .parse(file_id)
+        .ok()
+        .map_or_else(|_| AstIdMap::default(), |it| AstIdMap::from_source(&it.syntax()));
+    Arc::new(map)
 }
 
 #[salsa::query_group(DefDatabaseStorage)]
-pub trait DefDatabase: SourceDatabase + Upcast<dyn SourceDatabase> {
-    fn another(&self, n: u32) -> u32;
+pub trait DefDatabase:
+    InternDatabase + AstDatabase + SourceDatabase + Upcast<dyn AstDatabase>
+{
+    #[salsa::invoke(ItemTree::file_item_tree_query)]
+    fn file_item_tree(&self, file_id: FileId) -> Arc<ItemTree>;
 }
 
-fn another(db: &dyn DefDatabase, n: u32) -> u32 {
-    0
-}
+#[salsa::query_group(HirDatabaseStorage)]
+pub trait HirDatabase: DefDatabase + Upcast<dyn DefDatabase> {}

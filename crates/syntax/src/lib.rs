@@ -8,12 +8,14 @@ mod syntax_node;
 #[cfg(test)]
 mod tests;
 mod validation;
+mod ptr;
 
+pub use ptr::{SyntaxNodePtr, AstPtr};
 pub use parser::{SyntaxKind, Token, T};
 pub use syntax_node::{
     SyntaxElement, SyntaxElementChildren, SyntaxError, SyntaxNode, SyntaxNodeChildren, SyntaxToken,
 };
-pub use rowan::{TextSize, TextRange};
+pub use rowan::{TextSize, TextRange, WalkEvent};
 
 use std::{marker::PhantomData, sync::Arc};
 
@@ -86,7 +88,7 @@ impl Parse<SyntaxNode> {
     }
 }
 
-pub use ast::Program;
+pub use ast::SourceFile;
 
 fn format_errors(errors: &[SyntaxError]) -> String {
     let mut s = String::new();
@@ -113,14 +115,14 @@ impl ast::Expr {
     }
 }
 
-impl Program {
-    pub fn parse(text: &str) -> Parse<Program> {
+impl SourceFile {
+    pub fn parse(text: &str) -> Parse<SourceFile> {
         let (green, mut errors) = parsing::parse_text(text);
         let root = SyntaxNode::new_root(green.clone());
 
         errors.extend(validation::validate(&root));
 
-        assert_eq!(root.kind(), SyntaxKind::Program);
+        assert_eq!(root.kind(), SyntaxKind::SourceFile);
 
         Parse {
             green,
@@ -130,7 +132,7 @@ impl Program {
     }
 }
 
-impl Parse<Program> {
+impl Parse<SourceFile> {
     pub fn debug_dump(&self) -> String {
         let mut s = String::new();
         s.push_str(&format!("{:#?}", self.syntax_node()));
@@ -166,7 +168,7 @@ macro_rules! match_ast {
     (match $node:ident { $($tt:tt)* }) => { match_ast!(match ($node) { $($tt)* }) };
 
     (match ($node:expr) {
-        $( ast::$ast:ident($it:ident) => $res:expr, )*
+        $( ast::$ast:ident($it:ident) => $res:tt $(,)? )*
         _ => $catch_all:expr $(,)?
     }) => {{
         $( if let Some($it) = ast::$ast::cast($node.clone()) { $res } else )*

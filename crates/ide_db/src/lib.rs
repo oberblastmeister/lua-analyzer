@@ -8,12 +8,14 @@ use base_db::{
     salsa::{self, Database},
     Canceled, Change, CheckCanceled, FileId, SourceDatabase, Upcast,
 };
-use hir::{DefDatabase, HirDatabase};
+use hir::{AstDatabase, DefDatabase, HirDatabase};
 use line_index::LineIndex;
 
 #[salsa::database(
-    base_db::SourceDatabaseStorage,
     LineIndexDatabaseStorage,
+    base_db::SourceDatabaseStorage,
+    hir::InternDatabaseStorage,
+    hir::AstDatabaseStorage,
     hir::HirDatabaseStorage,
     hir::DefDatabaseStorage
 )]
@@ -39,10 +41,15 @@ impl Upcast<dyn HirDatabase> for RootDatabase {
     }
 }
 
+impl Upcast<dyn AstDatabase> for RootDatabase {
+    fn upcast(&self) -> &(dyn AstDatabase + 'static) {
+        &*self
+    }
+}
+
 impl RootDatabase {
     pub fn request_cancellation(&mut self) {
-        self.salsa_runtime_mut()
-            .synthetic_write(salsa::Durability::LOW);
+        self.salsa_runtime_mut().synthetic_write(salsa::Durability::LOW);
     }
 
     pub fn apply_change(&mut self, change: Change) {
@@ -75,17 +82,13 @@ impl salsa::Database for RootDatabase {
 
 impl salsa::ParallelDatabase for RootDatabase {
     fn snapshot(&self) -> salsa::Snapshot<RootDatabase> {
-        salsa::Snapshot::new(RootDatabase {
-            storage: self.storage.snapshot(),
-        })
+        salsa::Snapshot::new(RootDatabase { storage: self.storage.snapshot() })
     }
 }
 
 impl RootDatabase {
     pub fn new() -> RootDatabase {
-        RootDatabase {
-            storage: salsa::Storage::default(),
-        }
+        RootDatabase { storage: salsa::Storage::default() }
     }
 }
 

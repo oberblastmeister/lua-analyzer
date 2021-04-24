@@ -59,7 +59,7 @@ impl Validate for ast::ExprStmt {
 
         let expr_count = multival_expr
             .exprs()
-            .map(|expr| {
+            .inspect(|expr| {
                 if !expr.is_call() {
                     acc.push(SyntaxError::new(
                         "Expression statements can only be call expressions".to_string(),
@@ -70,10 +70,7 @@ impl Validate for ast::ExprStmt {
             .count();
 
         if expr_count == 0 {
-            acc.push(SyntaxError::new(
-                "Expected a call expression".to_string(),
-                self.range(),
-            ));
+            acc.push(SyntaxError::new("Expected a call expression".to_string(), self.range()));
         }
 
         if expr_count > 1 {
@@ -157,10 +154,7 @@ fn unquote(text: &str) -> (TextSize, &str) {
         assert_eq!(text.bytes().last().unwrap(), ']' as u8);
         let text = &text[..text.len() - 1];
         let back_equals = text.bytes().rev().take_while(|c| *c == '=' as u8).count();
-        assert_eq!(
-            equals, back_equals,
-            "Front and back equals must be the same"
-        );
+        assert_eq!(equals, back_equals, "Front and back equals must be the same");
         let text = &text[..text.len() - back_equals];
         assert_eq!(text.bytes().last().unwrap(), ']' as u8);
         let text = &text[..text.len() - 1];
@@ -220,23 +214,14 @@ mod tests {
         let mut chars = s.chars();
         let first = chars.next().unwrap();
         let mut actual_errors = Vec::new();
-        unescape_once(
-            first,
-            &mut chars,
-            s.text_len(),
-            0.into(),
-            &mut actual_errors,
-        );
+        unescape_once(first, &mut chars, s.text_len(), 0.into(), &mut actual_errors);
         assert_eq!(expected_errors, actual_errors);
     }
 
     fn check_unescape_str(s: &str, expected_ranges: Vec<TextRange>) {
         let mut actual_errors = vec![];
         unescape(s, 0.into(), &mut actual_errors);
-        let actual_ranges = actual_errors
-            .into_iter()
-            .map(|e| e.range())
-            .collect::<Vec<_>>();
+        let actual_ranges = actual_errors.into_iter().map(|e| e.range()).collect::<Vec<_>>();
         assert_eq!(actual_ranges, expected_ranges);
     }
 
@@ -247,9 +232,8 @@ mod tests {
 
     #[test]
     fn valid_escapes() {
-        let escapes = [
-            r"\a", r"\b", r"\f", r"\n", r"\r", r"\t", r"\v", r"\\", r#"\""#, r"\'", r"\[", r"\]",
-        ];
+        let escapes =
+            [r"\a", r"\b", r"\f", r"\n", r"\r", r"\t", r"\v", r"\\", r#"\""#, r"\'", r"\[", r"\]"];
 
         for escape in escapes.iter() {
             check_unescape_once(escape, vec![]);
@@ -267,20 +251,11 @@ mod tests {
         let one = TextRange::new(0.into(), 1.into());
         let two = TextRange::new(0.into(), 2.into());
 
-        let escapes = [
-            (r"\", one),
-            (r"\w", two),
-            (r"\u", two),
-            (r"\p", two),
-            (r"\l", two),
-            (r"\{", two),
-        ];
+        let escapes =
+            [(r"\", one), (r"\w", two), (r"\u", two), (r"\p", two), (r"\l", two), (r"\{", two)];
 
         for (escape, range) in escapes.iter() {
-            check_unescape_once(
-                escape,
-                vec![SyntaxError::new(ESCAPE_MSG.to_string(), *range)],
-            );
+            check_unescape_once(escape, vec![SyntaxError::new(ESCAPE_MSG.to_string(), *range)]);
         }
     }
 

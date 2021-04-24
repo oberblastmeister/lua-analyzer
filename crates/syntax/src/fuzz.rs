@@ -1,7 +1,7 @@
-use crate::{ast::Program, lexer::tokenize};
+use crate::{ast::SourceFile, lexer::tokenize};
 
 pub fn check_parser(text: &str) {
-    let _ = Program::parse(text);
+    let _ = SourceFile::parse(text);
 }
 
 pub fn check_lexer(text: &str) {

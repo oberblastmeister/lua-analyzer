@@ -13,10 +13,10 @@ use crate::{
     dispatch::{NotificationDispatcher, RequestDispatcher},
     document::DocumentData,
     from_proto,
-    to_proto::{self, url_from_abs_path},
-    global_state::{GlobalState, file_id_to_url},
+    global_state::{file_id_to_url, GlobalState},
     handlers,
     lsp_utils::apply_document_changes,
+    to_proto::{self, url_from_abs_path},
 };
 
 #[derive(Debug)]
@@ -40,6 +40,7 @@ impl GlobalState {
         while let Some(event) = self.next_event(&inbox) {
             if let Event::Lsp(lsp_server::Message::Notification(not)) = &event {
                 if not.method == lsp_types::notification::Exit::METHOD {
+                    log::error!("We exited properly");
                     return Ok(());
                 }
             }
@@ -74,8 +75,7 @@ impl GlobalState {
                     Task::Response(response) => self.respond(response),
                     Task::Diagnostics(diagnostics_per_file) => {
                         for (file_id, diagnostics) in diagnostics_per_file {
-                            self.diagnostics
-                                .set_native_diagnostics(file_id, diagnostics)
+                            self.diagnostics.set_native_diagnostics(file_id, diagnostics)
                         }
                     }
                 }
@@ -113,7 +113,21 @@ impl GlobalState {
 
         self.register_request(&req, request_received);
 
+        if self.shutdown_requested {
+            self.respond(Response::new_err(
+                req.id,
+                lsp_server::ErrorCode::InvalidRequest as i32,
+                "Shutdown already requested.".to_owned(),
+            ));
+
+            return Ok(());
+        }
+
         self.request_dispatcher(req)
+            .on_sync::<Shutdown>(|s, ()| {
+                s.shutdown_requested = true;
+                Ok(())
+            })?
             .on::<Completion>(handlers::handle_completion)
             .finish();
 
@@ -128,10 +142,7 @@ impl GlobalState {
                 if let Ok(path) = from_proto::abs_path(&params.text_document.uri) {
                     if this
                         .mem_docs
-                        .insert(
-                            path.clone(),
-                            DocumentData::new(params.text_document.version),
-                        )
+                        .insert(path.clone(), DocumentData::new(params.text_document.version))
                         .is_some()
                     {
                         log::error!("duplicate DidOpenTextDocument: {}", path.display())
@@ -141,7 +152,7 @@ impl GlobalState {
                         .vfs
                         .write()
                         .set_file_contents(path, Some(params.text_document.text.into_bytes()));
-                    
+
                     // If the VFS contents are unchanged, update diagnostics, since `handle_event`
                     // won't see any changes. This avoids missing diagnostics when opening a file.
                     //

@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/asserts.lua
 
 ---
-Program@0..256
+SourceFile@0..256
   ExprStmt@0..61
     MultivalExpr@0..61
       CallExpr@0..61

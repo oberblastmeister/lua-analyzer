@@ -44,11 +44,15 @@ pub(super) fn stmt(p: &mut Parser) {
         T![break] => {
             break_stmt(p);
         }
+        // TODO: need to allow global assignment also
         T![ident] => {
             expr_stmt(p);
         }
         T!['('] => {
             expr_stmt(p);
+        }
+        T![;] => {
+            p.err_and_bump("Semicolons can only be used after statements");
         }
         _ if p.at_ts(LITERAL_FIRST) => {
             p.err_and_bump("A literal cannot be the start of a statement");
@@ -60,6 +64,9 @@ pub(super) fn stmt(p: &mut Parser) {
         }
         _ => p.err_and_bump("Expected a statement"),
     };
+
+    // Optional semicolon at the end of each statement
+    p.accept(T![;]);
 }
 
 fn if_stmt(p: &mut Parser) -> MarkerComplete {

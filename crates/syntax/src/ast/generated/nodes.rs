@@ -7,10 +7,10 @@ use crate::{
     SyntaxKind, SyntaxNode, SyntaxToken, T,
 };
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Program {
+pub struct SourceFile {
     pub(crate) syntax: SyntaxNode,
 }
-impl Program {
+impl SourceFile {
     pub fn stmts(&self) -> AstChildren<Stmt> {
         support::children(&self.syntax)
     }
@@ -378,6 +378,15 @@ impl MethodCallExpr {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct RequireExpr {
+    pub(crate) syntax: SyntaxNode,
+}
+impl RequireExpr {
+    pub fn require_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![require])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct NameRef {
     pub(crate) syntax: SyntaxNode,
 }
@@ -574,8 +583,8 @@ pub struct FunctionNameIndex {
     pub(crate) syntax: SyntaxNode,
 }
 impl FunctionNameIndex {
-    pub fn name_refs(&self) -> AstChildren<NameRef> {
-        support::children(&self.syntax)
+    pub fn dot_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![.])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -669,6 +678,12 @@ pub enum Stmt {
     RepeatUntilStmt(RepeatUntilStmt),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum StmtItem {
+    LocalAssignStmt(LocalAssignStmt),
+    LocalFunctionDefStmt(LocalFunctionDefStmt),
+    FunctionDefStmt(FunctionDefStmt),
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Expr {
     Literal(Literal),
     TableExpr(TableExpr),
@@ -681,6 +696,7 @@ pub enum Expr {
     TableCallExpr(TableCallExpr),
     StringCallExpr(StringCallExpr),
     MethodCallExpr(MethodCallExpr),
+    RequireExpr(RequireExpr),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TableContent {
@@ -703,9 +719,9 @@ pub enum ForContent {
     NumericFor(NumericFor),
     GenericFor(GenericFor),
 }
-impl AstNode for Program {
+impl AstNode for SourceFile {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Program
+        kind == SyntaxKind::SourceFile
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1051,6 +1067,21 @@ impl AstNode for StringCallExpr {
 impl AstNode for MethodCallExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::MethodCallExpr
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for RequireExpr {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::RequireExpr
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1508,6 +1539,49 @@ impl AstNode for Stmt {
         }
     }
 }
+impl From<LocalAssignStmt> for StmtItem {
+    fn from(node: LocalAssignStmt) -> StmtItem {
+        StmtItem::LocalAssignStmt(node)
+    }
+}
+impl From<LocalFunctionDefStmt> for StmtItem {
+    fn from(node: LocalFunctionDefStmt) -> StmtItem {
+        StmtItem::LocalFunctionDefStmt(node)
+    }
+}
+impl From<FunctionDefStmt> for StmtItem {
+    fn from(node: FunctionDefStmt) -> StmtItem {
+        StmtItem::FunctionDefStmt(node)
+    }
+}
+impl AstNode for StmtItem {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        match kind {
+            SyntaxKind::LocalAssignStmt
+            | SyntaxKind::LocalFunctionDefStmt
+            | SyntaxKind::FunctionDefStmt => true,
+            _ => false,
+        }
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        let res = match syntax.kind() {
+            SyntaxKind::LocalAssignStmt => StmtItem::LocalAssignStmt(LocalAssignStmt { syntax }),
+            SyntaxKind::LocalFunctionDefStmt => {
+                StmtItem::LocalFunctionDefStmt(LocalFunctionDefStmt { syntax })
+            }
+            SyntaxKind::FunctionDefStmt => StmtItem::FunctionDefStmt(FunctionDefStmt { syntax }),
+            _ => return None,
+        };
+        Some(res)
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        match self {
+            StmtItem::LocalAssignStmt(it) => &it.syntax,
+            StmtItem::LocalFunctionDefStmt(it) => &it.syntax,
+            StmtItem::FunctionDefStmt(it) => &it.syntax,
+        }
+    }
+}
 impl From<Literal> for Expr {
     fn from(node: Literal) -> Expr {
         Expr::Literal(node)
@@ -1563,6 +1637,11 @@ impl From<MethodCallExpr> for Expr {
         Expr::MethodCallExpr(node)
     }
 }
+impl From<RequireExpr> for Expr {
+    fn from(node: RequireExpr) -> Expr {
+        Expr::RequireExpr(node)
+    }
+}
 impl AstNode for Expr {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
@@ -1576,7 +1655,8 @@ impl AstNode for Expr {
             | SyntaxKind::CallExpr
             | SyntaxKind::TableCallExpr
             | SyntaxKind::StringCallExpr
-            | SyntaxKind::MethodCallExpr => true,
+            | SyntaxKind::MethodCallExpr
+            | SyntaxKind::RequireExpr => true,
             _ => false,
         }
     }
@@ -1593,6 +1673,7 @@ impl AstNode for Expr {
             SyntaxKind::TableCallExpr => Expr::TableCallExpr(TableCallExpr { syntax }),
             SyntaxKind::StringCallExpr => Expr::StringCallExpr(StringCallExpr { syntax }),
             SyntaxKind::MethodCallExpr => Expr::MethodCallExpr(MethodCallExpr { syntax }),
+            SyntaxKind::RequireExpr => Expr::RequireExpr(RequireExpr { syntax }),
             _ => return None,
         };
         Some(res)
@@ -1610,6 +1691,7 @@ impl AstNode for Expr {
             Expr::TableCallExpr(it) => &it.syntax,
             Expr::StringCallExpr(it) => &it.syntax,
             Expr::MethodCallExpr(it) => &it.syntax,
+            Expr::RequireExpr(it) => &it.syntax,
         }
     }
 }
@@ -1759,6 +1841,11 @@ impl std::fmt::Display for Stmt {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
+impl std::fmt::Display for StmtItem {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
 impl std::fmt::Display for Expr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
@@ -1784,7 +1871,7 @@ impl std::fmt::Display for ForContent {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for Program {
+impl std::fmt::Display for SourceFile {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
@@ -1900,6 +1987,11 @@ impl std::fmt::Display for StringCallExpr {
     }
 }
 impl std::fmt::Display for MethodCallExpr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for RequireExpr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

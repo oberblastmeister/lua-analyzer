@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/assign.lua
 
 ---
-Program@0..138
+SourceFile@0..138
   Whitespace@0..47 "                      ..."
   Comment@47..78 "-- just a comment at  ..."
   Comment@78..97 "-- local hello = 5\n"

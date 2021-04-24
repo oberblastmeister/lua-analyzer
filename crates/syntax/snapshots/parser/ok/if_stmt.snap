@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/if_stmt.lua
 
 ---
-Program@0..57
+SourceFile@0..57
   IfStmt@0..56
     IfKw@0..2 "if"
     Whitespace@2..3 " "

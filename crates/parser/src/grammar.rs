@@ -15,7 +15,7 @@ pub(crate) fn root(p: &mut Parser) {
     while !p.at(T![eof]) {
         stmt(p);
     }
-    m.complete(p, Program);
+    m.complete(p, SourceFile);
 }
 
 fn multi_name(p: &mut Parser) -> MarkerComplete {

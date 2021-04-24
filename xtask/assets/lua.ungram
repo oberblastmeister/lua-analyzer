@@ -1,4 +1,4 @@
-Program = 
+SourceFile = 
   Stmt*
 
 Stmt =
@@ -15,6 +15,11 @@ Stmt =
   | LabelStmt
   | RepeatUntilStmt
 
+StmtItem =
+  LocalAssignStmt
+  | LocalFunctionDefStmt
+  | FunctionDefStmt
+
 Expr =
   Literal
   | TableExpr
@@ -27,6 +32,10 @@ Expr =
   | TableCallExpr
   | StringCallExpr
   | MethodCallExpr
+  | RequireExpr
+
+RequireExpr =
+    'require'
 
 CallExpr =
   fun:Expr '(' (args:Expr)? ')'
@@ -131,8 +140,10 @@ FunctionDefContent =
   | FunctionStatic
   | Name
 
+// need to fix this
 FunctionNameIndex =
-  (NameRef '.')*
+'.'
+  // (NameRef '.')*
 
 FunctionMethod =
   FunctionNameIndex

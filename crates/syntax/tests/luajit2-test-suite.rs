@@ -8,7 +8,7 @@ use std::{
     panic,
     sync::{atomic::Ordering, Arc},
 };
-use syntax::ast::Program;
+use syntax::ast::SourceFile;
 
 const GLOB: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/luajit2-test-suite/**/*.lua");
 
@@ -24,7 +24,7 @@ fn run_test_suite() {
             total.fetch_add(1, Ordering::Relaxed);
             let path = res.expect("Glob entry failed");
             let contents = fs::read_to_string(&path).expect("Failed to read path to string");
-            let result = panic::catch_unwind(|| Program::parse(&contents));
+            let result = panic::catch_unwind(|| SourceFile::parse(&contents));
             match result {
                 Ok(parse) => {
                     if !parse.errors().is_empty() {

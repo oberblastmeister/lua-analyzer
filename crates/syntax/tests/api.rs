@@ -3,22 +3,21 @@ use syntax::{
     match_ast, Parse,
 };
 
-fn stmt(program: ast::Program) -> ast::Stmt {
+fn stmt(program: ast::SourceFile) -> ast::Stmt {
     program.stmts().next().unwrap()
 }
 
 #[test]
-#[ignore]
 fn learning() {
-    let prog = ast::Program::parse(r#"
+    let prog = ast::SourceFile::parse(r#"
 local hello = "a string"
 local function testing(first, second, third)
     local new = first + second
     return new^324 .. "adfadsf"
-end"#);
-    for (i, it) in prog.syntax_node().descendants().enumerate() {
-        println!("{}: {:#?}", i, it);
-    }
+end"#).ok().unwrap();
+    // for (i, it) in prog.syntax_node().descendants().enumerate() {
+    //     println!("{}: {:#?}", i, it);
+    // }
     //
     // for (i, it) in prog.syntax_node().ancestors().enumerate() {
     //     println!("{}: {:#?}", i, it);
@@ -31,6 +30,10 @@ end"#);
     // for (i, it) in prog.syntax_node().children_with_tokens().enumerate() {
     //     println!("{}: {:#?}", i, it);
     // }
+    let mut preorder = prog.syntax().preorder();
+    for event in preorder {
+        println!("{:#?}", event);
+    }
     panic!("Just to test")
 }
 

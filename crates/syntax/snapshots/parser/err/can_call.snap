@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/err/can_call.lua
 
 ---
-Program@0..9
+SourceFile@0..9
   Error@0..2
     Str@0..2 "\"\""
   ExprStmt@2..4

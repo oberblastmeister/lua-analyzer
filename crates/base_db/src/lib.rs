@@ -7,7 +7,7 @@ pub use vfs::FileId;
 pub use change::Change;
 
 use syntax::{
-    ast::{self, Program},
+    ast::{self, SourceFile},
     Parse,
 };
 
@@ -59,13 +59,13 @@ impl<T: salsa::Database> CheckCanceled for T {
 pub trait SourceDatabase: CheckCanceled + std::fmt::Debug {
     // Parses the file into the syntax tree.
     #[salsa::invoke(parse_query)]
-    fn parse(&self, file_id: FileId) -> Parse<ast::Program>;
+    fn parse(&self, file_id: FileId) -> Parse<ast::SourceFile>;
 
     #[salsa::input]
     fn file_text(&self, file_id: FileId) -> Arc<String>;
 }
 
-fn parse_query(db: &dyn SourceDatabase, file_id: FileId) -> Parse<ast::Program> {
+fn parse_query(db: &dyn SourceDatabase, file_id: FileId) -> Parse<ast::SourceFile> {
     let text = db.file_text(file_id);
-    Program::parse(&*text)
+    SourceFile::parse(&*text)
 }

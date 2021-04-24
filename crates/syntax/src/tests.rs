@@ -9,14 +9,14 @@ use std::{
 #[test]
 fn parser() {
     dir_tests(snapshots_dir(), &["parser/ok"], |path, text| {
-        let parse = Program::parse(text);
+        let parse = SourceFile::parse(text);
         let errors = parse.errors();
         assert_errors_are_absent(errors, path);
         dump_parse(parse)
     });
 
     dir_tests(snapshots_dir(), &["parser/err"], |path, text| {
-        let parse = Program::parse(text);
+        let parse = SourceFile::parse(text);
         let errors = parse.errors();
         assert_errors_are_present(errors, path);
         dump_parse(parse)
@@ -151,7 +151,7 @@ fn dump_parse<T: AstNode + fmt::Debug>(parse: Parse<T>) -> String {
     s
 }
 
-fn dump_parse_no_errors(parse: Parse<Program>) -> Result<String, String> {
+fn dump_parse_no_errors(parse: Parse<SourceFile>) -> Result<String, String> {
     if !parse.errors().is_empty() {
         return Err(dump_parse(parse));
         // panic!(
@@ -196,15 +196,15 @@ fn project_root() -> PathBuf {
 
 #[test]
 fn nothing() {
-    insta::assert_debug_snapshot!(Program::parse("").syntax_node(), @"Program@0..0")
+    insta::assert_debug_snapshot!(SourceFile::parse("").syntax_node(), @"SourceFile@0..0")
 }
 
 #[test]
 fn fuzz1() {
-    Program::parse("e,,");
+    SourceFile::parse("e,,");
 }
 
 #[test]
 fn local_only() {
-    Program::parse("local");
+    SourceFile::parse("local");
 }

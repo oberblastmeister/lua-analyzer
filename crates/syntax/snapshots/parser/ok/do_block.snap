@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/do_block.lua
 
 ---
-Program@0..102
+SourceFile@0..102
   DoStmt@0..101
     DoKw@0..2 "do"
     Whitespace@2..5 "\n  "

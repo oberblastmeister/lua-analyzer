@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/higher_order_function.lua
 
 ---
-Program@0..53
+SourceFile@0..53
   ExprStmt@0..52
     MultivalExpr@0..52
       CallExpr@0..52

@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/break_stmt.lua
 
 ---
-Program@0..24
+SourceFile@0..24
   BreakStmt@0..5
     BreakKw@0..5 "break"
   Whitespace@5..6 "\n"

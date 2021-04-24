@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/while_stmt.lua
 
 ---
-Program@0..35
+SourceFile@0..35
   WhileStmt@0..34
     WhileKw@0..5 "while"
     Whitespace@5..6 " "

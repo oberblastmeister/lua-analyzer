@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/function_call_multi.lua
 
 ---
-Program@0..95
+SourceFile@0..95
   ExprStmt@0..40
     MultivalExpr@0..40
       CallExpr@0..40

@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/comments.lua
 
 ---
-Program@0..68
+SourceFile@0..68
   Comment@0..34 "-- these are just sim ..."
   Comment@34..51 "-- more comments\n"
   Comment@51..68 "-- more comments\n"

@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/multi_name.lua
 
 ---
-Program@0..129
+SourceFile@0..129
   LocalAssignStmt@0..26
     LocalKw@0..5 "local"
     Whitespace@5..6 " "

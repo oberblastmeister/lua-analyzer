@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/repeat_until_stmt.lua
 
 ---
-Program@0..65
+SourceFile@0..65
   RepeatUntilStmt@0..64
     RepeatKw@0..6 "repeat"
     Whitespace@6..9 "\n  "

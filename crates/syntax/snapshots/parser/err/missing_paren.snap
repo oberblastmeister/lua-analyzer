@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/err/missing_paren.lua
 
 ---
-Program@0..16
+SourceFile@0..16
   LocalAssignStmt@0..15
     LocalKw@0..5 "local"
     Whitespace@5..6 " "

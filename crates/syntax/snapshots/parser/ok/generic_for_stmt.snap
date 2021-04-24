@@ -4,7 +4,7 @@ expression: actual
 input_file: crates/syntax/snapshots/parser/ok/generic_for_stmt.lua
 
 ---
-Program@0..45
+SourceFile@0..45
   ForStmt@0..44
     ForKw@0..3 "for"
     Whitespace@3..4 " "

@@ -24,6 +24,7 @@ pub(crate) struct Handle<H, C> {
 pub struct GlobalState {
     req_queue: ReqQueue,
     pub(crate) diagnostics: DiagnosticCollection,
+    pub(crate) shutdown_requested: bool,
     pub(crate) sender: Sender<lsp_server::Message>,
     pub(crate) task_pool: Handle<TaskPool<Task>, Receiver<Task>>,
     pub(crate) mem_docs: FxHashMap<AbsPathBuf, DocumentData>,
@@ -49,6 +50,7 @@ impl GlobalState {
             config: Arc::new(config),
             analysis_host: AnalysisHost::new(),
             diagnostics: Default::default(),
+            shutdown_requested: false,
         }
     }
 
