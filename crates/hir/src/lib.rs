@@ -1,4 +1,5 @@
 mod ast_id_map;
+mod name;
 mod item_tree;
 mod semantics;
 

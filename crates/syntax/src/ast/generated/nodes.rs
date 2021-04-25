@@ -553,7 +553,7 @@ pub struct FunctionMethod {
     pub(crate) syntax: SyntaxNode,
 }
 impl FunctionMethod {
-    pub fn function_name_index(&self) -> Option<FunctionNameIndex> {
+    pub fn index_path(&self) -> Option<IndexPath> {
         support::child(&self.syntax)
     }
     pub fn colon_token(&self) -> Option<SyntaxToken> {
@@ -568,7 +568,7 @@ pub struct FunctionStatic {
     pub(crate) syntax: SyntaxNode,
 }
 impl FunctionStatic {
-    pub fn function_name_index(&self) -> Option<FunctionNameIndex> {
+    pub fn index_path(&self) -> Option<IndexPath> {
         support::child(&self.syntax)
     }
     pub fn dot_token(&self) -> Option<SyntaxToken> {
@@ -579,12 +579,12 @@ impl FunctionStatic {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FunctionNameIndex {
+pub struct IndexPath {
     pub(crate) syntax: SyntaxNode,
 }
-impl FunctionNameIndex {
-    pub fn dot_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![.])
+impl IndexPath {
+    pub fn name_refs(&self) -> AstChildren<NameRef> {
+        support::children(&self.syntax)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1334,9 +1334,9 @@ impl AstNode for FunctionStatic {
         &self.syntax
     }
 }
-impl AstNode for FunctionNameIndex {
+impl AstNode for IndexPath {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FunctionNameIndex
+        kind == SyntaxKind::IndexPath
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -2076,7 +2076,7 @@ impl std::fmt::Display for FunctionStatic {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for FunctionNameIndex {
+impl std::fmt::Display for IndexPath {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

@@ -5,23 +5,22 @@ input_file: crates/syntax/snapshots/parser/ok/return_nothing.lua
 
 ---
 SourceFile@0..84
-  FunctionItem@0..34
-    LocalFunctionDefStmt@0..34
-      LocalKw@0..5 "local"
-      Whitespace@5..6 " "
-      FunctionKw@6..14 "function"
-      Whitespace@14..15 " "
-      Name@15..19
-        Ident@15..19 "test"
-      Paramlist@19..21
-        LParen@19..20 "("
-        RParen@20..21 ")"
-      Whitespace@21..24 "\n  "
-      Block@24..30
-        ReturnStmt@24..30
-          ReturnKw@24..30 "return"
-      Whitespace@30..31 "\n"
-      EndKw@31..34 "end"
+  LocalFunctionDefStmt@0..34
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    FunctionKw@6..14 "function"
+    Whitespace@14..15 " "
+    Name@15..19
+      Ident@15..19 "test"
+    Paramlist@19..21
+      LParen@19..20 "("
+      RParen@20..21 ")"
+    Whitespace@21..24 "\n  "
+    Block@24..30
+      ReturnStmt@24..30
+        ReturnKw@24..30 "return"
+    Whitespace@30..31 "\n"
+    EndKw@31..34 "end"
   Whitespace@34..36 "\n\n"
   LocalAssignStmt@36..75
     LocalKw@36..41 "local"

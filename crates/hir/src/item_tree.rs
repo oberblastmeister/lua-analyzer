@@ -17,7 +17,11 @@ use syntax::{
     match_ast,
 };
 
-use crate::{ast_id_map::FileAstId, DefDatabase};
+use crate::{
+    ast_id_map::FileAstId,
+    name::{MultiName, Name},
+    DefDatabase,
+};
 
 #[derive(Debug, Default, Eq, PartialEq)]
 pub struct ItemTree {
@@ -28,7 +32,7 @@ pub struct ItemTree {
 impl ItemTree {
     pub fn file_item_tree_query(db: &dyn DefDatabase, file_id: FileId) -> Arc<ItemTree> {
         let ctx = lower::Ctx::new(db, file_id);
-        let syntax = db.parse(file_id).tree().syntax();
+        let syntax = db.parse(file_id).tree().syntax().clone();
         let mut item_tree = match_ast! {
             match syntax {
                 ast::SourceFile(file) => {
@@ -37,11 +41,26 @@ impl ItemTree {
                 _ => panic!("cannot create item tree from {:?} {}", syntax, syntax),
             }
         };
+
+        item_tree.shrink_to_fit();
         Arc::new(item_tree)
     }
 
     fn data(&self) -> &ItemTreeData {
         self.data.as_ref().expect("attempted to access data of empty ItemTree")
+    }
+
+    fn data_mut(&mut self) -> &mut ItemTreeData {
+        self.data.get_or_insert_with(Box::default)
+    }
+
+    fn shrink_to_fit(&mut self) {
+        if let Some(data) = &mut self.data {
+            data.local_assigns.shrink_to_fit();
+            data.local_functions.shrink_to_fit();
+            data.functions.shrink_to_fit();
+            data.inner_items.shrink_to_fit();
+        }
     }
 }
 
@@ -142,29 +161,15 @@ impl<N: ItemTreeNode> Hash for ItemTreeId<N> {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct MultiName {
-    names: Vec<Name>,
-}
-
-impl MultiName {
-    pub fn new(names: Vec<Name>) -> Self {
-        Self { names }
-    }
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Name(SmolStr);
-
-impl Name {
-    fn new(text: SmolStr) -> Self {
-        Self(text)
-    }
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Path {
+#[derive(Debug, Clone, Eq, PartialEq, Default)]
+pub struct IndexPath {
     segments: Vec<Name>,
+}
+
+impl IndexPath {
+    pub fn new(segments: Vec<Name>) -> Self {
+        Self { segments }
+    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -182,7 +187,7 @@ pub struct LocalFunction {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Function {
-    pub path: Path,
+    pub path: IndexPath,
     pub name: Name,
     pub is_method: bool,
     pub params: MultiName,

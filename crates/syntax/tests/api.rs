@@ -8,6 +8,7 @@ fn stmt(program: ast::SourceFile) -> ast::Stmt {
 }
 
 #[test]
+#[ignore]
 fn learning() {
     let prog = ast::SourceFile::parse(r#"
 local hello = "a string"

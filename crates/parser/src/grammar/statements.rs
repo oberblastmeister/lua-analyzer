@@ -249,7 +249,7 @@ fn function_def_content(p: &mut Parser) -> MarkerComplete {
     if p.at(T![ident]) && p.nth(1) == T!['('] {
         name_r(p, TS!['('].union(RECOVERY));
     } else {
-        let m = function_name_index(p).precede(p);
+        let m = index_path(p).precede(p);
         if p.at(T![:]) {
             p.bump(T![:]);
             name_r(p, RECOVERY);
@@ -262,7 +262,7 @@ fn function_def_content(p: &mut Parser) -> MarkerComplete {
     m.complete(p, FunctionDefContent)
 }
 
-fn function_name_index(p: &mut Parser) -> MarkerComplete {
+fn index_path(p: &mut Parser) -> MarkerComplete {
     const RECOVERY: TokenSet = TS![., :].union(STMT_RECOVERY);
 
     let m = p.start();
@@ -287,7 +287,7 @@ fn function_name_index(p: &mut Parser) -> MarkerComplete {
         name_ref_r(p, RECOVERY)
     }
 
-    m.complete(p, FunctionNameIndex)
+    m.complete(p, IndexPath)
 }
 
 fn do_stmt(p: &mut Parser) -> MarkerComplete {

@@ -140,18 +140,16 @@ FunctionDefContent =
   | FunctionStatic
   | Name
 
-// need to fix this
-FunctionNameIndex =
-'.'
-  // (NameRef '.')*
+IndexPath =
+  NameRef ('.' NameRef)*
 
 FunctionMethod =
-  FunctionNameIndex
+  IndexPath
   ':'
   Name
 
 FunctionStatic =
-  FunctionNameIndex
+  IndexPath
   '.'
   Name
 

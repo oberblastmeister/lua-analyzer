@@ -110,7 +110,7 @@ pub enum SyntaxKind {
     DoStmt,
     FunctionMethod,
     FunctionStatic,
-    FunctionNameIndex,
+    IndexPath,
     MultiName,
     ElseBranch,
     ElseIfBranch,

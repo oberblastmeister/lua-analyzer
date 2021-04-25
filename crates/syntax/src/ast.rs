@@ -1,6 +1,7 @@
 mod generated;
 mod expr_ext;
 mod stmt_ext;
+mod node_ext;
 
 pub use self::generated::{nodes::*, tokens::*};
 pub use expr_ext::LiteralKind;
@@ -70,6 +71,7 @@ impl<N> AstChildren<N> {
 
 impl<N: AstNode> Iterator for AstChildren<N> {
     type Item = N;
+
     fn next(&mut self) -> Option<N> {
         self.inner.find_map(N::cast)
     }

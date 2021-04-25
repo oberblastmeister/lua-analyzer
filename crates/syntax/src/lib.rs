@@ -9,8 +9,10 @@ mod syntax_node;
 mod tests;
 mod validation;
 mod ptr;
+mod token_text;
 
 pub use ptr::{SyntaxNodePtr, AstPtr};
+pub use token_text::TokenText;
 pub use parser::{SyntaxKind, Token, T};
 pub use syntax_node::{
     SyntaxElement, SyntaxElementChildren, SyntaxError, SyntaxNode, SyntaxNodeChildren, SyntaxToken,

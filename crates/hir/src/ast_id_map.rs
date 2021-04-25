@@ -158,7 +158,7 @@ end
     bdfs(prog.syntax(), |it| {
         match_ast! {
             match it {
-                ast::FunctionItem(function) => {
+                ast::StmtItem(function) => {
                     println!("Yes: {:#?}", function);
                     true
                 }
