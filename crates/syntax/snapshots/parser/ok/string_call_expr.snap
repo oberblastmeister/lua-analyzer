@@ -61,7 +61,7 @@ SourceFile@0..131
           LParen@100..101 "("
           FunctionExpr@101..115
             FunctionKw@101..109 "function"
-            Paramlist@109..111
+            ParamList@109..111
               LParen@109..110 "("
               RParen@110..111 ")"
             Whitespace@111..112 " "

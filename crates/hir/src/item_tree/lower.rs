@@ -69,7 +69,7 @@ impl Ctx {
         func: &ast::LocalFunctionDefStmt,
     ) -> Option<FileItemTreeId<LocalFunction>> {
         let name = func.name()?.as_name();
-        let params = self.lower_multiname(&func.paramlist()?.multi_name()?);
+        let params = self.lower_multiname(&func.param_list()?.multi_name()?);
         let ast_id = self.ast_id_map.ast_id(func);
 
         let res = LocalFunction { name, params, ast_id };
@@ -80,7 +80,7 @@ impl Ctx {
     fn lower_function(&mut self, func: &ast::FunctionDefStmt) -> Option<FileItemTreeId<Function>> {
         let (path, name, is_method) = self.lower_function_content(&func.function_def_content()?)?;
         let ast_id = self.ast_id_map.ast_id(func);
-        let params = self.lower_multiname(&func.paramlist()?.multi_name()?);
+        let params = self.lower_multiname(&func.param_list()?.multi_name()?);
 
         let res = Function { path, name, is_method, params, ast_id };
 

@@ -16,7 +16,7 @@ SourceFile@0..116
         Colon@15..16 ":"
         Name@16..20
           Ident@16..20 "name"
-    Paramlist@20..22
+    ParamList@20..22
       LParen@20..21 "("
       RParen@21..22 ")"
     Whitespace@22..25 "\n  "
@@ -50,7 +50,7 @@ SourceFile@0..116
         Colon@79..80 ":"
         Name@80..85
           Ident@80..85 "hello"
-    Paramlist@85..87
+    ParamList@85..87
       LParen@85..86 "("
       RParen@86..87 ")"
     Whitespace@87..90 "\n  "

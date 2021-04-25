@@ -34,19 +34,13 @@ pub(crate) enum Field {
     Node { name: String, ty: String, cardinality: Cardinality },
 }
 
-fn is_manually_implemented(label: &str) -> bool {
-    matches!(
-        label,
-        "lhs" | "rhs" | "op" // | "index"
-        | "table_sep" //     | "then_branch"
-                      //     | "else_branch"
-                      //     | "start"
-                      //     | "end"
-                      // | "base"
-                      // | "value"
-                      // | "trait"
-                      // | "self_ty"
-    )
+fn label_is_manually_implemented(label: &str) -> bool {
+    matches!(label, "lhs" | "rhs" | "op" | "table_sep")
+}
+
+fn node_is_manually_implemented(node: &str) -> bool {
+    false
+    // matches!(node, "ParamList")
 }
 
 impl Field {
@@ -119,7 +113,9 @@ pub(crate) fn lower(grammar: &Grammar) -> AstSrc {
         let name = grammar[node].name.clone();
         let rule = &grammar[node].rule;
 
-        eprintln!("Lowering name and rule {}, {:?}", name, rule);
+        if node_is_manually_implemented(&name) {
+            continue;
+        }
 
         match lower_enum(grammar, rule) {
             Some(variants) => {
@@ -194,7 +190,7 @@ fn lower_rule(acc: &mut Vec<Field>, grammar: &Grammar, label: Option<&String>, r
         Rule::Labeled { label: l, rule } => {
             assert!(label.is_none());
 
-            if is_manually_implemented(l) {
+            if label_is_manually_implemented(l) {
                 return;
             }
 

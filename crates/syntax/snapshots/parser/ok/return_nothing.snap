@@ -12,7 +12,7 @@ SourceFile@0..84
     Whitespace@14..15 " "
     Name@15..19
       Ident@15..19 "test"
-    Paramlist@19..21
+    ParamList@19..21
       LParen@19..20 "("
       RParen@20..21 ")"
     Whitespace@21..24 "\n  "
@@ -34,7 +34,7 @@ SourceFile@0..84
     MultivalExpr@52..75
       FunctionExpr@52..75
         FunctionKw@52..60 "function"
-        Paramlist@60..62
+        ParamList@60..62
           LParen@60..61 "("
           RParen@61..62 ")"
         Whitespace@62..65 "\n  "

@@ -36,7 +36,7 @@ SourceFile@0..67
           PositionalValue@36..50
             FunctionExpr@36..50
               FunctionKw@36..44 "function"
-              Paramlist@44..46
+              ParamList@44..46
                 LParen@44..45 "("
                 RParen@45..46 ")"
               Whitespace@46..47 " "

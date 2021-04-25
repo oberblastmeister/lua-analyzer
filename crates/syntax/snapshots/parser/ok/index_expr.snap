@@ -88,7 +88,7 @@ SourceFile@0..191
           LBracket@106..107 "["
           FunctionExpr@107..147
             FunctionKw@107..115 "function"
-            Paramlist@115..128
+            ParamList@115..128
               LParen@115..116 "("
               MultiName@116..127
                 Name@116..121

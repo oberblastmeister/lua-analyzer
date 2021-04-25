@@ -1,0 +1,157 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/err/vararg_wrong_position.lua
+
+---
+SourceFile@0..116
+  LocalFunctionDefStmt@0..35
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    FunctionKw@6..14 "function"
+    Whitespace@14..15 " "
+    Name@15..20
+      Ident@15..20 "wrong"
+    ParamList@20..24
+      LParen@20..21 "("
+      MultiName@21..21
+      TripleDot@21..24 "..."
+    Block@24..31
+      Error@24..25
+        Comma@24..25 ","
+      Whitespace@25..26 " "
+      ExprStmt@26..30
+        MultivalExpr@26..30
+          NameRef@26..30
+            Ident@26..30 "asdf"
+      Error@30..31
+        RParen@30..31 ")"
+    Whitespace@31..32 "\n"
+    EndKw@32..35 "end"
+  Whitespace@35..37 "\n\n"
+  LocalFunctionDefStmt@37..76
+    LocalKw@37..42 "local"
+    Whitespace@42..43 " "
+    FunctionKw@43..51 "function"
+    Whitespace@51..52 " "
+    Name@52..62
+      Ident@52..62 "more_wrong"
+    ParamList@62..66
+      LParen@62..63 "("
+      MultiName@63..63
+      TripleDot@63..66 "..."
+    Block@66..72
+      Error@66..67
+        Comma@66..67 ","
+      Whitespace@67..68 " "
+      Error@68..71
+        TripleDot@68..71 "..."
+      Error@71..72
+        RParen@71..72 ")"
+    Whitespace@72..73 "\n"
+    EndKw@73..76 "end"
+  Whitespace@76..78 "\n\n"
+  LocalFunctionDefStmt@78..115
+    LocalKw@78..83 "local"
+    Whitespace@83..84 " "
+    FunctionKw@84..92 "function"
+    Whitespace@92..93 " "
+    Name@93..98
+      Ident@93..98 "wrong"
+    ParamList@98..108
+      LParen@98..99 "("
+      MultiName@99..104
+        Name@99..103
+          Ident@99..103 "asdf"
+        Comma@103..104 ","
+      Whitespace@104..105 " "
+      TripleDot@105..108 "..."
+    Block@108..115
+      Error@108..109
+        Comma@108..109 ","
+      Whitespace@109..110 " "
+      ExprStmt@110..114
+        MultivalExpr@110..114
+          NameRef@110..114
+            Ident@110..114 "asdf"
+      Error@114..115
+        RParen@114..115 ")"
+  Whitespace@115..116 "\n"
+
+=============================
+Errors:
+=============================
+[
+    SyntaxError(
+        "Nothing can be after a vararg",
+        24..24,
+    ),
+    SyntaxError(
+        "Expected RParen, got Comma",
+        24..24,
+    ),
+    SyntaxError(
+        "Expected a statement",
+        24..25,
+    ),
+    SyntaxError(
+        "Expected a statement",
+        30..31,
+    ),
+    SyntaxError(
+        "Nothing can be after a vararg",
+        66..66,
+    ),
+    SyntaxError(
+        "Expected RParen, got Comma",
+        66..66,
+    ),
+    SyntaxError(
+        "Expected a statement",
+        66..67,
+    ),
+    SyntaxError(
+        "Expected a statement",
+        68..71,
+    ),
+    SyntaxError(
+        "Expected a statement",
+        71..72,
+    ),
+    SyntaxError(
+        "Nothing can be after a vararg",
+        108..108,
+    ),
+    SyntaxError(
+        "Expected RParen, got Comma",
+        108..108,
+    ),
+    SyntaxError(
+        "Expected a statement",
+        108..109,
+    ),
+    SyntaxError(
+        "Expected a statement",
+        114..115,
+    ),
+    SyntaxError(
+        "Expected EndKw, got Eof",
+        115..115,
+    ),
+    SyntaxError(
+        "Expression statements can only be call expressions",
+        26..30,
+    ),
+    SyntaxError(
+        "Expected a call expression",
+        26..30,
+    ),
+    SyntaxError(
+        "Expression statements can only be call expressions",
+        110..114,
+    ),
+    SyntaxError(
+        "Expected a call expression",
+        110..114,
+    ),
+]

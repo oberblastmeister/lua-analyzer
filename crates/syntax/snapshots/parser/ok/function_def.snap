@@ -12,7 +12,7 @@ SourceFile@0..89
     Whitespace@14..15 " "
     Name@15..20
       Ident@15..20 "empty"
-    Paramlist@20..22
+    ParamList@20..22
       LParen@20..21 "("
       RParen@21..22 ")"
     Whitespace@22..25 "\n  "

@@ -60,7 +60,7 @@ Literal =
 
 FunctionExpr =
   'function'
-  params:Paramlist
+  params:ParamList
   body:Block
   'end'
 
@@ -113,6 +113,9 @@ PrefixExpr =
 IndexExpr =
   base:Expr Index
 
+Index =
+  '[' Expr ']'
+
 LabelStmt =
   start:LabelDelim Name finish:LabelDelim
 
@@ -133,7 +136,7 @@ DoStmt =
 FunctionDefStmt =
   'function' 
   FunctionDefContent
-  Paramlist
+  ParamList
   body:Block
   'end'
 
@@ -156,14 +159,12 @@ FunctionStatic =
   Name
 
 LocalFunctionDefStmt =
-  'local' 'function' Name Paramlist
+  'local' 'function' Name ParamList
   body:Block
   'end'
 
-Paramlist =
-  '('
-  MultiName?
-  ')'
+ParamList =
+  '(' (MultiName (',' '...')?)? ')'
 
 ExprStmt = MultivalExpr
 

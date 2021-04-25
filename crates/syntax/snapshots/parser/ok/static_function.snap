@@ -16,7 +16,7 @@ SourceFile@0..76
           Dot@10..11 "."
         Name@11..16
           Ident@11..16 "first"
-    Paramlist@16..18
+    ParamList@16..18
       LParen@16..17 "("
       RParen@17..18 ")"
     Whitespace@18..21 "\n  "
@@ -50,7 +50,7 @@ SourceFile@0..76
           Dot@64..65 "."
         Name@65..69
           Ident@65..69 "more"
-    Paramlist@69..71
+    ParamList@69..71
       LParen@69..70 "("
       RParen@70..71 ")"
     Whitespace@71..72 "\n"

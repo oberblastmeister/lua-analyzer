@@ -1,7 +1,7 @@
 use super::{
     block, expr_single,
     expressions::{expr, EXPR_FIRST, LITERAL_FIRST},
-    multi_name_r, name, name_r, name_ref, name_ref_r, param_list,
+    param_list, multi_name_r, name, name_r, name_ref, name_ref_r,
 };
 use crate::parser::{MarkerComplete, Parser};
 use crate::SyntaxKind::*;
@@ -172,7 +172,7 @@ fn for_content(p: &mut Parser) -> MarkerComplete {
 fn generic_for(p: &mut Parser) -> MarkerComplete {
     assert!(p.at(T![ident]));
     let m = p.start();
-    multi_name_r(p, STMT_RECOVERY);
+    multi_name_r(p, STMT_RECOVERY, false);
     p.expect(T![in]);
     expr_single(p);
     m.complete(p, GenericFor)
@@ -310,7 +310,7 @@ fn return_stmt(p: &mut Parser) -> MarkerComplete {
 fn local_assign_stmt(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![local]);
-    multi_name_r(p, STMT_RECOVERY);
+    multi_name_r(p, STMT_RECOVERY, false);
     if p.accept(T![=]) {
         expr(p);
     }

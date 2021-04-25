@@ -17,7 +17,7 @@ SourceFile@0..128
     MultivalExpr@18..67
       FunctionExpr@18..67
         FunctionKw@18..26 "function"
-        Paramlist@26..28
+        ParamList@26..28
           LParen@26..27 "("
           RParen@27..28 ")"
         Whitespace@28..31 "\n  "
@@ -60,7 +60,7 @@ SourceFile@0..128
     MultivalExpr@87..127
       FunctionExpr@87..127
         FunctionKw@87..95 "function"
-        Paramlist@95..110
+        ParamList@95..110
           LParen@95..96 "("
           MultiName@96..109
             Name@96..101

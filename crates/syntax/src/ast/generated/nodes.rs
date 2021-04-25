@@ -56,7 +56,7 @@ impl LocalFunctionDefStmt {
     pub fn name(&self) -> Option<Name> {
         support::child(&self.syntax)
     }
-    pub fn paramlist(&self) -> Option<Paramlist> {
+    pub fn param_list(&self) -> Option<ParamList> {
         support::child(&self.syntax)
     }
     pub fn body(&self) -> Option<Block> {
@@ -77,7 +77,7 @@ impl FunctionDefStmt {
     pub fn function_def_content(&self) -> Option<FunctionDefContent> {
         support::child(&self.syntax)
     }
-    pub fn paramlist(&self) -> Option<Paramlist> {
+    pub fn param_list(&self) -> Option<ParamList> {
         support::child(&self.syntax)
     }
     pub fn body(&self) -> Option<Block> {
@@ -301,7 +301,7 @@ impl FunctionExpr {
     pub fn function_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![function])
     }
-    pub fn params(&self) -> Option<Paramlist> {
+    pub fn params(&self) -> Option<ParamList> {
         support::child(&self.syntax)
     }
     pub fn body(&self) -> Option<Block> {
@@ -411,15 +411,18 @@ impl Arglist {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Paramlist {
+pub struct ParamList {
     pub(crate) syntax: SyntaxNode,
 }
-impl Paramlist {
+impl ParamList {
     pub fn l_paren_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T!['('])
     }
     pub fn multi_name(&self) -> Option<MultiName> {
         support::child(&self.syntax)
+    }
+    pub fn triple_dot_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![...])
     }
     pub fn r_paren_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![')'])
@@ -487,11 +490,20 @@ impl Index {
     pub fn l_brack_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T!['['])
     }
-    pub fn index(&self) -> Option<Expr> {
+    pub fn expr(&self) -> Option<Expr> {
         support::child(&self.syntax)
     }
     pub fn r_brack_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![']'])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Name {
+    pub(crate) syntax: SyntaxNode,
+}
+impl Name {
+    pub fn ident_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![ident])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -510,15 +522,6 @@ pub struct LabelDelim {
 impl LabelDelim {
     pub fn double_colon_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![::])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Name {
-    pub(crate) syntax: SyntaxNode,
-}
-impl Name {
-    pub fn ident_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![ident])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -706,7 +709,7 @@ pub enum TableContent {
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TableKey {
     Index(Index),
-    IdentKey(IdentKey),
+    Name(Name),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum FunctionDefContent {
@@ -1124,9 +1127,9 @@ impl AstNode for Arglist {
         &self.syntax
     }
 }
-impl AstNode for Paramlist {
+impl AstNode for ParamList {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Paramlist
+        kind == SyntaxKind::ParamList
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1229,6 +1232,21 @@ impl AstNode for Index {
         &self.syntax
     }
 }
+impl AstNode for Name {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Name
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
 impl AstNode for IdentKey {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::IdentKey
@@ -1247,21 +1265,6 @@ impl AstNode for IdentKey {
 impl AstNode for LabelDelim {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::LabelDelim
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for Name {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Name
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1734,22 +1737,22 @@ impl From<Index> for TableKey {
         TableKey::Index(node)
     }
 }
-impl From<IdentKey> for TableKey {
-    fn from(node: IdentKey) -> TableKey {
-        TableKey::IdentKey(node)
+impl From<Name> for TableKey {
+    fn from(node: Name) -> TableKey {
+        TableKey::Name(node)
     }
 }
 impl AstNode for TableKey {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
-            SyntaxKind::Index | SyntaxKind::IdentKey => true,
+            SyntaxKind::Index | SyntaxKind::Name => true,
             _ => false,
         }
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             SyntaxKind::Index => TableKey::Index(Index { syntax }),
-            SyntaxKind::IdentKey => TableKey::IdentKey(IdentKey { syntax }),
+            SyntaxKind::Name => TableKey::Name(Name { syntax }),
             _ => return None,
         };
         Some(res)
@@ -1757,7 +1760,7 @@ impl AstNode for TableKey {
     fn syntax(&self) -> &SyntaxNode {
         match self {
             TableKey::Index(it) => &it.syntax,
-            TableKey::IdentKey(it) => &it.syntax,
+            TableKey::Name(it) => &it.syntax,
         }
     }
 }
@@ -2006,7 +2009,7 @@ impl std::fmt::Display for Arglist {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for Paramlist {
+impl std::fmt::Display for ParamList {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
@@ -2041,17 +2044,17 @@ impl std::fmt::Display for Index {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
+impl std::fmt::Display for Name {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
 impl std::fmt::Display for IdentKey {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
 impl std::fmt::Display for LabelDelim {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for Name {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

@@ -54,7 +54,7 @@ SourceFile@0..81
                 LBracket@56..57 "["
                 FunctionExpr@57..71
                   FunctionKw@57..65 "function"
-                  Paramlist@65..67
+                  ParamList@65..67
                     LParen@65..66 "("
                     RParen@66..67 ")"
                   Whitespace@67..68 " "

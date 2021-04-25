@@ -38,7 +38,7 @@ SourceFile@0..102
             MultivalExpr@45..91
               FunctionExpr@45..91
                 FunctionKw@45..53 "function"
-                Paramlist@53..55
+                ParamList@53..55
                   LParen@53..54 "("
                   RParen@54..55 ")"
                 Whitespace@55..62 "\n      "

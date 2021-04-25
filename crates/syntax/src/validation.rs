@@ -129,7 +129,7 @@ impl Validate for ast::Literal {
         match self.kind() {
             ast::LiteralKind::Str(s) => {
                 let (offset, unquoted) = unquote(&text);
-                unescape(unquoted, offset, acc)
+                unescape(unquoted, token.text_range().start() + offset, acc)
             }
             ast::LiteralKind::Number(_) => (),
             ast::LiteralKind::Bool(_) => (),

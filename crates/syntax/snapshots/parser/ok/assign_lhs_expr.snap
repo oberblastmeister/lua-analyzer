@@ -59,7 +59,7 @@ SourceFile@0..190
           LParen@69..70 "("
           FunctionExpr@70..84
             FunctionKw@70..78 "function"
-            Paramlist@78..80
+            ParamList@78..80
               LParen@78..79 "("
               RParen@79..80 ")"
             Whitespace@80..81 " "
@@ -92,7 +92,7 @@ SourceFile@0..190
           LParen@129..130 "("
           FunctionExpr@130..144
             FunctionKw@130..138 "function"
-            Paramlist@138..140
+            ParamList@138..140
               LParen@138..139 "("
               RParen@139..140 ")"
             Whitespace@140..141 " "

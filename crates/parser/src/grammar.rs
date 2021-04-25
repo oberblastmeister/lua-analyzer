@@ -29,12 +29,23 @@ fn multi_name(p: &mut Parser) -> MarkerComplete {
     m.complete(p, MultiName)
 }
 
-fn multi_name_r(p: &mut Parser, recovery: TokenSet) {
-    let m = p.start();
+fn multi_name_r(p: &mut Parser, recovery: TokenSet, vararg: bool) {
     let recovery = recovery.union(TokenSet::new(&[T![,]]));
+
+    let m = p.start();
+
+    if vararg && p.at(T![...]) {
+        m.complete(p, MultiName);
+        return
+    }
+
     name_r(p, recovery);
     while p.at(T![,]) {
         p.bump(T![,]);
+
+        if vararg && p.at(T![...]) {
+            break;
+        }
 
         name_r(p, recovery);
     }
@@ -93,9 +104,19 @@ fn param_list(p: &mut Parser) -> MarkerComplete {
 
     let m = p.start();
     p.expect(T!['(']);
+
     if !p.at_ts(END) {
-        multi_name_r(p, STMT_RECOVERY);
+        multi_name_r(p, STMT_RECOVERY, true);
     }
+
+    if p.at(T![...]) {
+        p.bump(T![...]);
+
+        if !p.at(T![')']) {
+            p.error("Nothing can be after a vararg");
+        }
+    }
+
     p.expect(T![')']);
-    m.complete(p, Paramlist)
+    m.complete(p, ParamList)
 }
