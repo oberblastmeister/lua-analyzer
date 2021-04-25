@@ -19,7 +19,7 @@ pub use rowan::{TextSize, TextRange, WalkEvent};
 
 use std::{marker::PhantomData, sync::Arc};
 
-use ast::AstNode;
+use ast::{AstChildren, AstNode};
 use rowan::GreenNode;
 
 /// `Parse` is the result of the parsing: a syntax tree and a collection of
@@ -88,8 +88,6 @@ impl Parse<SyntaxNode> {
     }
 }
 
-pub use ast::SourceFile;
-
 fn format_errors(errors: &[SyntaxError]) -> String {
     let mut s = String::new();
     s.push_str(
@@ -114,6 +112,8 @@ impl ast::Expr {
         )
     }
 }
+
+pub use ast::SourceFile;
 
 impl SourceFile {
     pub fn parse(text: &str) -> Parse<SourceFile> {
@@ -166,6 +166,14 @@ impl Parse<SourceFile> {
 #[macro_export]
 macro_rules! match_ast {
     (match $node:ident { $($tt:tt)* }) => { match_ast!(match ($node) { $($tt)* }) };
+
+    // (match ($node:expr) {
+    //     $( ast::$ast:ident($it:ident) => $res:expr, )*
+    //     _ => $catch_all:expr $(,)?
+    // }) => {{
+    //     $( if let Some($it) = ast::$ast::cast($node.clone()) { $res } else )*
+    //     { $catch_all }
+    // }};
 
     (match ($node:expr) {
         $( ast::$ast:ident($it:ident) => $res:tt $(,)? )*

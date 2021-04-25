@@ -1,5 +1,7 @@
 use crate::ast::{self, support, AstNode};
 
+use super::AstChildren;
+
 impl ast::Stmt {
     pub fn is_block_like(&self) -> bool {
         matches!(
@@ -27,5 +29,11 @@ impl ast::AssignStmt {
         let first = children.next();
         let second = children.next();
         (first, second)
+    }
+}
+
+impl ast::SourceFile {
+    pub fn stmt_items(&self) -> AstChildren<ast::StmtItem> {
+        support::children(&self.syntax)
     }
 }

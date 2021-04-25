@@ -1,7 +1,10 @@
+mod lower;
+
 use std::{
     fmt,
     hash::{Hash, Hasher},
     marker::PhantomData,
+    ops::Index,
     sync::Arc,
 };
 
@@ -9,14 +12,37 @@ use base_db::FileId;
 use la_arena::{Arena, Idx};
 use rustc_hash::FxHashMap;
 use smol_str::SmolStr;
-use syntax::ast::{self, AstNode};
+use syntax::{
+    ast::{self, AstNode},
+    match_ast,
+};
 
 use crate::{ast_id_map::FileAstId, DefDatabase};
 
 #[derive(Debug, Default, Eq, PartialEq)]
 pub struct ItemTree {
     top_level: Vec<ModItem>,
-    data: Box<ItemTreeData>,
+    data: Option<Box<ItemTreeData>>,
+}
+
+impl ItemTree {
+    pub fn file_item_tree_query(db: &dyn DefDatabase, file_id: FileId) -> Arc<ItemTree> {
+        let ctx = lower::Ctx::new(db, file_id);
+        let syntax = db.parse(file_id).tree().syntax();
+        let mut item_tree = match_ast! {
+            match syntax {
+                ast::SourceFile(file) => {
+                    ctx.lower_module_items(&file)
+                }
+                _ => panic!("cannot create item tree from {:?} {}", syntax, syntax),
+            }
+        };
+        Arc::new(item_tree)
+    }
+
+    fn data(&self) -> &ItemTreeData {
+        self.data.as_ref().expect("attempted to access data of empty ItemTree")
+    }
 }
 
 #[derive(Debug, Default, Eq, PartialEq)]
@@ -26,12 +52,6 @@ pub struct ItemTreeData {
     functions: Arena<Function>,
 
     inner_items: FxHashMap<FileAstId<ast::Block>, ModItem>,
-}
-
-impl ItemTree {
-    pub fn file_item_tree_query(db: &dyn DefDatabase, file_id: FileId) -> Arc<ItemTree> {
-        todo!()
-    }
 }
 
 pub trait ItemTreeNode: Clone {
@@ -127,8 +147,20 @@ pub struct MultiName {
     names: Vec<Name>,
 }
 
+impl MultiName {
+    pub fn new(names: Vec<Name>) -> Self {
+        Self { names }
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Name(SmolStr);
+
+impl Name {
+    fn new(text: SmolStr) -> Self {
+        Self(text)
+    }
+}
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Path {
@@ -157,5 +189,61 @@ pub struct Function {
     pub ast_id: FileAstId<ast::FunctionDefStmt>,
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
-pub struct ModItem;
+macro_rules! mod_items {
+    ( $( $type:ident in $field:ident -> $ast:ty ),+ $(,)? ) => {
+        #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+        pub enum ModItem {
+            $(
+                $type(FileItemTreeId<$type>),
+            )+
+        }
+
+        $(
+            impl From<FileItemTreeId<$type>> for ModItem {
+                fn from(id: FileItemTreeId<$type>) -> ModItem {
+                    ModItem::$type(id)
+                }
+            }
+        )+
+
+        $(
+            impl ItemTreeNode for $type {
+                type Source = $ast;
+
+                fn ast_id(&self) -> FileAstId<Self::Source> {
+                    self.ast_id
+                }
+
+                fn lookup(tree: &ItemTree, index: Idx<Self>) -> &Self {
+                    &tree.data().$field[index]
+                }
+
+                fn id_from_mod_item(mod_item: ModItem) -> Option<FileItemTreeId<Self>> {
+                    if let ModItem::$type(id) = mod_item {
+                        Some(id)
+                    } else {
+                        None
+                    }
+                }
+
+                fn id_to_mod_item(id: FileItemTreeId<Self>) -> ModItem {
+                    ModItem::$type(id)
+                }
+            }
+        )+
+    };
+}
+
+mod_items! {
+    LocalAssign in local_assigns -> ast::LocalAssignStmt,
+    LocalFunction in local_functions -> ast::LocalFunctionDefStmt,
+    Function in functions -> ast::FunctionDefStmt,
+}
+
+impl<N: ItemTreeNode> Index<FileItemTreeId<N>> for ItemTree {
+    type Output = N;
+
+    fn index(&self, id: FileItemTreeId<N>) -> &Self::Output {
+        N::lookup(self, id.index)
+    }
+}
