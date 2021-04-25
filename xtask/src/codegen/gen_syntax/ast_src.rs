@@ -17,10 +17,7 @@ impl AstSrc {
     }
 
     pub fn names(&self) -> impl Iterator<Item = &str> {
-        self.nodes
-            .iter()
-            .map(|node| &*node.name)
-            .chain(self.enums.iter().map(|enoom| &*enoom.name))
+        self.nodes.iter().map(|node| &*node.name).chain(self.enums.iter().map(|enoom| &*enoom.name))
     }
 }
 
@@ -34,48 +31,31 @@ pub(crate) struct AstNodeSrc {
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) enum Field {
     Token(String),
-    Node {
-        name: String,
-        ty: String,
-        cardinality: Cardinality,
-    },
+    Node { name: String, ty: String, cardinality: Cardinality },
 }
 
 fn is_manually_implemented(label: &str) -> bool {
     matches!(
         label,
         "lhs" | "rhs" | "op" // | "index"
-        | "table_sep"
-                             //     | "then_branch"
-                             //     | "else_branch"
-                             //     | "start"
-                             //     | "end"
-                             // | "base"
-                             // | "value"
-                             // | "trait"
-                             // | "self_ty"
+        | "table_sep" //     | "then_branch"
+                      //     | "else_branch"
+                      //     | "start"
+                      //     | "end"
+                      // | "base"
+                      // | "value"
+                      // | "trait"
+                      // | "self_ty"
     )
 }
 
 impl Field {
     pub fn is_many(&self) -> bool {
-        matches!(
-            self,
-            Field::Node {
-                cardinality: Cardinality::Many,
-                ..
-            }
-        )
+        matches!(self, Field::Node { cardinality: Cardinality::Many, .. })
     }
 
     pub fn is_many_trailing(&self) -> bool {
-        matches!(
-            self,
-            Field::Node {
-                cardinality: Cardinality::ManyTrailing,
-                ..
-            }
-        )
+        matches!(self, Field::Node { cardinality: Cardinality::ManyTrailing, .. })
     }
 
     pub fn token_kind(&self) -> Option<proc_macro2::TokenStream> {
@@ -143,21 +123,13 @@ pub(crate) fn lower(grammar: &Grammar) -> AstSrc {
 
         match lower_enum(grammar, rule) {
             Some(variants) => {
-                let enum_src = AstEnumSrc {
-                    doc: Vec::new(),
-                    name,
-                    variants,
-                };
+                let enum_src = AstEnumSrc { doc: Vec::new(), name, variants };
                 res.enums.push(enum_src);
             }
             None => {
                 let mut fields = Vec::new();
                 lower_rule(&mut fields, grammar, None, rule);
-                res.nodes.push(AstNodeSrc {
-                    doc: Vec::new(),
-                    name,
-                    fields,
-                });
+                res.nodes.push(AstNodeSrc { doc: Vec::new(), name, fields });
             }
         }
     }
@@ -191,11 +163,7 @@ fn lower_rule(acc: &mut Vec<Field>, grammar: &Grammar, label: Option<&String>, r
         Rule::Node(node) => {
             let ty = grammar[*node].name.clone();
             let name = label.cloned().unwrap_or_else(|| ty.to_snake_case());
-            let field = Field::Node {
-                name,
-                ty,
-                cardinality: Cardinality::Optional,
-            };
+            let field = Field::Node { name, ty, cardinality: Cardinality::Optional };
             acc.push(field);
         }
         Rule::Token(token) => {
@@ -216,14 +184,8 @@ fn lower_rule(acc: &mut Vec<Field>, grammar: &Grammar, label: Option<&String>, r
         Rule::Rep(inner) => {
             if let Rule::Node(node) = &**inner {
                 let ty = grammar[*node].name.clone();
-                let name = label
-                    .cloned()
-                    .unwrap_or_else(|| pluralize(&ty.to_snake_case()));
-                let field = Field::Node {
-                    name,
-                    ty,
-                    cardinality: Cardinality::Many,
-                };
+                let name = label.cloned().unwrap_or_else(|| pluralize(&ty.to_snake_case()));
+                let field = Field::Node { name, ty, cardinality: Cardinality::Many };
                 acc.push(field);
                 return;
             }
@@ -258,12 +220,9 @@ fn lower_comma_list(
         _ => return false,
     };
     let (node, repeat, trailing_comma, cardinality) = match rule.as_slice() {
-        [Rule::Node(node), Rule::Rep(repeat), Rule::Opt(trailing_comma)] => (
-            node,
-            repeat,
-            Some(trailing_comma),
-            Cardinality::ManyTrailing,
-        ),
+        [Rule::Node(node), Rule::Rep(repeat), Rule::Opt(trailing_comma)] => {
+            (node, repeat, Some(trailing_comma), Cardinality::ManyTrailing)
+        }
         [Rule::Node(node), Rule::Rep(repeat)] => (node, repeat, None, Cardinality::Many),
         _ => return false,
     };
@@ -277,14 +236,8 @@ fn lower_comma_list(
         _ => return false,
     }
     let ty = grammar[*node].name.clone();
-    let name = label
-        .cloned()
-        .unwrap_or_else(|| pluralize(&ty.to_snake_case()));
-    let field = Field::Node {
-        name,
-        ty,
-        cardinality,
-    };
+    let name = label.cloned().unwrap_or_else(|| pluralize(&ty.to_snake_case()));
+    let field = Field::Node { name, ty, cardinality };
     acc.push(field);
     true
 }

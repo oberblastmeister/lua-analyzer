@@ -378,15 +378,6 @@ impl MethodCallExpr {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct RequireExpr {
-    pub(crate) syntax: SyntaxNode,
-}
-impl RequireExpr {
-    pub fn require_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![require])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct NameRef {
     pub(crate) syntax: SyntaxNode,
 }
@@ -441,6 +432,15 @@ pub struct Block {
 impl Block {
     pub fn stmts(&self) -> AstChildren<Stmt> {
         support::children(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct TableSep {
+    pub(crate) syntax: SyntaxNode,
+}
+impl TableSep {
+    pub fn semicolon_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![;])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -696,7 +696,7 @@ pub enum Expr {
     TableCallExpr(TableCallExpr),
     StringCallExpr(StringCallExpr),
     MethodCallExpr(MethodCallExpr),
-    RequireExpr(RequireExpr),
+    NameRef(NameRef),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TableContent {
@@ -1079,21 +1079,6 @@ impl AstNode for MethodCallExpr {
         &self.syntax
     }
 }
-impl AstNode for RequireExpr {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::RequireExpr
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
 impl AstNode for NameRef {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::NameRef
@@ -1157,6 +1142,21 @@ impl AstNode for Paramlist {
 impl AstNode for Block {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Block
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for TableSep {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::TableSep
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1637,9 +1637,9 @@ impl From<MethodCallExpr> for Expr {
         Expr::MethodCallExpr(node)
     }
 }
-impl From<RequireExpr> for Expr {
-    fn from(node: RequireExpr) -> Expr {
-        Expr::RequireExpr(node)
+impl From<NameRef> for Expr {
+    fn from(node: NameRef) -> Expr {
+        Expr::NameRef(node)
     }
 }
 impl AstNode for Expr {
@@ -1656,7 +1656,7 @@ impl AstNode for Expr {
             | SyntaxKind::TableCallExpr
             | SyntaxKind::StringCallExpr
             | SyntaxKind::MethodCallExpr
-            | SyntaxKind::RequireExpr => true,
+            | SyntaxKind::NameRef => true,
             _ => false,
         }
     }
@@ -1673,7 +1673,7 @@ impl AstNode for Expr {
             SyntaxKind::TableCallExpr => Expr::TableCallExpr(TableCallExpr { syntax }),
             SyntaxKind::StringCallExpr => Expr::StringCallExpr(StringCallExpr { syntax }),
             SyntaxKind::MethodCallExpr => Expr::MethodCallExpr(MethodCallExpr { syntax }),
-            SyntaxKind::RequireExpr => Expr::RequireExpr(RequireExpr { syntax }),
+            SyntaxKind::NameRef => Expr::NameRef(NameRef { syntax }),
             _ => return None,
         };
         Some(res)
@@ -1691,7 +1691,7 @@ impl AstNode for Expr {
             Expr::TableCallExpr(it) => &it.syntax,
             Expr::StringCallExpr(it) => &it.syntax,
             Expr::MethodCallExpr(it) => &it.syntax,
-            Expr::RequireExpr(it) => &it.syntax,
+            Expr::NameRef(it) => &it.syntax,
         }
     }
 }
@@ -1991,11 +1991,6 @@ impl std::fmt::Display for MethodCallExpr {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for RequireExpr {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
 impl std::fmt::Display for NameRef {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
@@ -2017,6 +2012,11 @@ impl std::fmt::Display for Paramlist {
     }
 }
 impl std::fmt::Display for Block {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for TableSep {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

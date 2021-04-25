@@ -1,0 +1,24 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/require_stmt.lua
+
+---
+SourceFile@0..17
+  ExprStmt@0..16
+    MultivalExpr@0..16
+      CallExpr@0..16
+        NameRef@0..7
+          Ident@0..7 "require"
+        Arglist@7..16
+          LParen@7..8 "("
+          MultivalExpr@8..15
+            Literal@8..15
+              Str@8..15 "\"hello\""
+          RParen@15..16 ")"
+  Whitespace@16..17 "\n"
+
+=============================
+Errors:
+=============================
+[]

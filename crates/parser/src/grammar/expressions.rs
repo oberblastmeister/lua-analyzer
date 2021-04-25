@@ -1,6 +1,6 @@
 use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP, NOT_AN_OP_INFIX, NOT_AN_OP_PREFIX};
 
-use super::{block, name_ref, param_list};
+use super::{block, name_r, name_ref, param_list};
 use crate::{
     parser::{MarkerComplete, MarkerRegular, Parser},
     SyntaxKind::{self, *},
@@ -95,15 +95,11 @@ impl From<SyntaxKind> for Option<LuaOp> {
 }
 
 fn infix_binding_power(kind: SyntaxKind) -> (u8, u8) {
-    <Option<LuaOp>>::from(kind)
-        .map(|op| op.infix_power())
-        .unwrap_or(NOT_AN_OP_INFIX)
+    <Option<LuaOp>>::from(kind).map(|op| op.infix_power()).unwrap_or(NOT_AN_OP_INFIX)
 }
 
 fn prefix_binding_power(kind: SyntaxKind) -> ((), u8) {
-    <Option<LuaOp>>::from(kind)
-        .map(|op| op.prefix_power())
-        .unwrap_or(NOT_AN_OP_PREFIX)
+    <Option<LuaOp>>::from(kind).map(|op| op.prefix_power()).unwrap_or(NOT_AN_OP_PREFIX)
 }
 
 pub(super) const EXPR_FIRST: TokenSet = LHS_FIRST;
@@ -232,14 +228,24 @@ fn literal(p: &mut Parser) -> Option<MarkerComplete> {
     Some(m.complete(p, Literal))
 }
 
+const TABLE_SEP: TokenSet = TokenSet::new(&[T![,], T![;]]);
+
+fn table_sep(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump_ts(TABLE_SEP);
+    m.complete(p, TableSep)
+}
+
 fn table_expr(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T!['{']);
     while !p.at(T![eof]) && !p.at(T!['}']) {
         table_content(p);
 
-        if !p.accept(T![,]) {
+        if !p.at_ts(TABLE_SEP) {
             break;
+        } else {
+            table_sep(p);
         }
     }
     p.expect(T!['}']);
@@ -249,8 +255,23 @@ fn table_expr(p: &mut Parser) -> MarkerComplete {
 fn table_content(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     match p.current() {
-        T![ident] | T!['['] => {
-            key_value(p);
+        T![ident] => {
+            let m = name_r(p, TS![]).unwrap();
+            if p.at(T![=]) {
+                let m = m.precede_unit(p, TableKey).precede(p);
+                p.bump(T![=]);
+                expr_single(p);
+                m.complete(p, KeyValue);
+            } else {
+                m.change_kind(p, NameRef).precede_unit(p, PositionalValue);
+            }
+        }
+        T!['['] => {
+            let m = p.start();
+            index_key(p);
+            p.expect(T![=]);
+            expr_single(p);
+            m.complete(p, KeyValue);
         }
         _ if p.at_ts(EXPR_FIRST) => {
             positional_value(p);
@@ -262,28 +283,11 @@ fn table_content(p: &mut Parser) -> MarkerComplete {
     m.complete(p, TableContent)
 }
 
-fn key_value(p: &mut Parser) -> MarkerComplete {
+fn index_key(p: &mut Parser) -> MarkerComplete {
+    assert!(p.at(T!['[']));
     let m = p.start();
-    table_key(p);
-    p.expect(T![=]);
-    expr_single(p);
-    m.complete(p, KeyValue)
-}
-
-fn table_key(p: &mut Parser) -> MarkerComplete {
-    let m = p.start();
-    match p.current() {
-        T![ident] => ident_key(p),
-        T!['['] => index(p),
-        _ => unreachable!(),
-    };
+    index(p);
     m.complete(p, TableKey)
-}
-
-fn ident_key(p: &mut Parser) -> MarkerComplete {
-    let m = p.start();
-    p.bump(T![ident]);
-    m.complete(p, IdentKey)
 }
 
 fn positional_value(p: &mut Parser) -> MarkerComplete {

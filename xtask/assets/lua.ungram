@@ -32,10 +32,7 @@ Expr =
   | TableCallExpr
   | StringCallExpr
   | MethodCallExpr
-  | RequireExpr
-
-RequireExpr =
-    'require'
+  | NameRef
 
 CallExpr =
   fun:Expr '(' (args:Expr)? ')'
@@ -67,10 +64,18 @@ FunctionExpr =
   body:Block
   'end'
 
+// TableExpr =
+//   '{'
+//   (TableContent (',' TableContent)* ','?)
+//   '}'
+
 TableExpr =
   '{'
-  (TableContent (',' TableContent)* ','?)
+  (TableContent (TableSep TableContent)* TableSep?)
   '}'
+
+TableSep =
+  ',' | ';'
 
 DotExpr =
   Expr '.' 'ident'
@@ -92,10 +97,7 @@ KeyValue =
   
 TableKey =
   Index
-  | IdentKey
-
-Index =
-  '[' index:Expr ']'
+  | Name
 
 IdentKey =
   'ident'

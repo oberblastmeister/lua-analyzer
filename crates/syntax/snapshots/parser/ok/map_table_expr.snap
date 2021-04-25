@@ -21,14 +21,15 @@ SourceFile@0..81
         TableContent@16..27
           KeyValue@16..27
             TableKey@16..23
-              IdentKey@16..23
+              Name@16..23
                 Ident@16..23 "another"
             Whitespace@23..24 " "
             Eq@24..25 "="
             Whitespace@25..26 " "
             Literal@26..27
               Number@26..27 "4"
-        Comma@27..28 ","
+        TableSep@27..28
+          Comma@27..28 ","
         Whitespace@28..31 "\n  "
         TableContent@31..52
           KeyValue@31..52
@@ -43,7 +44,8 @@ SourceFile@0..81
             Whitespace@37..38 " "
             Literal@38..52
               Str@38..52 "\"hello person\""
-        Comma@52..53 ","
+        TableSep@52..53
+          Comma@52..53 ","
         Whitespace@53..56 "\n  "
         TableContent@56..77
           KeyValue@56..77
@@ -64,7 +66,8 @@ SourceFile@0..81
             Whitespace@74..75 " "
             Literal@75..77
               Number@75..77 "23"
-        Comma@77..78 ","
+        TableSep@77..78
+          Comma@77..78 ","
         Whitespace@78..79 "\n"
         RBrace@79..80 "}"
   Whitespace@80..81 "\n"

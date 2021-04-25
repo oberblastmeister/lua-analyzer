@@ -26,18 +26,20 @@ SourceFile@0..58
             PositionalValue@21..28
               Literal@21..28
                 Str@21..28 "\"first\""
-          Comma@28..29 ","
+          TableSep@28..29
+            Comma@28..29 ","
           Whitespace@29..32 "\n  "
           TableContent@32..40
             PositionalValue@32..40
               Literal@32..40
                 Str@32..40 "\"second\""
-          Comma@40..41 ","
+          TableSep@40..41
+            Comma@40..41 ","
           Whitespace@41..44 "\n  "
           TableContent@44..55
             KeyValue@44..55
               TableKey@44..49
-                IdentKey@44..49
+                Name@44..49
                   Ident@44..49 "hello"
               Whitespace@49..50 " "
               Eq@50..51 "="

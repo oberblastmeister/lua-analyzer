@@ -59,12 +59,15 @@ impl Validate for ast::ExprStmt {
 
         let expr_count = multival_expr
             .exprs()
-            .inspect(|expr| {
+            .filter(|expr| {
                 if !expr.is_call() {
                     acc.push(SyntaxError::new(
                         "Expression statements can only be call expressions".to_string(),
                         expr.range(),
                     ));
+                    false
+                } else {
+                    true
                 }
             })
             .count();
@@ -108,8 +111,10 @@ impl Validate for ast::AssignStmt {
                 | ast::Expr::MethodCallExpr(_)
                 | ast::Expr::DotExpr(_)
                 | ast::Expr::IndexExpr(_) => (),
+                ast::Expr::NameRef(_) => (),
                 _ => acc.push(SyntaxError::new(
-                    "Can only assign to a function call or index expression".to_string(),
+                    "Can only assign to a function call, name reference, or index expression"
+                        .to_string(),
                     expr.range(),
                 )),
             }

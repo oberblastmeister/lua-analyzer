@@ -56,7 +56,12 @@ impl Ctx {
         &mut self,
         assign: &ast::LocalAssignStmt,
     ) -> Option<FileItemTreeId<LocalAssign>> {
-        todo!()
+        let multi_name = self.lower_multiname(&assign.multi_name()?);
+        let ast_id = self.ast_id_map.ast_id(assign);
+
+        let res = LocalAssign { multi_name, ast_id };
+
+        Some(id(self.data().local_assigns.alloc(res)))
     }
 
     fn lower_local_function(

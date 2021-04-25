@@ -41,13 +41,14 @@ fn multi_name_r(p: &mut Parser, recovery: TokenSet) {
     m.complete(p, MultiName);
 }
 
-fn name_r(p: &mut Parser, recovery: TokenSet) {
+fn name_r(p: &mut Parser, recovery: TokenSet) -> Option<MarkerComplete> {
     if p.at(T![ident]) {
         let m = p.start();
         p.bump(T![ident]);
-        m.complete(p, Name);
+        Some(m.complete(p, Name))
     } else {
         p.err_recover("expected a name", recovery);
+        None
     }
 }
 

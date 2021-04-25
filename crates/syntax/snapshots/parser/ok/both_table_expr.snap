@@ -22,7 +22,8 @@ SourceFile@0..105
           PositionalValue@17..29
             Literal@17..29
               Str@17..29 "\"positional\""
-        Comma@29..30 ","
+        TableSep@29..30
+          Comma@29..30 ","
         Whitespace@30..33 "\n  "
         TableContent@33..54
           KeyValue@33..54
@@ -37,25 +38,28 @@ SourceFile@0..105
             Whitespace@39..40 " "
             Literal@40..54
               Str@40..54 "\"what is thsi\""
-        Comma@54..55 ","
+        TableSep@54..55
+          Comma@54..55 ","
         Whitespace@55..58 "\n  "
         TableContent@58..71
           KeyValue@58..71
             TableKey@58..63
-              IdentKey@58..63
+              Name@58..63
                 Ident@58..63 "hello"
             Whitespace@63..64 " "
             Eq@64..65 "="
             Whitespace@65..66 " "
             Literal@66..71
               Str@66..71 "\"adf\""
-        Comma@71..72 ","
+        TableSep@71..72
+          Comma@71..72 ","
         Whitespace@72..75 "\n  "
         TableContent@75..79
           PositionalValue@75..79
             Literal@75..79
               Number@75..79 "1234"
-        Comma@79..80 ","
+        TableSep@79..80
+          Comma@79..80 ","
         Whitespace@80..83 "\n  "
         TableContent@83..101
           KeyValue@83..101
@@ -70,7 +74,8 @@ SourceFile@0..105
             Whitespace@96..97 " "
             Literal@97..101
               Number@97..101 "1234"
-        Comma@101..102 ","
+        TableSep@101..102
+          Comma@101..102 ","
         Whitespace@102..103 "\n"
         RBrace@103..104 "}"
   Whitespace@104..105 "\n"

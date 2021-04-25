@@ -37,7 +37,7 @@ impl ItemTree {
             match syntax {
                 ast::SourceFile(file) => {
                     ctx.lower_module_items(&file)
-                }
+                },
                 _ => panic!("cannot create item tree from {:?} {}", syntax, syntax),
             }
         };

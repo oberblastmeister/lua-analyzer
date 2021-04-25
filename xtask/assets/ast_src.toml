@@ -27,9 +27,6 @@ keywords = [
     "until",
 
     "nil",
-
-    # not an actual keyword but is useful to recognize
-    "require",
 ]
 
 literals = [

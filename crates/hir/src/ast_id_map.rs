@@ -72,11 +72,11 @@ impl AstIdMap {
                     ast::StmtItem(stmt) => {
                         res.alloc(stmt.syntax());
                         true
-                    }
+                    },
                     ast::Block(block) => {
                         res.alloc(block.syntax());
                         true
-                    }
+                    },
                     _ => false
                 }
             }
@@ -140,6 +140,7 @@ fn bdfs(node: &SyntaxNode, mut f: impl FnMut(SyntaxNode) -> bool) {
 }
 
 #[test]
+#[ignore]
 fn learning() {
     let prog = ast::SourceFile::parse(
         r#"
@@ -161,7 +162,7 @@ end
                 ast::StmtItem(function) => {
                     println!("Yes: {:#?}", function);
                     true
-                }
+                },
                 // ast::LocalFunctionDefStmt(function) => {
                 //     println!("Yes: {:#?}", function);
                 //     true
@@ -169,7 +170,7 @@ end
                 ast::Block(block) => {
                     println!("Yes: {:#?}", block);
                     true
-                }
+                },
                 _ => {
                     println!("No: {:#?}", it);
                     false

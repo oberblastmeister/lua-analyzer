@@ -13,10 +13,7 @@ pub struct Parser<'a> {
 
 impl<'a> Parser<'a> {
     pub fn new(token_source: &mut dyn TokenSource) -> Parser {
-        Parser {
-            token_source,
-            events: Vec::new(),
-        }
+        Parser { token_source, events: Vec::new() }
     }
 
     pub(crate) fn finish(self) -> Vec<Event> {
@@ -136,6 +133,13 @@ impl<'a> Parser<'a> {
         self.do_bump();
     }
 
+    pub(crate) fn bump_ts(&mut self, kinds: TokenSet) {
+        if !self.at_ts(kinds) {
+            panic!("Failed to bump {:?}, got {:?}", kinds, self.current())
+        }
+        self.do_bump();
+    }
+
     /// Consume the next token if it is `kind` or emit an error
     /// otherwise.
     pub(crate) fn expect(&mut self, kind: SyntaxKind) -> bool {
@@ -204,10 +208,7 @@ impl Marker<RegularMarker> {
         let idx = self.pos as usize;
         if idx == p.events.len() - 1 {
             match p.events.pop() {
-                Some(Event::Start {
-                    kind: T![__],
-                    forward_parent: None,
-                }) => (),
+                Some(Event::Start { kind: T![__], forward_parent: None }) => (),
                 _ => unreachable!(),
             }
         }
@@ -238,12 +239,7 @@ pub(crate) struct CompletedMarker<T: MarkerType> {
 
 impl<T: MarkerType> CompletedMarker<T> {
     fn new(start_pos: u32, finish_pos: u32, kind: SyntaxKind) -> CompletedMarker<T> {
-        CompletedMarker {
-            start_pos,
-            finish_pos,
-            kind,
-            _marker_type: PhantomData,
-        }
+        CompletedMarker { start_pos, finish_pos, kind, _marker_type: PhantomData }
     }
 }
 
@@ -274,15 +270,17 @@ impl CompletedMarker<RegularMarker> {
         new_pos
     }
 
+    pub(crate) fn precede_unit(self, p: &mut Parser, kind: SyntaxKind) -> MarkerComplete {
+        let m = self.precede(p);
+        m.complete(p, kind)
+    }
+
     /// Undo this completion and turns into a `Marker`
     pub(crate) fn undo_completion(self, p: &mut Parser) -> Marker<RegularMarker> {
         let start_idx = self.start_pos as usize;
         let finish_idx = self.finish_pos as usize;
         match &mut p.events[start_idx] {
-            Event::Start {
-                kind,
-                forward_parent: None,
-            } => *kind = T![__],
+            Event::Start { kind, forward_parent: None } => *kind = T![__],
             _ => unreachable!(),
         }
         match &mut p.events[finish_idx] {
@@ -290,6 +288,15 @@ impl CompletedMarker<RegularMarker> {
             _ => unreachable!(),
         }
         Marker::new(self.start_pos)
+    }
+
+    pub(crate) fn change_kind(self, p: &mut Parser, kind: SyntaxKind) -> MarkerComplete {
+        let start_idx = self.start_pos as usize;
+        match &mut p.events[start_idx] {
+            Event::Start { kind: old_kind, forward_parent: None } => *old_kind = kind,
+            _ => unreachable!(),
+        };
+        self
     }
 
     pub(crate) fn kind(&self) -> SyntaxKind {
