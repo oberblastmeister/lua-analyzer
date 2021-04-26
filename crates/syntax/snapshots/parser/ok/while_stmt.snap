@@ -19,12 +19,13 @@ SourceFile@0..35
           CallExpr@16..30
             NameRef@16..21
               Ident@16..21 "print"
-            Arglist@21..30
-              LParen@21..22 "("
-              MultivalExpr@22..29
-                Literal@22..29
-                  Str@22..29 "\"hello\""
-              RParen@29..30 ")"
+            CallArgs@21..30
+              ArgList@21..30
+                LParen@21..22 "("
+                MultivalExpr@22..29
+                  Literal@22..29
+                    Str@22..29 "\"hello\""
+                RParen@29..30 ")"
     Whitespace@30..31 "\n"
     EndKw@31..34 "end"
   Whitespace@34..35 "\n"

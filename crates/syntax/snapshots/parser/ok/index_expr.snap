@@ -105,12 +105,13 @@ SourceFile@0..191
                   CallExpr@129..143
                     NameRef@129..134
                       Ident@129..134 "print"
-                    Arglist@134..143
-                      LParen@134..135 "("
-                      MultivalExpr@135..142
-                        Literal@135..142
-                          Str@135..142 "\'hello\'"
-                      RParen@142..143 ")"
+                    CallArgs@134..143
+                      ArgList@134..143
+                        LParen@134..135 "("
+                        MultivalExpr@135..142
+                          Literal@135..142
+                            Str@135..142 "\'hello\'"
+                        RParen@142..143 ")"
             Whitespace@143..144 " "
             EndKw@144..147 "end"
           RBracket@147..148 "]"
@@ -130,20 +131,22 @@ SourceFile@0..191
           CallExpr@168..179
             NameRef@168..170
               Ident@168..170 "fn"
-            Arglist@170..179
-              LParen@170..171 "("
-              MultivalExpr@171..178
-                Literal@171..178
-                  Str@171..178 "\"hello\""
-              RParen@178..179 ")"
+            CallArgs@170..179
+              ArgList@170..179
+                LParen@170..171 "("
+                MultivalExpr@171..178
+                  Literal@171..178
+                    Str@171..178 "\"hello\""
+                RParen@178..179 ")"
           Index@179..188
             LBracket@179..180 "["
             Literal@180..187
               Str@180..187 "\'index\'"
             RBracket@187..188 "]"
-        Arglist@188..190
-          LParen@188..189 "("
-          RParen@189..190 ")"
+        CallArgs@188..190
+          ArgList@188..190
+            LParen@188..189 "("
+            RParen@189..190 ")"
   Whitespace@190..191 "\n"
 
 =============================

@@ -31,12 +31,13 @@ SourceFile@0..82
           CallExpr@22..42
             NameRef@22..27
               Ident@22..27 "print"
-            Arglist@27..42
-              LParen@27..28 "("
-              MultivalExpr@28..41
-                Literal@28..41
-                  Str@28..41 "\'hello world\'"
-              RParen@41..42 ")"
+            CallArgs@27..42
+              ArgList@27..42
+                LParen@27..28 "("
+                MultivalExpr@28..41
+                  Literal@28..41
+                    Str@28..41 "\'hello world\'"
+                RParen@41..42 ")"
     Whitespace@42..43 "\n"
     EndKw@43..46 "end"
   Whitespace@46..48 "\n\n"
@@ -70,12 +71,13 @@ SourceFile@0..82
           CallExpr@69..77
             NameRef@69..74
               Ident@69..74 "print"
-            Arglist@74..77
-              LParen@74..75 "("
-              MultivalExpr@75..76
-                NameRef@75..76
-                  Ident@75..76 "i"
-              RParen@76..77 ")"
+            CallArgs@74..77
+              ArgList@74..77
+                LParen@74..75 "("
+                MultivalExpr@75..76
+                  NameRef@75..76
+                    Ident@75..76 "i"
+                RParen@76..77 ")"
     Whitespace@77..78 "\n"
     EndKw@78..81 "end"
   Whitespace@81..82 "\n"

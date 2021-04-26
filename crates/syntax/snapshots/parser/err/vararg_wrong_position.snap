@@ -12,14 +12,14 @@ SourceFile@0..116
     Whitespace@14..15 " "
     Name@15..20
       Ident@15..20 "wrong"
-    ParamList@20..24
+    ParamList@20..25
       LParen@20..21 "("
       MultiName@21..21
       TripleDot@21..24 "..."
-    Block@24..31
       Error@24..25
         Comma@24..25 ","
-      Whitespace@25..26 " "
+    Whitespace@25..26 " "
+    Block@26..31
       ExprStmt@26..30
         MultivalExpr@26..30
           NameRef@26..30
@@ -36,14 +36,14 @@ SourceFile@0..116
     Whitespace@51..52 " "
     Name@52..62
       Ident@52..62 "more_wrong"
-    ParamList@62..66
+    ParamList@62..67
       LParen@62..63 "("
       MultiName@63..63
       TripleDot@63..66 "..."
-    Block@66..72
       Error@66..67
         Comma@66..67 ","
-      Whitespace@67..68 " "
+    Whitespace@67..68 " "
+    Block@68..72
       Error@68..71
         TripleDot@68..71 "..."
       Error@71..72
@@ -58,7 +58,7 @@ SourceFile@0..116
     Whitespace@92..93 " "
     Name@93..98
       Ident@93..98 "wrong"
-    ParamList@98..108
+    ParamList@98..109
       LParen@98..99 "("
       MultiName@99..104
         Name@99..103
@@ -66,10 +66,10 @@ SourceFile@0..116
         Comma@103..104 ","
       Whitespace@104..105 " "
       TripleDot@105..108 "..."
-    Block@108..115
       Error@108..109
         Comma@108..109 ","
-      Whitespace@109..110 " "
+    Whitespace@109..110 " "
+    Block@110..115
       ExprStmt@110..114
         MultivalExpr@110..114
           NameRef@110..114
@@ -84,15 +84,11 @@ Errors:
 [
     SyntaxError(
         "Nothing can be after a vararg",
-        24..24,
-    ),
-    SyntaxError(
-        "Expected RParen, got Comma",
-        24..24,
-    ),
-    SyntaxError(
-        "Expected a statement",
         24..25,
+    ),
+    SyntaxError(
+        "Expected RParen, got Ident",
+        25..25,
     ),
     SyntaxError(
         "Expected a statement",
@@ -100,15 +96,11 @@ Errors:
     ),
     SyntaxError(
         "Nothing can be after a vararg",
-        66..66,
-    ),
-    SyntaxError(
-        "Expected RParen, got Comma",
-        66..66,
-    ),
-    SyntaxError(
-        "Expected a statement",
         66..67,
+    ),
+    SyntaxError(
+        "Expected RParen, got TripleDot",
+        67..67,
     ),
     SyntaxError(
         "Expected a statement",
@@ -120,15 +112,11 @@ Errors:
     ),
     SyntaxError(
         "Nothing can be after a vararg",
-        108..108,
-    ),
-    SyntaxError(
-        "Expected RParen, got Comma",
-        108..108,
-    ),
-    SyntaxError(
-        "Expected a statement",
         108..109,
+    ),
+    SyntaxError(
+        "Expected RParen, got Ident",
+        109..109,
     ),
     SyntaxError(
         "Expected a statement",

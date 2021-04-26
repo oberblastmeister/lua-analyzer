@@ -36,7 +36,7 @@ fn multi_name_r(p: &mut Parser, recovery: TokenSet, vararg: bool) {
 
     if vararg && p.at(T![...]) {
         m.complete(p, MultiName);
-        return
+        return;
     }
 
     name_r(p, recovery);
@@ -99,6 +99,8 @@ fn block(p: &mut Parser) -> MarkerComplete {
     m.complete(p, Block)
 }
 
+const VARARG_ERROR_MSG: &str = "Nothing can be after a vararg";
+
 fn param_list(p: &mut Parser) -> MarkerComplete {
     const END: TokenSet = TS![')', eof];
 
@@ -113,7 +115,7 @@ fn param_list(p: &mut Parser) -> MarkerComplete {
         p.bump(T![...]);
 
         if !p.at(T![')']) {
-            p.error("Nothing can be after a vararg");
+            p.err_and_bump(VARARG_ERROR_MSG)
         }
     }
 

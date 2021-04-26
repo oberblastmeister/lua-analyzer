@@ -1,6 +1,6 @@
 use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP, NOT_AN_OP_INFIX, NOT_AN_OP_PREFIX};
 
-use super::{block, name_r, name_ref, param_list};
+use super::{block, name_r, name_ref, param_list, VARARG_ERROR_MSG};
 use crate::{
     parser::{MarkerComplete, MarkerRegular, Parser},
     SyntaxKind::{self, *},
@@ -105,17 +105,28 @@ fn prefix_binding_power(kind: SyntaxKind) -> ((), u8) {
 pub(super) const EXPR_FIRST: TokenSet = LHS_FIRST;
 
 pub(super) fn expr(p: &mut Parser) -> MarkerComplete {
-    expr_multi(p)
+    expr_multi(p, false)
 }
 
-fn expr_multi(p: &mut Parser) -> MarkerComplete {
+fn expr_multi(p: &mut Parser, vararg: bool) -> MarkerComplete {
     let m = p.start();
+
+    if vararg && p.at(T![...]) {
+        return m.complete(p, MultivalExpr);
+    }
+
     expr_single(p);
+
     while p.at(T![,]) {
         p.bump(T![,]);
 
+        if vararg && p.at(T![...]) {
+            return m.complete(p, MultivalExpr);
+        }
+
         expr_single(p);
     }
+
     m.complete(p, MultivalExpr)
 }
 
@@ -194,12 +205,12 @@ fn prefix_expr(p: &mut Parser, r_bp: u8) -> Option<MarkerComplete> {
     return Some(completed);
 }
 
+const CALL_FIRST: TokenSet = TS!['{', '(', str];
+
 fn postfix_expr(p: &mut Parser, mut lhs: MarkerComplete, mut can_call: bool) -> MarkerComplete {
     loop {
         lhs = match p.current() {
-            T!['('] if can_call => call_expr(p, lhs),
-            T!['{'] if can_call => table_call_expr(p, lhs),
-            T![str] if can_call => string_call_expr(p, lhs),
+            _ if can_call && p.at_ts(CALL_FIRST) => call_expr(p, lhs),
             T![:] if can_call => method_call_expr(p, lhs),
             T!['['] => index_expr(p, lhs),
             T![.] => dot_expr(p, lhs),
@@ -307,32 +318,53 @@ fn function_expr(p: &mut Parser) -> MarkerComplete {
 
 pub(super) fn call_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
     let m = lhs.precede(p);
-    arg_list(p);
+    call_args(p);
     m.complete(p, CallExpr)
 }
 
-fn string_call_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
-    assert!(p.at(T![str]));
-    let m = lhs.precede(p);
-    expr_single(p);
-    m.complete(p, StringCallExpr)
-}
+fn call_args(p: &mut Parser) -> MarkerComplete {
+    assert!(p.at_ts(CALL_FIRST));
 
-fn table_call_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
-    assert!(p.at(T!['{']));
-    let m = lhs.precede(p);
-    expr_single(p);
-    m.complete(p, TableCallExpr)
+    let m = p.start();
+
+    match p.current() {
+        T!['('] => {
+            arg_list(p);
+        }
+        T!['{'] => {
+            table_expr(p);
+        }
+        T![str] => {
+            p.bump_any();
+        }
+        _ => unreachable!(),
+    }
+
+    m.complete(p, CallArgs)
 }
 
 fn arg_list(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
-    p.bump(T!['(']);
-    if !p.at(T![')']) {
-        expr_multi(p);
+
+    fn check_r_paren(p: &mut Parser) {
+        if !p.at(T![')']) {
+            p.err_and_bump(VARARG_ERROR_MSG);
+        }
     }
+
+    p.bump(T!['(']);
+
+    if !p.at(T![')']) {
+        expr_multi(p, true);
+    }
+
+    if p.at(T![...]) {
+        p.bump(T![...]);
+        check_r_paren(p);
+    }
+
     p.expect(T![')']);
-    m.complete(p, Arglist)
+    m.complete(p, ArgList)
 }
 
 fn index_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
@@ -345,9 +377,7 @@ fn method_call_expr(p: &mut Parser, lhs: MarkerComplete) -> MarkerComplete {
     let m = lhs.precede(p);
     p.bump(T![:]);
     name_ref(p);
-    if p.expect_at(T!['(']) {
-        arg_list(p);
-    }
+    call_args(p);
     m.complete(p, MethodCallExpr)
 }
 

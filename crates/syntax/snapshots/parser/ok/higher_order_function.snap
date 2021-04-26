@@ -11,22 +11,24 @@ SourceFile@0..53
         CallExpr@0..24
           NameRef@0..15
             Ident@0..15 "returns_another"
-          Arglist@15..24
-            LParen@15..16 "("
-            MultivalExpr@16..23
-              Literal@16..23
-                Str@16..23 "\"hello\""
-            RParen@23..24 ")"
-        Arglist@24..52
-          LParen@24..25 "("
-          MultivalExpr@25..51
-            Literal@25..36
-              Str@25..36 "\"more args\""
-            Comma@36..37 ","
-            Whitespace@37..38 " "
-            Literal@38..51
-              Str@38..51 "\"another arg\""
-          RParen@51..52 ")"
+          CallArgs@15..24
+            ArgList@15..24
+              LParen@15..16 "("
+              MultivalExpr@16..23
+                Literal@16..23
+                  Str@16..23 "\"hello\""
+              RParen@23..24 ")"
+        CallArgs@24..52
+          ArgList@24..52
+            LParen@24..25 "("
+            MultivalExpr@25..51
+              Literal@25..36
+                Str@25..36 "\"more args\""
+              Comma@36..37 ","
+              Whitespace@37..38 " "
+              Literal@38..51
+                Str@38..51 "\"another arg\""
+            RParen@51..52 ")"
   Whitespace@52..53 "\n"
 
 =============================

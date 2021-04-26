@@ -29,28 +29,25 @@ Expr =
   | DotExpr
   | FunctionExpr
   | CallExpr
-  | TableCallExpr
-  | StringCallExpr
   | MethodCallExpr
   | NameRef
 
 CallExpr =
-  fun:Expr '(' (args:Expr)? ')'
-
-TableCallExpr =
-  fun:Expr tbl:TableExpr
-
-StringCallExpr =
-  fun:Expr 'str'
+  fun:Expr CallArgs
 
 MethodCallExpr =
-  fun:Expr ':' NameRef '(' (args:Expr)? ')'
+  fun:Expr ':' NameRef CallArgs
 
 MultivalExpr =
   Expr (',' Expr)*
 
-Arglist =
-  '(' args:(Expr (',' Expr)*)? ')'
+CallArgs =
+  ArgList
+  | TableExpr
+  | 'str'
+
+ArgList =
+  '(' args:(Expr (',' Expr)*)? (',' '...')? ')'
 
 Literal =
   'number'

@@ -23,12 +23,13 @@ SourceFile@0..45
         CallExpr@12..23
           NameRef@12..18
             Ident@12..18 "ipairs"
-          Arglist@18..23
-            LParen@18..19 "("
-            MultivalExpr@19..22
-              NameRef@19..22
-                Ident@19..22 "tbl"
-            RParen@22..23 ")"
+          CallArgs@18..23
+            ArgList@18..23
+              LParen@18..19 "("
+              MultivalExpr@19..22
+                NameRef@19..22
+                  Ident@19..22 "tbl"
+              RParen@22..23 ")"
     Whitespace@23..24 " "
     DoKw@24..26 "do"
     Whitespace@26..29 "\n  "
@@ -38,16 +39,17 @@ SourceFile@0..45
           CallExpr@29..40
             NameRef@29..34
               Ident@29..34 "print"
-            Arglist@34..40
-              LParen@34..35 "("
-              MultivalExpr@35..39
-                NameRef@35..36
-                  Ident@35..36 "k"
-                Comma@36..37 ","
-                Whitespace@37..38 " "
-                NameRef@38..39
-                  Ident@38..39 "v"
-              RParen@39..40 ")"
+            CallArgs@34..40
+              ArgList@34..40
+                LParen@34..35 "("
+                MultivalExpr@35..39
+                  NameRef@35..36
+                    Ident@35..36 "k"
+                  Comma@36..37 ","
+                  Whitespace@37..38 " "
+                  NameRef@38..39
+                    Ident@38..39 "v"
+                RParen@39..40 ")"
     Whitespace@40..41 "\n"
     EndKw@41..44 "end"
   Whitespace@44..45 "\n"

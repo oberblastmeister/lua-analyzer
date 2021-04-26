@@ -1,7 +1,7 @@
 use super::{
     block, expr_single,
     expressions::{expr, EXPR_FIRST, LITERAL_FIRST},
-    param_list, multi_name_r, name, name_r, name_ref, name_ref_r,
+    multi_name_r, name, name_r, name_ref, name_ref_r, param_list,
 };
 use crate::parser::{MarkerComplete, Parser};
 use crate::SyntaxKind::*;
@@ -221,10 +221,12 @@ fn expr_stmt(p: &mut Parser) -> MarkerComplete {
 }
 
 fn local_function_def_stmt(p: &mut Parser) -> MarkerComplete {
+    const RECOVERY: TokenSet = STMT_RECOVERY.union(TS!['(']);
+
     let m = p.start();
     p.bump(T![local]);
     p.expect(T![function]);
-    name_r(p, STMT_RECOVERY);
+    name_r(p, RECOVERY);
     param_list(p);
     block(p);
     p.expect(T![end]);

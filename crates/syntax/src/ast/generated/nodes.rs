@@ -319,38 +319,8 @@ impl CallExpr {
     pub fn fun(&self) -> Option<Expr> {
         support::child(&self.syntax)
     }
-    pub fn l_paren_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T!['('])
-    }
-    pub fn args(&self) -> Option<Expr> {
+    pub fn call_args(&self) -> Option<CallArgs> {
         support::child(&self.syntax)
-    }
-    pub fn r_paren_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![')'])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TableCallExpr {
-    pub(crate) syntax: SyntaxNode,
-}
-impl TableCallExpr {
-    pub fn fun(&self) -> Option<Expr> {
-        support::child(&self.syntax)
-    }
-    pub fn tbl(&self) -> Option<TableExpr> {
-        support::child(&self.syntax)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct StringCallExpr {
-    pub(crate) syntax: SyntaxNode,
-}
-impl StringCallExpr {
-    pub fn fun(&self) -> Option<Expr> {
-        support::child(&self.syntax)
-    }
-    pub fn str_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![str])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -367,14 +337,8 @@ impl MethodCallExpr {
     pub fn name_ref(&self) -> Option<NameRef> {
         support::child(&self.syntax)
     }
-    pub fn l_paren_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T!['('])
-    }
-    pub fn args(&self) -> Option<Expr> {
+    pub fn call_args(&self) -> Option<CallArgs> {
         support::child(&self.syntax)
-    }
-    pub fn r_paren_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![')'])
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -387,6 +351,21 @@ impl NameRef {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CallArgs {
+    pub(crate) syntax: SyntaxNode,
+}
+impl CallArgs {
+    pub fn arg_list(&self) -> Option<ArgList> {
+        support::child(&self.syntax)
+    }
+    pub fn table_expr(&self) -> Option<TableExpr> {
+        support::child(&self.syntax)
+    }
+    pub fn str_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![str])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct MultivalExpr {
     pub(crate) syntax: SyntaxNode,
 }
@@ -396,15 +375,18 @@ impl MultivalExpr {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Arglist {
+pub struct ArgList {
     pub(crate) syntax: SyntaxNode,
 }
-impl Arglist {
+impl ArgList {
     pub fn l_paren_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T!['('])
     }
     pub fn args(&self) -> AstChildren<Expr> {
         support::children(&self.syntax)
+    }
+    pub fn triple_dot_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![...])
     }
     pub fn r_paren_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![')'])
@@ -696,8 +678,6 @@ pub enum Expr {
     DotExpr(DotExpr),
     FunctionExpr(FunctionExpr),
     CallExpr(CallExpr),
-    TableCallExpr(TableCallExpr),
-    StringCallExpr(StringCallExpr),
     MethodCallExpr(MethodCallExpr),
     NameRef(NameRef),
 }
@@ -1037,36 +1017,6 @@ impl AstNode for CallExpr {
         &self.syntax
     }
 }
-impl AstNode for TableCallExpr {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::TableCallExpr
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for StringCallExpr {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::StringCallExpr
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
 impl AstNode for MethodCallExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::MethodCallExpr
@@ -1097,6 +1047,21 @@ impl AstNode for NameRef {
         &self.syntax
     }
 }
+impl AstNode for CallArgs {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CallArgs
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
 impl AstNode for MultivalExpr {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::MultivalExpr
@@ -1112,9 +1077,9 @@ impl AstNode for MultivalExpr {
         &self.syntax
     }
 }
-impl AstNode for Arglist {
+impl AstNode for ArgList {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Arglist
+        kind == SyntaxKind::ArgList
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1625,16 +1590,6 @@ impl From<CallExpr> for Expr {
         Expr::CallExpr(node)
     }
 }
-impl From<TableCallExpr> for Expr {
-    fn from(node: TableCallExpr) -> Expr {
-        Expr::TableCallExpr(node)
-    }
-}
-impl From<StringCallExpr> for Expr {
-    fn from(node: StringCallExpr) -> Expr {
-        Expr::StringCallExpr(node)
-    }
-}
 impl From<MethodCallExpr> for Expr {
     fn from(node: MethodCallExpr) -> Expr {
         Expr::MethodCallExpr(node)
@@ -1656,8 +1611,6 @@ impl AstNode for Expr {
             | SyntaxKind::DotExpr
             | SyntaxKind::FunctionExpr
             | SyntaxKind::CallExpr
-            | SyntaxKind::TableCallExpr
-            | SyntaxKind::StringCallExpr
             | SyntaxKind::MethodCallExpr
             | SyntaxKind::NameRef => true,
             _ => false,
@@ -1673,8 +1626,6 @@ impl AstNode for Expr {
             SyntaxKind::DotExpr => Expr::DotExpr(DotExpr { syntax }),
             SyntaxKind::FunctionExpr => Expr::FunctionExpr(FunctionExpr { syntax }),
             SyntaxKind::CallExpr => Expr::CallExpr(CallExpr { syntax }),
-            SyntaxKind::TableCallExpr => Expr::TableCallExpr(TableCallExpr { syntax }),
-            SyntaxKind::StringCallExpr => Expr::StringCallExpr(StringCallExpr { syntax }),
             SyntaxKind::MethodCallExpr => Expr::MethodCallExpr(MethodCallExpr { syntax }),
             SyntaxKind::NameRef => Expr::NameRef(NameRef { syntax }),
             _ => return None,
@@ -1691,8 +1642,6 @@ impl AstNode for Expr {
             Expr::DotExpr(it) => &it.syntax,
             Expr::FunctionExpr(it) => &it.syntax,
             Expr::CallExpr(it) => &it.syntax,
-            Expr::TableCallExpr(it) => &it.syntax,
-            Expr::StringCallExpr(it) => &it.syntax,
             Expr::MethodCallExpr(it) => &it.syntax,
             Expr::NameRef(it) => &it.syntax,
         }
@@ -1979,16 +1928,6 @@ impl std::fmt::Display for CallExpr {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for TableCallExpr {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for StringCallExpr {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
 impl std::fmt::Display for MethodCallExpr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
@@ -1999,12 +1938,17 @@ impl std::fmt::Display for NameRef {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
+impl std::fmt::Display for CallArgs {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
 impl std::fmt::Display for MultivalExpr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for Arglist {
+impl std::fmt::Display for ArgList {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

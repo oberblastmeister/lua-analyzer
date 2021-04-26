@@ -11,9 +11,10 @@ SourceFile@0..190
         CallExpr@0..13
           NameRef@0..11
             Ident@0..11 "returns_tbl"
-          Arglist@11..13
-            LParen@11..12 "("
-            RParen@12..13 ")"
+          CallArgs@11..13
+            ArgList@11..13
+              LParen@11..12 "("
+              RParen@12..13 ")"
         Dot@13..14 "."
         Ident@14..19 "hello"
       Comma@19..20 ","
@@ -37,9 +38,10 @@ SourceFile@0..190
         CallExpr@43..56
           NameRef@43..54
             Ident@43..54 "another_tbl"
-          Arglist@54..56
-            LParen@54..55 "("
-            RParen@55..56 ")"
+          CallArgs@54..56
+            ArgList@54..56
+              LParen@54..55 "("
+              RParen@55..56 ")"
         Index@56..59
           LBracket@56..57 "["
           Literal@57..58

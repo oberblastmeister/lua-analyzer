@@ -18,18 +18,19 @@ SourceFile@0..29
       CallExpr@14..28
         NameRef@14..20
           Ident@14..20 "assert"
-        Arglist@20..28
-          LParen@20..21 "("
-          MultivalExpr@21..27
-            InfixExpr@21..27
-              Literal@21..22
-                Number@21..22 "5"
-              Whitespace@22..23 " "
-              EqEq@23..25 "=="
-              Whitespace@25..26 " "
-              Literal@26..27
-                Number@26..27 "2"
-          RParen@27..28 ")"
+        CallArgs@20..28
+          ArgList@20..28
+            LParen@20..21 "("
+            MultivalExpr@21..27
+              InfixExpr@21..27
+                Literal@21..22
+                  Number@21..22 "5"
+                Whitespace@22..23 " "
+                EqEq@23..25 "=="
+                Whitespace@25..26 " "
+                Literal@26..27
+                  Number@26..27 "2"
+            RParen@27..28 ")"
   Whitespace@28..29 "\n"
 
 =============================

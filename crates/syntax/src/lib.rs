@@ -1,27 +1,27 @@
+mod accept;
 pub mod ast;
 #[doc(hidden)]
 pub mod fuzz;
-mod accept;
 mod lexer;
 mod parsing;
+mod ptr;
 mod syntax_node;
 #[cfg(test)]
 mod tests;
-mod validation;
-mod ptr;
 mod token_text;
+mod validation;
 
-pub use ptr::{SyntaxNodePtr, AstPtr};
-pub use token_text::TokenText;
 pub use parser::{SyntaxKind, Token, T};
+pub use ptr::{AstPtr, SyntaxNodePtr};
+pub use rowan::{TextRange, TextSize, WalkEvent};
 pub use syntax_node::{
     SyntaxElement, SyntaxElementChildren, SyntaxError, SyntaxNode, SyntaxNodeChildren, SyntaxToken,
 };
-pub use rowan::{TextSize, TextRange, WalkEvent};
+pub use token_text::TokenText;
 
 use std::{marker::PhantomData, sync::Arc};
 
-use ast::{AstChildren, AstNode};
+use ast::AstNode;
 use rowan::GreenNode;
 
 /// `Parse` is the result of the parsing: a syntax tree and a collection of
@@ -38,11 +38,7 @@ pub struct Parse<T> {
 
 impl<T> Parse<T> {
     fn new(green: GreenNode, errors: Vec<SyntaxError>) -> Parse<T> {
-        Parse {
-            green,
-            errors: Arc::new(errors),
-            _ty: PhantomData,
-        }
+        Parse { green, errors: Arc::new(errors), _ty: PhantomData }
     }
 
     pub fn syntax_node(&self) -> SyntaxNode {
@@ -52,11 +48,7 @@ impl<T> Parse<T> {
 
 impl<T: AstNode> Parse<T> {
     pub fn to_syntax(self) -> Parse<SyntaxNode> {
-        Parse {
-            green: self.green,
-            errors: self.errors,
-            _ty: PhantomData,
-        }
+        Parse { green: self.green, errors: self.errors, _ty: PhantomData }
     }
 
     pub fn tree(&self) -> T {
@@ -79,11 +71,7 @@ impl<T: AstNode> Parse<T> {
 impl Parse<SyntaxNode> {
     pub fn cast<N: AstNode>(self) -> Option<Parse<N>> {
         if N::cast(self.syntax_node()).is_some() {
-            Some(Parse {
-                green: self.green,
-                errors: self.errors,
-                _ty: PhantomData,
-            })
+            Some(Parse { green: self.green, errors: self.errors, _ty: PhantomData })
         } else {
             None
         }
@@ -105,13 +93,7 @@ Errors:
 
 impl ast::Expr {
     pub fn is_call(&self) -> bool {
-        matches!(
-            self,
-            ast::Expr::CallExpr(_)
-                | ast::Expr::MethodCallExpr(_)
-                | ast::Expr::StringCallExpr(_)
-                | ast::Expr::TableCallExpr(_),
-        )
+        matches!(self, ast::Expr::CallExpr(_) | ast::Expr::MethodCallExpr(_))
     }
 }
 
@@ -126,11 +108,7 @@ impl SourceFile {
 
         assert_eq!(root.kind(), SyntaxKind::SourceFile);
 
-        Parse {
-            green,
-            errors: Arc::new(errors),
-            _ty: PhantomData,
-        }
+        Parse { green, errors: Arc::new(errors), _ty: PhantomData }
     }
 }
 

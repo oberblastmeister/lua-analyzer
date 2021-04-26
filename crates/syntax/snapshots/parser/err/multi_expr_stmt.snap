@@ -10,12 +10,13 @@ SourceFile@0..24
       CallExpr@0..17
         NameRef@0..5
           Ident@0..5 "print"
-        Arglist@5..17
-          LParen@5..6 "("
-          MultivalExpr@6..16
-            Literal@6..16
-              Str@6..16 "\"asdfasdf\""
-          RParen@16..17 ")"
+        CallArgs@5..17
+          ArgList@5..17
+            LParen@5..6 "("
+            MultivalExpr@6..16
+              Literal@6..16
+                Str@6..16 "\"asdfasdf\""
+            RParen@16..17 ")"
       Comma@17..18 ","
       Whitespace@18..19 " "
       NameRef@19..23

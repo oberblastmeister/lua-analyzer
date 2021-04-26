@@ -48,12 +48,13 @@ SourceFile@0..102
                       CallExpr@62..83
                         NameRef@62..67
                           Ident@62..67 "print"
-                        Arglist@67..83
-                          LParen@67..68 "("
-                          MultivalExpr@68..82
-                            Literal@68..82
-                              Str@68..82 "\'hello person\'"
-                          RParen@82..83 ")"
+                        CallArgs@67..83
+                          ArgList@67..83
+                            LParen@67..68 "("
+                            MultivalExpr@68..82
+                              Literal@68..82
+                                Str@68..82 "\'hello person\'"
+                            RParen@82..83 ")"
                 Whitespace@83..88 "\n    "
                 EndKw@88..91 "end"
         Whitespace@91..94 "\n  "

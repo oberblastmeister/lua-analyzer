@@ -50,12 +50,14 @@ SourceFile@0..74
               Literal@65..68
                 Number@65..68 "234"
               RBracket@68..69 "]"
-          Arglist@69..71
-            LParen@69..70 "("
-            RParen@70..71 ")"
-        Arglist@71..73
-          LParen@71..72 "("
-          RParen@72..73 ")"
+          CallArgs@69..71
+            ArgList@69..71
+              LParen@69..70 "("
+              RParen@70..71 ")"
+        CallArgs@71..73
+          ArgList@71..73
+            LParen@71..72 "("
+            RParen@72..73 ")"
   Whitespace@73..74 "\n"
 
 =============================

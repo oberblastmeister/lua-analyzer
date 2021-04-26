@@ -15,11 +15,11 @@ SourceFile@0..131
     Eq@10..11 "="
     Whitespace@11..12 " "
     MultivalExpr@12..41
-      StringCallExpr@12..41
+      CallExpr@12..41
         NameRef@12..17
           Ident@12..17 "print"
         Whitespace@17..18 " "
-        Literal@18..41
+        CallArgs@18..41
           Str@18..41 "\"this is a string call\""
   Whitespace@41..42 "\n"
   LocalAssignStmt@42..86
@@ -32,18 +32,19 @@ SourceFile@0..131
     Eq@56..57 "="
     Whitespace@57..58 " "
     MultivalExpr@58..86
-      StringCallExpr@58..86
+      CallExpr@58..86
         CallExpr@58..74
-          StringCallExpr@58..72
+          CallExpr@58..72
             NameRef@58..64
               Ident@58..64 "higher"
             Whitespace@64..65 " "
-            Literal@65..72
+            CallArgs@65..72
               Str@65..72 "\"hello\""
-          Arglist@72..74
-            LParen@72..73 "("
-            RParen@73..74 ")"
-        Literal@74..86
+          CallArgs@72..74
+            ArgList@72..74
+              LParen@72..73 "("
+              RParen@73..74 ")"
+        CallArgs@74..86
           Str@74..86 "\"what ithis\""
   Whitespace@86..87 "\n"
   LocalAssignStmt@87..130
@@ -56,7 +57,7 @@ SourceFile@0..131
     Eq@98..99 "="
     Whitespace@99..100 " "
     MultivalExpr@100..130
-      StringCallExpr@100..130
+      CallExpr@100..130
         ParenExpr@100..116
           LParen@100..101 "("
           FunctionExpr@101..115
@@ -68,7 +69,7 @@ SourceFile@0..131
             Block@112..112
             EndKw@112..115 "end"
           RParen@115..116 ")"
-        Literal@116..130
+        CallArgs@116..130
           Str@116..130 "\"hello person\""
   Whitespace@130..131 "\n"
 

@@ -38,9 +38,10 @@ SourceFile@0..65
     CallExpr@49..64
       NameRef@49..62
         Ident@49..62 "should_finish"
-      Arglist@62..64
-        LParen@62..63 "("
-        RParen@63..64 ")"
+      CallArgs@62..64
+        ArgList@62..64
+          LParen@62..63 "("
+          RParen@63..64 ")"
   Whitespace@64..65 "\n"
 
 =============================

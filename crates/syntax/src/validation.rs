@@ -106,8 +106,6 @@ impl Validate for ast::AssignStmt {
         for expr in lhs.exprs() {
             match expr {
                 ast::Expr::CallExpr(_)
-                | ast::Expr::TableCallExpr(_)
-                | ast::Expr::StringCallExpr(_)
                 | ast::Expr::MethodCallExpr(_)
                 | ast::Expr::DotExpr(_)
                 | ast::Expr::IndexExpr(_) => (),
