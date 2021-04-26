@@ -1,5 +1,6 @@
 mod text_token_source;
 mod text_tree_sink;
+mod reparsing;
 
 use crate::lexer::tokenize;
 use rowan::GreenNode;

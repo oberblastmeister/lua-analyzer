@@ -10,12 +10,16 @@ fn stmt(program: ast::SourceFile) -> ast::Stmt {
 #[test]
 #[ignore]
 fn learning() {
-    let prog = ast::SourceFile::parse(r#"
+    let prog = ast::SourceFile::parse(
+        r#"
 local hello = "a string"
 local function testing(first, second, third)
     local new = first + second
     return new^324 .. "adfadsf"
-end"#).ok().unwrap();
+end"#,
+    )
+    .ok()
+    .unwrap();
     // for (i, it) in prog.syntax_node().descendants().enumerate() {
     //     println!("{}: {:#?}", i, it);
     // }

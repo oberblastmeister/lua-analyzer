@@ -103,7 +103,7 @@ Errors:
         67..67,
     ),
     SyntaxError(
-        "Expected a statement",
+        "A literal cannot be the start of a statement",
         68..71,
     ),
     SyntaxError(

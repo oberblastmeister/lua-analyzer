@@ -16,6 +16,7 @@ thiserror = "1.0.24"
 
 parser = { path = "../parser", version = "0.0.0" }
 stdx = { path = "../stdx", version = "0.0.0" }
+text_edit = { path = "../text_edit", version = "0.0.0" }
 
 [dev-dependencies]
 glob = "0.3.0"

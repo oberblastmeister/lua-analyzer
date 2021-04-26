@@ -49,6 +49,7 @@ pub enum LiteralKind {
     Number(ast::Number),
     Bool(bool),
     Nil,
+    Vararg,
 }
 
 impl ast::Literal {
@@ -75,6 +76,7 @@ impl ast::Literal {
             T![true] => LiteralKind::Bool(true),
             T![false] => LiteralKind::Bool(false),
             T![nil] => LiteralKind::Nil,
+            T![...] => LiteralKind::Vararg,
             _ => unreachable!(),
         }
     }

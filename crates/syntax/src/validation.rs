@@ -105,14 +105,10 @@ impl Validate for ast::AssignStmt {
 
         for expr in lhs.exprs() {
             match expr {
-                ast::Expr::CallExpr(_)
-                | ast::Expr::MethodCallExpr(_)
-                | ast::Expr::DotExpr(_)
-                | ast::Expr::IndexExpr(_) => (),
+                ast::Expr::DotExpr(_) | ast::Expr::IndexExpr(_) => (),
                 ast::Expr::NameRef(_) => (),
                 _ => acc.push(SyntaxError::new(
-                    "Can only assign to a function call, name reference, or index expression"
-                        .to_string(),
+                    "Can only assign name reference or index expression".to_string(),
                     expr.range(),
                 )),
             }
@@ -125,13 +121,14 @@ impl Validate for ast::Literal {
         let token = self.token();
         let text = token.text();
         match self.kind() {
-            ast::LiteralKind::Str(s) => {
+            ast::LiteralKind::Str(_) => {
                 let (offset, unquoted) = unquote(&text);
                 unescape(unquoted, token.text_range().start() + offset, acc)
             }
-            ast::LiteralKind::Number(_) => (),
-            ast::LiteralKind::Bool(_) => (),
-            ast::LiteralKind::Nil => (),
+            ast::LiteralKind::Number(_)
+            | ast::LiteralKind::Bool(_)
+            | ast::LiteralKind::Nil
+            | ast::LiteralKind::Vararg => (),
         }
     }
 }

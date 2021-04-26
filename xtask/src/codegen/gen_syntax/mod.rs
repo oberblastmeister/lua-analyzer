@@ -97,7 +97,7 @@ fn gen_syntax_kinds(kinds_src: &KindsSrc, ast_src: &AstSrc) -> Result<String> {
         .map(|name| format_ident!("{}", name))
         .collect::<Vec<_>>();
 
-    let node_names = ast_src.names().map(|s| format_ident!("{}", s));
+    let node_names = ast_src.names().map(|s| format_ident!("{}", s)).collect::<Vec<_>>();
 
     let ast = quote! {
         #![allow(bad_style, missing_docs, unreachable_pub)]
@@ -152,7 +152,7 @@ fn gen_syntax_kinds(kinds_src: &KindsSrc, ast_src: &AstSrc) -> Result<String> {
             }
         }
 
-        /// A helper macro to get the SyntaxKind
+        /// A helper macro to get the token
         #[macro_export]
         macro_rules! T {
             #([#punctuation_matches] => { $crate::SyntaxKind::#punctuation };)*
@@ -163,6 +163,12 @@ fn gen_syntax_kinds(kinds_src: &KindsSrc, ast_src: &AstSrc) -> Result<String> {
             [__] => { $crate::SyntaxKind::Tombstone };
             [eof] => { $crate::SyntaxKind::Eof };
             [unknown] => { $crate::SyntaxKind::Unknown };
+        }
+
+        /// A helper macro to get the node
+        #[macro_export]
+        macro_rules! N {
+            #([#node_names] => { $crate::SyntaxKind::#node_names };)*
         }
     };
 

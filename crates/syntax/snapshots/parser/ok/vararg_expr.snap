@@ -1,0 +1,81 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/vararg_expr.lua
+
+---
+SourceFile@0..97
+  LocalFunctionDefStmt@0..96
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    FunctionKw@6..14 "function"
+    Whitespace@14..15 " "
+    Name@15..21
+      Ident@15..21 "person"
+    ParamList@21..26
+      LParen@21..22 "("
+      MultiName@22..22
+      TripleDot@22..25 "..."
+      RParen@25..26 ")"
+    Whitespace@26..29 "\n  "
+    Block@29..92
+      ExprStmt@29..39
+        MultivalExpr@29..39
+          CallExpr@29..39
+            NameRef@29..34
+              Ident@29..34 "print"
+            CallArgs@34..39
+              ArgList@34..39
+                LParen@34..35 "("
+                MultivalExpr@35..38
+                  Literal@35..38
+                    TripleDot@35..38 "..."
+                RParen@38..39 ")"
+      Whitespace@39..42 "\n  "
+      LocalAssignStmt@42..63
+        LocalKw@42..47 "local"
+        Whitespace@47..48 " "
+        MultiName@48..53
+          Name@48..53
+            Ident@48..53 "hello"
+        Whitespace@53..54 " "
+        Eq@54..55 "="
+        Whitespace@55..56 " "
+        MultivalExpr@56..63
+          InfixExpr@56..63
+            Literal@56..59
+              TripleDot@56..59 "..."
+            Whitespace@59..60 " "
+            Plus@60..61 "+"
+            Whitespace@61..62 " "
+            Literal@62..63
+              Number@62..63 "1"
+      Whitespace@63..66 "\n  "
+      ExprStmt@66..92
+        MultivalExpr@66..92
+          CallExpr@66..92
+            NameRef@66..71
+              Ident@66..71 "print"
+            CallArgs@71..92
+              ArgList@71..92
+                LParen@71..72 "("
+                MultivalExpr@72..91
+                  Literal@72..75
+                    TripleDot@72..75 "..."
+                  Comma@75..76 ","
+                  Whitespace@76..77 " "
+                  Literal@77..86
+                    Str@77..86 "\"another\""
+                  Comma@86..87 ","
+                  Whitespace@87..88 " "
+                  Literal@88..91
+                    TripleDot@88..91 "..."
+                RParen@91..92 ")"
+    Whitespace@92..93 "\n"
+    EndKw@93..96 "end"
+  Whitespace@96..97 "\n"
+
+=============================
+Errors:
+=============================
+[]

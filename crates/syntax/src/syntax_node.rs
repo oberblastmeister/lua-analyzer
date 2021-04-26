@@ -6,7 +6,7 @@ use rowan::{GreenNodeBuilder, Language, TextRange, TextSize};
 
 use crate::{Parse, SyntaxKind, T};
 
-pub(crate) use rowan::GreenNode;
+pub(crate) use rowan::{GreenNode, GreenToken, NodeOrToken};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum LuaLanguage {}
