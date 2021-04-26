@@ -122,8 +122,9 @@ impl Validate for ast::Literal {
         let text = token.text();
         match self.kind() {
             ast::LiteralKind::Str(_) => {
-                let (offset, unquoted) = unquote(&text);
-                unescape(unquoted, token.text_range().start() + offset, acc)
+                if let Some((offset, unquoted)) = unquote(&text) {
+                    unescape(unquoted, token.text_range().start() + offset, acc)
+                }
             }
             ast::LiteralKind::Number(_)
             | ast::LiteralKind::Bool(_)
@@ -136,31 +137,34 @@ impl Validate for ast::Literal {
 /// Unquotes a lua string. This will panic if something wrong happens
 /// because the string passed in should be correctly quoted, or we have a problem with
 /// the lexer.
-fn unquote(text: &str) -> (TextSize, &str) {
-    let delimit = text.bytes().next().unwrap() as char;
+fn unquote(mut text: &str) -> Option<(TextSize, &str)> {
+    let delimit = text.chars().next().unwrap();
 
     if delimit == '\'' || delimit == '\"' {
-        assert!(text.ends_with(delimit));
-        (1.into(), &text[1..text.len() - 1])
+        if !text.ends_with(delimit) || text.len() == 1 {
+            return None;
+        }
+        Some((1.into(), &text[1..text.len() - 1]))
     } else if delimit == '[' {
         // unquote front
-        let text = &text[1..];
+        text = &text[1..];
         let equals = text.bytes().take_while(|c| *c == '=' as u8).count();
-        let text = &text[equals..];
-        assert_eq!(text.bytes().next().unwrap(), '[' as u8);
-        let text = &text[1..];
+        text = &text[equals..];
+        text = if Some('[' as u8) == text.bytes().next() { &text[1..] } else { &text };
 
         // unquote back
-        assert_eq!(text.bytes().last().unwrap(), ']' as u8);
-        let text = &text[..text.len() - 1];
-        let back_equals = text.bytes().rev().take_while(|c| *c == '=' as u8).count();
-        assert_eq!(equals, back_equals, "Front and back equals must be the same");
-        let text = &text[..text.len() - back_equals];
-        assert_eq!(text.bytes().last().unwrap(), ']' as u8);
-        let text = &text[..text.len() - 1];
+        if text.bytes().last() == Some(']' as u8) {
+            text = &text[..text.len() - 1];
+            let back_equals = text.bytes().rev().take_while(|c| *c == '=' as u8).count();
+            // assert_eq!(equals, back_equals, "Front and back equals must be the same");
+            text = &text[..text.len() - back_equals];
+            if text.bytes().last() == Some(']' as u8) {
+                text = &text[..text.len() - 1]
+            }
+        };
 
         let offset = TextSize::from(2 + equals as u32);
-        (offset, text)
+        Some((offset, text))
     } else {
         panic!("String was not properly quoted")
     }
@@ -303,12 +307,12 @@ mod tests {
 
     #[test]
     fn unquote_str() {
-        assert_eq!(unquote(r#""a string""#), (1.into(), "a string"));
-        assert_eq!(unquote(r#""""#), (1.into(), ""));
-        assert_eq!(unquote(r"'a string'"), (1.into(), "a string"));
-        assert_eq!(unquote(r"''"), (1.into(), ""));
-        assert_eq!(unquote(r"[[asdf asdf]]"), (2.into(), "asdf asdf"));
-        assert_eq!(unquote(r"[=====[asdf asdf]=====]"), (7.into(), "asdf asdf"));
+        assert_eq!(unquote(r#""a string""#), Some((1.into(), "a string")));
+        assert_eq!(unquote(r#""""#), Some((1.into(), "")));
+        assert_eq!(unquote(r"'a string'"), Some((1.into(), "a string")));
+        assert_eq!(unquote(r"''"), Some((1.into(), "")));
+        assert_eq!(unquote(r"[[asdf asdf]]"), Some((2.into(), "asdf asdf")));
+        assert_eq!(unquote(r"[=====[asdf asdf]=====]"), Some((7.into(), "asdf asdf")));
     }
 
     #[test]
@@ -333,5 +337,10 @@ mod tests {
     #[should_panic]
     fn unquote_str_bad4() {
         unquote(r"[====[asdfasd]=]");
+    }
+
+    #[test]
+    fn unquote_weird() {
+        unquote(r#""\'8""#);
     }
 }

@@ -1,6 +1,5 @@
 use std::fmt;
 
-use crate::lexer::LexError;
 use parser::{ParseError, Token};
 use rowan::{GreenNodeBuilder, Language, TextRange, TextSize};
 
@@ -41,12 +40,6 @@ impl SyntaxError {
 
     pub fn to_unknown_token(&self) -> Token {
         Token::new(T![unknown], self.range())
-    }
-}
-
-impl From<LexError> for SyntaxError {
-    fn from(e: LexError) -> SyntaxError {
-        SyntaxError(e.msg.to_string(), e.range)
     }
 }
 

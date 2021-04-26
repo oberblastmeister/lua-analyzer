@@ -6,7 +6,7 @@ input_file: crates/syntax/snapshots/lexer/err/string_unclosed.lua
 ---
 [
     Token {
-        kind: Unknown,
+        kind: Str,
         range: 0..9,
     },
     Token {

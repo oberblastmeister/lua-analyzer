@@ -16,7 +16,14 @@ impl flags::FuzzTests {
             bail!("fuzz tests require nightly rustc")
         }
 
-        cmd!("cargo fuzz run parser").run()?;
+        let target = if self.lexer {
+            "lexer"
+        } else {
+            "parser"
+        };
+
+        cmd!("cargo fuzz run {target}").run()?;
+
         Ok(())
     }
 }

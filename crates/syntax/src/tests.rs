@@ -1,4 +1,4 @@
-use super::lexer::{tokenize, tokenize_iter, LexError};
+use super::lexer::{tokenize, tokenize_iter};
 use super::*;
 use std::{
     fmt, fs,
@@ -34,8 +34,7 @@ fn lexer() {
 
     dir_tests(snapshots_dir(), &["lexer/err"], |path, text| {
         let (tokens, errors) = tokenize(text);
-        assert_errors_are_present(&errors, path);
-        assert_unknowns_are_present(&tokens, path);
+        assert_errors_or_unknowns_are_present(&errors, &tokens, path);
         format!("{:#?}\n\n{:#?}", tokens, errors)
     })
 }
@@ -99,6 +98,13 @@ fn lua_files_in_dir(dir: &Path) -> Vec<PathBuf> {
     acc.sort();
     acc
 }
+fn assert_errors_or_unknowns_are_present(errors: &[SyntaxError], tokens: &[Token], path: &Path) {
+    assert!(
+        !errors.is_empty() || !tokens.is_empty(),
+        "There should be errors in the file {:?}",
+        path.display()
+    );
+}
 
 fn assert_errors_are_present(errors: &[SyntaxError], path: &Path) {
     assert!(
@@ -139,7 +145,7 @@ fn assert_unknowns_are_present(tokens: &[Token], path: &Path) {
     let unknowns = collect_unknowns(tokens);
     assert!(
         !unknowns.is_empty(),
-        "There should be no unknowns in the file {:?}",
+        "There should be unknowns in the file {:?}",
         path.display()
     )
 }

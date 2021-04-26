@@ -8,7 +8,10 @@ xflags::xflags! {
         }
 
         /// Run the fuzzer for the parser
-        cmd fuzz-tests {}
+        cmd fuzz-tests {
+            /// run the lexer fuzz tests instead
+            optional -l, --lexer
+        }
 
         /// Run the codegen
         cmd codegen {}
@@ -35,7 +38,9 @@ pub struct Help {
 }
 
 #[derive(Debug)]
-pub struct FuzzTests;
+pub struct FuzzTests {
+    pub lexer: bool,
+}
 
 #[derive(Debug)]
 pub struct Codegen;

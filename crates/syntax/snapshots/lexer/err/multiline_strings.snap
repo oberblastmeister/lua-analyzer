@@ -30,7 +30,7 @@ input_file: crates/syntax/snapshots/lexer/err/multiline_strings.lua
         range: 9..10,
     },
     Token {
-        kind: Unknown,
+        kind: Str,
         range: 10..46,
     },
 ]

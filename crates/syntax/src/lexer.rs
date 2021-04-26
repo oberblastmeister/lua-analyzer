@@ -91,6 +91,11 @@ pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = TokenErr> + '_ {
     })
 }
 
+pub fn lex_first_syntax_kind(text: &str) -> Option<(SyntaxKind, Option<SyntaxError>)> {
+    let TokenErr { token, err } = lex_first_token(text)?;
+    Some((token.kind, err))
+}
+
 pub fn lex_first_token(text: &str) -> Option<TokenErr> {
     if text.is_empty() {
         return None;
@@ -105,19 +110,6 @@ pub fn lex_first_token(text: &str) -> Option<TokenErr> {
 
 fn first_lex_result(text: &str) -> WithLen<LexResult<SyntaxKind>> {
     Lexer::new(text).next_lex_result()
-}
-
-#[derive(Debug, Error)]
-#[error("{msg}")]
-pub struct LexError {
-    pub msg: LexErrorMsg,
-    pub range: TextRange,
-}
-
-impl LexError {
-    pub fn to_unknown(&self) -> Token {
-        Token { kind: T![unknown], range: self.range }
-    }
 }
 
 #[derive(Debug, Error, PartialEq, Eq)]
@@ -214,6 +206,8 @@ impl<'a> Lexer<'a> {
 
         // return on special cases
         let kind = match c {
+            // '\0' if self.is_eof() => done!(T![eof]),
+
             '=' => match self.bump_then(Any) {
                 '=' => {
                     self.bump('=');
