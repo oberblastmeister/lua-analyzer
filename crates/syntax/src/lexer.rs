@@ -12,13 +12,22 @@ pub(crate) const EOF_CHAR: char = '\0';
 
 macro_rules! done {
     ($expr:expr) => {
-        return Ok($expr);
+        return ($expr, None);
     };
 }
 
 macro_rules! bail {
-    ($( $stuff:tt )*) => {
-        return Err(LexErrorMsg(format!($( $stuff )*)))
+    () => {
+        return (T![unknown], None)
+    };
+    (T![$match:tt]) => {
+        return (T![$match], None)
+    };
+    (T![$match:tt], $( $stuff:tt )*) => {
+        return (T![$match], Some(LexErrorMsg(format!($( $stuff)* ))))
+    };
+    ($expr:expr, $( $stuff:tt )*) => {
+        return ($expr, Some(LexErrorMsg(format!($( $stuff)* ))))
     };
 }
 
@@ -39,56 +48,63 @@ impl<T> WithLen<T> {
     }
 }
 
-pub fn tokenize(text: &str) -> (Vec<Token>, Vec<SyntaxError>) {
-    let mut tokens = vec![];
-    let mut errors = vec![];
-    for res in tokenize_iter(text) {
-        match res {
-            Ok(tok) => tokens.push(tok),
-            Err(e) => {
-                tokens.push(e.to_unknown_token());
-                errors.push(e.into());
-            }
-        }
+/// A token with an optional error
+pub struct TokenErr {
+    pub token: Token,
+    pub err: Option<SyntaxError>,
+}
+
+impl TokenErr {
+    pub fn new(token: Token, err: Option<SyntaxError>) -> Self {
+        Self { token, err }
     }
+}
+
+pub fn tokenize(text: &str) -> (Vec<Token>, Vec<SyntaxError>) {
+    let mut errors = Vec::new();
+    let tokens = tokenize_iter(text)
+        .map(|TokenErr { token, err }| {
+            errors.extend(err);
+            token
+        })
+        .collect();
+
     (tokens, errors)
 }
 
-pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = Result<Token, SyntaxError>> + '_ {
+pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = TokenErr> + '_ {
     let mut pos = TextSize::from(0);
 
     iter::from_fn(move || {
-        if input.is_empty() {
-            return None;
-        }
+        let mut token_err = lex_first_token(input)?;
+        token_err.token.range += pos;
+        token_err.err.as_mut().map(|err| {
+            err.1 += pos;
+        });
 
-        match first_token(input) {
-            Ok(token) => {
-                let len = token.len;
+        let len = token_err.token.range.len();
 
-                let token = Token::new(token.inner, TextRange::at(pos, len));
+        pos += len;
+        input = &input[len.into()..];
 
-                pos += len;
-                input = &input[len.into()..];
-
-                Some(Ok(token))
-            }
-            Err(err) => {
-                let len = err.len;
-
-                let e = SyntaxError::new(err.inner.0, TextRange::at(pos, len));
-
-                pos += len;
-                input = &input[len.into()..];
-
-                Some(Err(e))
-            }
-        }
+        Some(token_err)
     })
 }
 
-fn first_token(input: &str) -> Result<WithLen<SyntaxKind>, WithLen<LexErrorMsg>> {
-    Lexer::new(input).next_token()
+pub fn lex_first_token(text: &str) -> Option<TokenErr> {
+    if text.is_empty() {
+        return None;
+    }
+
+    let WithLen { len, inner: (kind, err) } = first_lex_result(text);
+    let range = TextRange::up_to(len);
+    let token = Token::new(kind, range);
+    let err = err.map(|err| SyntaxError::new(err.0, range));
+    Some(TokenErr::new(token, err))
+}
+
+fn first_lex_result(text: &str) -> WithLen<LexResult<SyntaxKind>> {
+    Lexer::new(text).next_lex_result()
 }
 
 #[derive(Debug, Error)]
@@ -108,7 +124,7 @@ impl LexError {
 #[error("{0}")]
 pub struct LexErrorMsg(String);
 
-type LexResult<T, E = LexErrorMsg> = Result<T, E>;
+type LexResult<T> = (T, Option<LexErrorMsg>);
 
 pub struct Lexer<'a> {
     input_len: u32,
@@ -163,10 +179,10 @@ impl<'a> Lexer<'a> {
         self.current()
     }
 
-    fn next_token(mut self) -> Result<WithLen<SyntaxKind>, WithLen<LexErrorMsg>> {
-        self.lex_main()
-            .map(|kind| WithLen::new(kind, self.pos().into()))
-            .map_err(|e| WithLen::new(e, self.pos().into()))
+    fn next_lex_result(mut self) -> WithLen<LexResult<SyntaxKind>> {
+        let res = self.lex_main();
+        let pos = self.pos();
+        WithLen::new(res, pos.into())
     }
 
     fn bump<T: Accept + Copy>(&mut self, t: T) {
@@ -218,8 +234,8 @@ impl<'a> Lexer<'a> {
             '{' => T!['{'],
             '}' => T!['}'],
             '[' => match self.bump_then(Any) {
-                '[' => done!(self.multiline_string()?),
-                '=' => done!(self.multiline_string()?),
+                '[' => return self.multiline_string(),
+                '=' => return self.multiline_string(),
                 _ => done!(T!['[']),
             },
             ']' => T![']'],
@@ -276,10 +292,10 @@ impl<'a> Lexer<'a> {
                 _ => done!(T![-]),
             },
 
-            c @ '\'' | c @ '"' => done!(self.string(c)?),
+            c @ '\'' | c @ '"' => return self.string(c),
 
             _ if is_ident_start(c) => done!(self.ident()),
-            _ if is_number(c) => done!(self.number()?),
+            _ if is_number(c) => return self.number(),
             _ if is_whitespace(c) => done!(self.whitespace()),
 
             _ => T![unknown],
@@ -288,7 +304,7 @@ impl<'a> Lexer<'a> {
         // if we got here, that means that the token was only length 1
         self.bump(Any);
 
-        Ok(kind)
+        (kind, None)
     }
 
     fn number(&mut self) -> LexResult<SyntaxKind> {
@@ -296,7 +312,7 @@ impl<'a> Lexer<'a> {
 
         if self.accept(seq!('0', 'x')) {
             self.accept_while(is_hex);
-            done!(T![number]);
+            return (T![number], None);
         }
 
         self.accept_while(is_number);
@@ -308,7 +324,7 @@ impl<'a> Lexer<'a> {
             self.accept_while(is_number);
         }
 
-        Ok(T![number])
+        done!(T![number]);
     }
 
     fn whitespace(&mut self) -> SyntaxKind {
@@ -328,11 +344,11 @@ impl<'a> Lexer<'a> {
 
     fn bracket_enclosed(&mut self) -> LexResult<()> {
         fn close(l: &mut Lexer<'_>, count: u32) -> LexResult<()> {
-            let mut err = Ok(());
+            let mut err = None;
 
             let mut set_err = || {
-                if err.is_ok() {
-                    err = Err(LexErrorMsg("Invalid bracket notation".to_string()));
+                if err.is_none() {
+                    err = Some(LexErrorMsg("Invalid bracket notation".to_string()));
                 }
             };
 
@@ -351,7 +367,7 @@ impl<'a> Lexer<'a> {
 
                 if !l.accept(']') {
                     // we hit eof
-                    bail!("Could not find bracket string close");
+                    bail!((), "Could not find bracket string close");
                 }
 
                 let close_count = l.accept_while_count('=');
@@ -364,7 +380,7 @@ impl<'a> Lexer<'a> {
 
             expect!(l.accept(']'));
 
-            err
+            ((), err)
         }
 
         assert_matches!(self.current(), '[' | '=');
@@ -375,20 +391,22 @@ impl<'a> Lexer<'a> {
             let count = self.accept_while_count('=');
             close(self, count)
         } else {
-            Ok(())
+            ((), None)
         }
     }
 
     fn multiline_string(&mut self) -> LexResult<SyntaxKind> {
         assert!(self.at(or!('[', '=')));
 
-        self.bracket_enclosed().map(|()| T![str])
+        let res = self.bracket_enclosed();
+        (T![str], res.1)
     }
 
     fn multiline_comment(&mut self) -> LexResult<SyntaxKind> {
         assert!(self.at(or!('[', '=')));
 
-        self.bracket_enclosed().map(|()| T![comment])
+        let res = self.bracket_enclosed();
+        (T![comment], res.1)
     }
 
     fn string(&mut self, delimit: char) -> LexResult<SyntaxKind> {
@@ -397,8 +415,8 @@ impl<'a> Lexer<'a> {
 
         loop {
             match self.current() {
-                '\0' => bail!("Could not find closing delimiter `{}`", delimit),
-                '\n' => bail!("Unexpected newline in string"),
+                '\0' => bail!(T![str], "Could not find closing delimiter `{}`", delimit),
+                '\n' => bail!(T![str], "Unexpected newline in string"),
                 c if c == delimit => {
                     self.bump(delimit);
                     break;
@@ -408,7 +426,7 @@ impl<'a> Lexer<'a> {
             self.bump(or!(seq!('\\', delimit), Any));
         }
 
-        Ok(T![str])
+        (T![str], None)
     }
 
     fn ident(&mut self) -> SyntaxKind {
@@ -498,5 +516,10 @@ mod tests {
         let mut lexer = Lexer::new(r"\]    \]  ]]");
         lexer.accept_while(or!(seq!('\\', ']'), not!(']')));
         assert_eq!(lexer.pos(), 10);
+    }
+
+    #[test]
+    fn run_current() {
+        tokenize("local hello = 5");
     }
 }

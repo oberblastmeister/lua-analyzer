@@ -11,7 +11,7 @@ mod tests;
 mod token_text;
 mod validation;
 
-pub use parser::{SyntaxKind, Token, T};
+pub use parser::{SyntaxKind, Token, T, N};
 pub use ptr::{AstPtr, SyntaxNodePtr};
 pub use rowan::{TextRange, TextSize, WalkEvent};
 pub use syntax_node::{
