@@ -9,9 +9,12 @@ mod token_set;
 pub use event::Event;
 pub use grammar::LuaOp;
 pub use parse_error::ParseError;
-use rowan::TextRange;
 pub use syntax_kind::SyntaxKind;
 pub use token_set::TokenSet;
+
+use rowan::TextRange;
+
+use parser::Parser;
 
 #[macro_export]
 #[doc(hidden)]
@@ -85,4 +88,23 @@ where
     TS: TreeSink,
 {
     parse_from_tokens(token_source, tree_sink, grammar::root);
+}
+
+pub struct Reparser(fn(&mut Parser));
+
+impl Reparser {
+    pub fn for_node(node: SyntaxKind) -> Option<Reparser> {
+        grammar::reparser(node).map(Reparser)
+    }
+
+    pub fn parse<TS>(self, token_source: &mut dyn TokenSource, tree_sink: &mut TS)
+    where
+        TS: TreeSink,
+    {
+        let Reparser(r) = self;
+        let mut p = Parser::new(token_source);
+        r(&mut p);
+        let events = p.finish();
+        event::process(tree_sink, events);
+    }
 }

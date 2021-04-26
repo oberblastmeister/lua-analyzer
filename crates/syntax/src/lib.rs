@@ -11,17 +11,18 @@ mod tests;
 mod token_text;
 mod validation;
 
-pub use parser::{SyntaxKind, Token, T, N};
-pub use lexer::{tokenize, tokenize_iter, lex_first_syntax_kind};
+pub use lexer::{lex_first_syntax_kind, tokenize, tokenize_iter};
+pub use parser::{SyntaxKind, Token, N, T};
 pub use ptr::{AstPtr, SyntaxNodePtr};
 pub use rowan::{TextRange, TextSize, WalkEvent};
 pub use syntax_node::{
     SyntaxElement, SyntaxElementChildren, SyntaxError, SyntaxNode, SyntaxNodeChildren, SyntaxToken,
 };
-use text_edit::Indel;
 pub use token_text::TokenText;
 
 use std::{marker::PhantomData, sync::Arc};
+
+use text_edit::Indel;
 
 use ast::{AstNode, ParamList};
 use rowan::GreenNode;

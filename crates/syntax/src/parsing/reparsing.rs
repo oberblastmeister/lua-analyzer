@@ -1,10 +1,12 @@
+use parser::{Reparser, Token};
 use rowan::TextSize;
 use text_edit::Indel;
 
 use crate::{
     lex_first_syntax_kind,
+    parsing::{text_token_source::TextTokenSource, text_tree_sink::TextTreeSink},
     syntax_node::{GreenToken, NodeOrToken},
-    GreenNode, SyntaxElement, SyntaxError, SyntaxNode, TextRange, N, T,
+    tokenize, GreenNode, SyntaxElement, SyntaxError, SyntaxNode, TextRange, N, T,
 };
 
 pub(crate) fn incremental_reparse(
@@ -13,6 +15,10 @@ pub(crate) fn incremental_reparse(
     errors: Vec<SyntaxError>,
 ) -> Option<(GreenNode, Vec<SyntaxError>, TextRange)> {
     if let Some((green, new_errors, old_range)) = reparse_token(node, &edit) {
+        return Some((green, merge_errors(errors, new_errors, old_range, edit), old_range));
+    }
+
+    if let Some((green, new_errors, old_range)) = reparse_block(node, &edit) {
         return Some((green, merge_errors(errors, new_errors, old_range, edit), old_range));
     }
 
@@ -36,7 +42,6 @@ fn reparse_token(
             }
 
             let mut new_text = get_text_after_edit(prev_token.clone().into(), &edit);
-            eprintln!("new_text = {:?}", new_text);
             let (new_token_kind, new_err) = lex_first_syntax_kind(&new_text)?;
 
             if new_token_kind != prev_token_kind {
@@ -54,6 +59,28 @@ fn reparse_token(
     }
 }
 
+fn reparse_block(
+    root: &SyntaxNode,
+    edit: &Indel,
+) -> Option<(GreenNode, Vec<SyntaxError>, TextRange)> {
+    let (node, reparser) = find_reparsable_node(root, edit.delete)?;
+    let text = get_text_after_edit(node.clone().into(), edit);
+
+    let (tokens, new_lexer_errors) = tokenize(&text);
+    if !is_balanced(&tokens) {
+        return None;
+    }
+
+    let mut token_source = TextTokenSource::new(&text, &tokens);
+    let mut tree_sink = TextTreeSink::new(&text, &tokens);
+    reparser.parse(&mut token_source, &mut tree_sink);
+
+    let (green, mut new_parser_errors) = tree_sink.finish();
+    new_parser_errors.extend(new_lexer_errors);
+
+    Some((node.replace_with(green), new_parser_errors, node.text_range()))
+}
+
 fn get_text_after_edit(element: SyntaxElement, edit: &Indel) -> String {
     let edit = Indel::replace(edit.delete - element.text_range().start(), edit.insert.clone());
 
@@ -63,6 +90,19 @@ fn get_text_after_edit(element: SyntaxElement, edit: &Indel) -> String {
     };
     edit.apply(&mut text);
     text
+}
+
+fn find_reparsable_node(node: &SyntaxNode, range: TextRange) -> Option<(SyntaxNode, Reparser)> {
+    let node = node.covering_element(range);
+
+    node.ancestors().find_map(|node| Reparser::for_node(node.kind()).map(|r| (node, r)))
+}
+
+fn is_balanced(tokens: &[Token]) -> bool {
+    if tokens.is_empty() || tokens.last().unwrap().kind != T![end] {
+        return false;
+    }
+    true
 }
 
 fn merge_errors(
@@ -160,6 +200,8 @@ local person = "$0$0"
               "#,
             "my name",
             2,
-        )
+        );
+
+        check(r"print($0$0)", r"'hello'", 0);
     }
 }

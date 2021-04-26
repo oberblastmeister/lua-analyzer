@@ -3,7 +3,7 @@ mod statements;
 
 use crate::{
     parser::{MarkerComplete, Parser},
-    TokenSet, TS,
+    SyntaxKind, TokenSet, TS,
 };
 use expressions::expr_single;
 pub use expressions::LuaOp;
@@ -88,14 +88,14 @@ fn name(p: &mut Parser) {
     }
 }
 
-fn block(p: &mut Parser) -> MarkerComplete {
+pub(crate) fn block(p: &mut Parser) {
     const END: TokenSet = TS![eof, end, elseif, else, until];
 
     let m = p.start();
     while !p.at_ts(END) {
         stmt(p);
     }
-    m.complete(p, N![Block])
+    m.complete(p, N![Block]);
 }
 
 const VARARG_ERROR_MSG: &str = "Nothing can be after a vararg";
@@ -120,4 +120,11 @@ fn param_list(p: &mut Parser) -> MarkerComplete {
 
     p.expect(T![')']);
     m.complete(p, N![ParamList])
+}
+
+pub(crate) fn reparser(node: SyntaxKind) -> Option<fn(&mut Parser)> {
+    Some(match node {
+        N![Block] => block,
+        _ => return None,
+    })
 }
