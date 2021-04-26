@@ -1,0 +1,11 @@
+[package]
+name = "test_utils"
+version = "0.0.0"
+authors = ["Brian Shu <littlebubu.shu@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dissimilar = "1.0.2"
+text-size = "1.1.0"

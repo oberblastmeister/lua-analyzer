@@ -41,6 +41,10 @@ impl Indel {
         let end: usize = self.delete.end().into();
         text.replace_range(start..end, &self.insert);
     }
+
+    pub fn offset(&self) -> TextSize {
+        TextSize::of(&self.insert) - self.delete.len()
+    }
 }
 
 impl TextEdit {

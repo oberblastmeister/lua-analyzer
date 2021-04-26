@@ -166,7 +166,7 @@ fn unquote(mut text: &str) -> Option<(TextSize, &str)> {
         let offset = TextSize::from(2 + equals as u32);
         Some((offset, text))
     } else {
-        panic!("String was not properly quoted")
+        unreachable!();
     }
 }
 
@@ -313,34 +313,5 @@ mod tests {
         assert_eq!(unquote(r"''"), Some((1.into(), "")));
         assert_eq!(unquote(r"[[asdf asdf]]"), Some((2.into(), "asdf asdf")));
         assert_eq!(unquote(r"[=====[asdf asdf]=====]"), Some((7.into(), "asdf asdf")));
-    }
-
-    #[test]
-    #[should_panic]
-    fn unquote_str_bad1() {
-        unquote(r"");
-    }
-
-    #[test]
-    #[should_panic]
-    fn unquote_str_bad2() {
-        unquote(r"'");
-    }
-
-    #[test]
-    #[should_panic]
-    fn unquote_str_bad3() {
-        unquote(r"[");
-    }
-
-    #[test]
-    #[should_panic]
-    fn unquote_str_bad4() {
-        unquote(r"[====[asdfasd]=]");
-    }
-
-    #[test]
-    fn unquote_weird() {
-        unquote(r#""\'8""#);
     }
 }

@@ -56,18 +56,12 @@ where
     let path = path.as_ref();
 
     let mut settings = insta::Settings::clone_current();
-    settings.set_snapshot_path(
-        path.parent()
-            .expect("There is no parent for the given path"),
-    );
+    settings.set_snapshot_path(path.parent().expect("There is no parent for the given path"));
     settings.set_prepend_module_to_snapshot(false);
     settings.set_input_file(path);
     settings.bind(|| {
-        let name = path
-            .file_stem()
-            .expect("No file stem")
-            .to_str()
-            .expect("Could not turn path to str");
+        let name =
+            path.file_stem().expect("No file stem").to_str().expect("Could not turn path to str");
         insta::assert_snapshot!(name, actual);
     })
 }
@@ -107,11 +101,7 @@ fn assert_errors_or_unknowns_are_present(errors: &[SyntaxError], tokens: &[Token
 }
 
 fn assert_errors_are_present(errors: &[SyntaxError], path: &Path) {
-    assert!(
-        !errors.is_empty(),
-        "There should be errors in the file {:?}",
-        path.display()
-    );
+    assert!(!errors.is_empty(), "There should be errors in the file {:?}", path.display());
 }
 
 fn assert_errors_are_absent(errors: &[SyntaxError], path: &Path) {
@@ -124,11 +114,7 @@ fn assert_errors_are_absent(errors: &[SyntaxError], path: &Path) {
 }
 
 fn collect_unknowns(tokens: &[Token]) -> Vec<Token> {
-    tokens
-        .into_iter()
-        .filter(|t| t.kind == T![unknown])
-        .map(|t| *t)
-        .collect()
+    tokens.into_iter().filter(|t| t.kind == T![unknown]).map(|t| *t).collect()
 }
 
 fn assert_unknowns_are_absent(tokens: &[Token], path: &Path) {
@@ -143,11 +129,7 @@ fn assert_unknowns_are_absent(tokens: &[Token], path: &Path) {
 
 fn assert_unknowns_are_present(tokens: &[Token], path: &Path) {
     let unknowns = collect_unknowns(tokens);
-    assert!(
-        !unknowns.is_empty(),
-        "There should be unknowns in the file {:?}",
-        path.display()
-    )
+    assert!(!unknowns.is_empty(), "There should be unknowns in the file {:?}", path.display())
 }
 
 fn dump_parse<T: AstNode + fmt::Debug>(parse: Parse<T>) -> String {
@@ -192,12 +174,7 @@ fn snapshots_dir() -> PathBuf {
 
 fn project_root() -> PathBuf {
     let dir = env!("CARGO_MANIFEST_DIR");
-    PathBuf::from(dir)
-        .parent()
-        .unwrap()
-        .parent()
-        .unwrap()
-        .to_owned()
+    PathBuf::from(dir).parent().unwrap().parent().unwrap().to_owned()
 }
 
 #[test]

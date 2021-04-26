@@ -7,11 +7,11 @@ input_file: crates/syntax/snapshots/lexer/ok/keywords.lua
 [
     Token {
         kind: Comment,
-        range: 0..32,
+        range: 0..31,
     },
     Token {
         kind: Whitespace,
-        range: 32..33,
+        range: 31..33,
     },
     Token {
         kind: AndKw,

@@ -166,6 +166,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "dissimilar"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fc4b29f4b9bb94bf267d57269fd0706d343a160937108e9619fe380645428abb"
+
+[[package]]
 name = "drop_bomb"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -810,6 +816,7 @@ dependencies = [
  "rayon",
  "rowan",
  "stdx",
+ "test_utils",
  "text_edit",
  "thiserror",
 ]
@@ -831,6 +838,14 @@ checksum = "86ca8ced750734db02076f44132d802af0b33b09942331f4459dde8636fd2406"
 dependencies = [
  "libc",
  "winapi",
+]
+
+[[package]]
+name = "test_utils"
+version = "0.0.0"
+dependencies = [
+ "dissimilar",
+ "text-size",
 ]
 
 [[package]]

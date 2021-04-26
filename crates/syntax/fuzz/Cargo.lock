@@ -42,6 +42,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "328b822bdcba4d4e402be8d9adb6eebf269f969f8eadef977a553ff3c4fbcb58"
 
 [[package]]
+name = "dissimilar"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fc4b29f4b9bb94bf267d57269fd0706d343a160937108e9619fe380645428abb"
+
+[[package]]
 name = "drop_bomb"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -158,6 +164,7 @@ dependencies = [
  "parser",
  "rowan",
  "stdx",
+ "test_utils",
  "text_edit",
  "thiserror",
 ]
@@ -168,6 +175,14 @@ version = "0.0.0"
 dependencies = [
  "libfuzzer-sys",
  "syntax",
+]
+
+[[package]]
+name = "test_utils"
+version = "0.0.0"
+dependencies = [
+ "dissimilar",
+ "text-size",
 ]
 
 [[package]]

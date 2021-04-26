@@ -38,8 +38,9 @@ impl SyntaxError {
         self.1
     }
 
-    pub fn to_unknown_token(&self) -> Token {
-        Token::new(T![unknown], self.range())
+    pub fn with_range(mut self, range: TextRange) -> Self {
+        self.1 = range;
+        self
     }
 }
 

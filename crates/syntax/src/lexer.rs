@@ -4,7 +4,7 @@ use std::{iter, ops::Range};
 use rowan::{TextRange, TextSize};
 use thiserror::Error;
 
-use crate::accept::{and, not, or, seq, Accept, Any, Lexable};
+use crate::accept::{and, not, or, seq, Accept, Any, Lexable, Until, While};
 use crate::{SyntaxError, SyntaxKind, T};
 use parser::Token;
 
@@ -185,16 +185,8 @@ impl<'a> Lexer<'a> {
         t.accept(self)
     }
 
-    fn accept_while<T: Accept + Copy>(&mut self, t: T) {
-        t.accept_while(self)
-    }
-
-    fn accept_until<T: Accept + Copy>(&mut self, t: T) {
-        t.accept_until(self)
-    }
-
-    fn accept_while_count<T: Accept + Copy>(&mut self, t: T) -> u32 {
-        t.accept_while_count(self)
+    fn accept_count<T: Accept + Copy>(&mut self, t: T) -> u32 {
+        t.accept_count(self)
     }
 
     fn accept_repeat<T: Accept + Copy>(&mut self, t: T, repeat: u32) -> bool {
@@ -207,7 +199,6 @@ impl<'a> Lexer<'a> {
         // return on special cases
         let kind = match c {
             // '\0' if self.is_eof() => done!(T![eof]),
-
             '=' => match self.bump_then(Any) {
                 '=' => {
                     self.bump('=');
@@ -305,17 +296,17 @@ impl<'a> Lexer<'a> {
         assert!(self.at(is_number));
 
         if self.accept(seq!('0', 'x')) {
-            self.accept_while(is_hex);
+            self.accept(While(is_hex));
             return (T![number], None);
         }
 
-        self.accept_while(is_number);
+        self.accept(While(is_number));
         if self.accept('.') {
-            self.accept_while(is_number);
+            self.accept(While(is_number));
         }
         if self.accept('e') || self.accept('E') {
             self.accept('-');
-            self.accept_while(is_number);
+            self.accept(While(is_number));
         }
 
         done!(T![number]);
@@ -324,14 +315,15 @@ impl<'a> Lexer<'a> {
     fn whitespace(&mut self) -> SyntaxKind {
         assert!(self.at(is_whitespace));
 
-        self.accept_while(is_whitespace);
+        self.accept(While(is_whitespace));
+
         T![whitespace]
     }
 
     fn comment(&mut self) -> SyntaxKind {
         self.bump('-');
 
-        self.chars.find(|c| *c == '\n');
+        self.accept(Until('\n'));
 
         T![comment]
     }
@@ -357,14 +349,14 @@ impl<'a> Lexer<'a> {
             expect!(l.accept('['));
 
             loop {
-                l.accept_while(or!(seq!('\\', ']'), not!(']')));
+                l.accept(While(or!(seq!('\\', ']'), not!(']'))));
 
                 if !l.accept(']') {
                     // we hit eof
                     bail!((), "Could not find bracket string close");
                 }
 
-                let close_count = l.accept_while_count('=');
+                let close_count = l.accept_count(While('='));
                 if count != close_count {
                     continue;
                 } else {
@@ -382,7 +374,7 @@ impl<'a> Lexer<'a> {
         if self.at('[') {
             close(self, 0)
         } else if self.at('=') {
-            let count = self.accept_while_count('=');
+            let count = self.accept_count(While('='));
             close(self, count)
         } else {
             ((), None)
@@ -428,7 +420,7 @@ impl<'a> Lexer<'a> {
         let text = self.chars.as_str();
 
         self.bump(is_ident_start);
-        self.accept_while(is_ident_continue);
+        self.accept(While(is_ident_continue));
 
         let text = &text[0..(self.pos() - start) as usize];
         SyntaxKind::from_keyword(text).unwrap_or(T![ident])
@@ -508,7 +500,7 @@ mod tests {
     #[test]
     fn combinations() {
         let mut lexer = Lexer::new(r"\]    \]  ]]");
-        lexer.accept_while(or!(seq!('\\', ']'), not!(']')));
+        lexer.accept(While(or!(seq!('\\', ']'), not!(']'))));
         assert_eq!(lexer.pos(), 10);
     }
 

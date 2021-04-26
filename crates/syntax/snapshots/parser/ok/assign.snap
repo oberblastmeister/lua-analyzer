@@ -6,9 +6,12 @@ input_file: crates/syntax/snapshots/parser/ok/assign.lua
 ---
 SourceFile@0..138
   Whitespace@0..47 "                      ..."
-  Comment@47..78 "-- just a comment at  ..."
-  Comment@78..97 "-- local hello = 5\n"
-  Comment@97..120 "-- local another = (5)\n"
+  Comment@47..77 "-- just a comment at  ..."
+  Whitespace@77..78 "\n"
+  Comment@78..96 "-- local hello = 5"
+  Whitespace@96..97 "\n"
+  Comment@97..119 "-- local another = (5)"
+  Whitespace@119..120 "\n"
   LocalAssignStmt@120..137
     LocalKw@120..125 "local"
     Whitespace@125..126 " "

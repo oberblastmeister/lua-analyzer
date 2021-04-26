@@ -2,6 +2,8 @@ mod text_token_source;
 mod text_tree_sink;
 mod reparsing;
 
+pub(crate) use reparsing::incremental_reparse;
+
 use crate::lexer::tokenize;
 use rowan::GreenNode;
 use text_token_source::TextTokenSource;

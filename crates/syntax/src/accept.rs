@@ -16,15 +16,21 @@ pub trait Lexable {
 pub trait Accept: Lexable {
     fn accept(self, l: &mut Lexer<'_>) -> bool
     where
-        Self: Lexable + Sized + Copy,
+        Self: Lexable + Sized,
     {
         if self.peek(l) {
-            l.bump_raw()
-                .expect("Whatever was acceptable did not take into account eof");
+            l.bump_raw().expect("Whatever was acceptable did not take into account eof");
             true
         } else {
             false
         }
+    }
+
+    fn accept_count(self, l: &mut Lexer<'_>) -> u32
+    where
+        Self: Lexable + Sized,
+    {
+        self.accept(l) as u32
     }
 
     fn bump(self, l: &mut Lexer<'_>)
@@ -32,31 +38,6 @@ pub trait Accept: Lexable {
         Self: Lexable + Sized + Copy,
     {
         assert!(self.accept(l), "Failed to accept");
-    }
-
-    fn accept_while(self, l: &mut Lexer<'_>)
-    where
-        Self: Lexable + Sized + Copy,
-    {
-        while self.accept(l) {}
-    }
-
-    fn accept_until(self, l: &mut Lexer<'_>)
-    where
-        Self: Lexable + Sized + Copy,
-    {
-        while (Not(self)).accept(l) {}
-    }
-
-    fn accept_while_count(self, l: &mut Lexer<'_>) -> u32
-    where
-        Self: Lexable + Sized + Copy,
-    {
-        let mut count = 0;
-        while self.accept(l) {
-            count += 1;
-        }
-        count
     }
 
     fn accept_repeat(self, l: &mut Lexer<'_>, repeat: u32) -> bool
@@ -95,7 +76,7 @@ impl Lexable for Range<char> {
 }
 impl Accept for Range<char> {}
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Seq<T: Copy>(pub T);
 
 macro_rules! tuple_seq {
@@ -137,7 +118,7 @@ macro_rules! _seq {
 }
 pub(crate) use _seq as seq;
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct And<T: Copy>(pub T);
 
 macro_rules! tuple_and {
@@ -168,7 +149,7 @@ macro_rules! _and {
 }
 pub(crate) use _and as and;
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Or<T: Copy>(pub T);
 
 macro_rules! tuple_or {
@@ -205,10 +186,10 @@ macro_rules! _or {
 }
 pub(crate) use _or as or;
 
-#[derive(Copy, Clone)]
-pub struct Not<T: Copy>(pub T);
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Not<T>(pub T);
 
-impl<T: Lexable + Copy> Lexable for Not<T> {
+impl<T: Lexable> Lexable for Not<T> {
     fn nth(self, p: &Lexer<'_>, n: u32) -> bool
     where
         Self: Sized,
@@ -258,4 +239,64 @@ tuple_impls! {
     (0 TO 1 T1 2 T2 3 T3 4 T4 5 T5 6 T6 7 T7 8 T8 9 T9 10 T10),
     (0 TO 1 T1 2 T2 3 T3 4 T4 5 T5 6 T6 7 T7 8 T8 9 T9 10 T10 11 T11),
     (0 TO 1 T1 2 T2 3 T3 4 T4 5 T5 6 T6 7 T7 8 T8 9 T9 10 T10 11 T11 12 T12),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct While<T>(pub T);
+
+impl<T: Lexable> Lexable for While<T> {
+    fn nth(self, l: &Lexer<'_>, n: u32) -> bool {
+        self.0.nth(l, n)
+    }
+}
+
+impl<T: Copy + Lexable + Accept> Accept for While<T> {
+    fn accept(self, l: &mut Lexer<'_>) -> bool
+    where
+        Self: Lexable + Sized + Copy,
+    {
+        if !self.peek(l) {
+            return false;
+        }
+
+        while self.0.accept(l) {}
+
+        true
+    }
+
+    fn accept_count(self, l: &mut Lexer<'_>) -> u32
+    where
+        Self: Lexable + Sized,
+    {
+        let mut count = 0;
+        while self.0.accept(l) {
+            count += 1;
+        }
+        count
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Until<T>(pub T);
+
+impl<T: Lexable> Lexable for Until<T> {
+    fn nth(self, l: &Lexer<'_>, n: u32) -> bool {
+        While(Not(self.0)).nth(l, n)
+    }
+}
+
+impl<T: Copy + Lexable + Accept> Accept for Until<T> {
+    fn accept(self, l: &mut Lexer<'_>) -> bool
+    where
+        Self: Lexable + Sized + Copy,
+    {
+        While(Not(self.0)).accept(l)
+    }
+
+    fn accept_count(self, l: &mut Lexer<'_>) -> u32
+    where
+        Self: Lexable + Sized,
+    {
+        While(Not(self.0)).accept_count(l)
+    }
 }
