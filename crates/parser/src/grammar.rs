@@ -9,6 +9,8 @@ use expressions::expr_single;
 pub use expressions::LuaOp;
 use statements::{stmt, STMT_RECOVERY};
 
+const RECOVERY_SET: TokenSet = TS![function, do, ::];
+
 pub(crate) fn root(p: &mut Parser) {
     let m = p.start();
     while !p.at(T![eof]) {

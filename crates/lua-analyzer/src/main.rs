@@ -81,13 +81,13 @@ fn run_server() -> Result<()> {
 }
 
 fn setup_logging() -> Result<()> {
-    let proj_dirs = ProjectDirs::from("rs", "Open Source", "Lua Analyzer")
-        .expect("Failed to find project dirs");
-    let data_dir = proj_dirs.data_dir();
-    fs::create_dir_all(data_dir).context("Failed to create data dir")?;
-    let file_path = proj_dirs.data_dir().join("server.log");
-    let file = File::create(file_path).context("Failed to create log file")?;
-    WriteLogger::init(LevelFilter::Warn, simplelog::Config::default(), file)?;
+    // let proj_dirs = ProjectDirs::from("rs", "Open Source", "Lua Analyzer")
+    //     .expect("Failed to find project dirs");
+    // let data_dir = proj_dirs.data_dir();
+    // fs::create_dir_all(data_dir).context("Failed to create data dir")?;
+    // let file_path = proj_dirs.data_dir().join("server.log");
+    // let file = File::create(file_path).context("Failed to create log file")?;
+    // WriteLogger::init(LevelFilter::Warn, simplelog::Config::default(), file)?;
 
     Ok(())
 }

@@ -94,6 +94,18 @@ impl<'a> Parser<'a> {
         self.err_recover(message, TS![])
     }
 
+    pub(crate) fn err_until(&mut self, message: &'static str, recovery: TokenSet) {
+        let recovery = recovery.union(TS![end]);
+
+        let m = self.start_error();
+
+        while !self.at_ts(recovery) && !self.at(T![eof]) {
+            self.bump_any()
+        }
+
+        m.complete(self, ParseError::Message(message));
+    }
+
     fn do_bump(&mut self) {
         self.token_source.bump();
 

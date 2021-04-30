@@ -1,10 +1,9 @@
 use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP, NOT_AN_OP_INFIX, NOT_AN_OP_PREFIX};
 
-use super::{block, name_r, name_ref, param_list, VARARG_ERROR_MSG, name_unchecked};
+use super::{block, name_r, name_ref, name_unchecked, param_list, VARARG_ERROR_MSG};
 use crate::{
     parser::{MarkerComplete, MarkerRegular, Parser},
-    SyntaxKind,
-    TokenSet, TS,
+    ParseError, SyntaxKind, TokenSet, TS,
 };
 
 pub(super) const EXPR_RECOVERY_SET: TokenSet = TS![local];
@@ -241,18 +240,42 @@ fn table_sep(p: &mut Parser) -> MarkerComplete {
 
 fn table_expr(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
+
     p.bump(T!['{']);
-    while !p.at(T![eof]) && !p.at(T!['}']) {
+
+    const END: TokenSet = TS![eof, end, '}'];
+
+    'outer: while !p.at_ts(END) {
         table_content(p);
 
         if !p.at_ts(TABLE_SEP) {
             break;
         } else {
             table_sep(p);
+            // p.bump_any();
         }
+        // while !p.at_ts(END) {
+        //     if p.at_ts(TABLE_SEP) {
+        //         p.bump_ts(TABLE_SEP);
+
+        //         if p.at(T!['}']) {
+        //             break 'outer;
+        //         }
+
+        //         break;
+        //     } else {
+        //         table_correct(p);
+        //         continue;
+        //     }
+        // }
     }
+
     p.expect(T!['}']);
     m.complete(p, N![TableExpr])
+}
+
+fn table_correct(p: &mut Parser) {
+    p.err_until("Failed to find comma or closing bracket", TS!['}'].union(TABLE_SEP));
 }
 
 fn table_content(p: &mut Parser) -> MarkerComplete {
