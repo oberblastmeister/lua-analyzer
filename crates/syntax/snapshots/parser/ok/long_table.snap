@@ -1,0 +1,114 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/long_table.lua
+
+---
+SourceFile@0..186
+  Whitespace@0..1 "\n"
+  ReturnStmt@1..185
+    ReturnKw@1..7 "return"
+    Whitespace@7..8 " "
+    MultivalExpr@8..185
+      TableExpr@8..185
+        LBrace@8..9 "{"
+        Whitespace@9..12 "\n  "
+        TableContent@12..182
+          KeyValue@12..182
+            TableKey@12..22
+              Name@12..22
+                Ident@12..22 "formatters"
+            Whitespace@22..23 " "
+            Eq@23..24 "="
+            Whitespace@24..25 " "
+            TableExpr@25..182
+              LBrace@25..26 "{"
+              Whitespace@26..31 "\n    "
+              TableContent@31..177
+                KeyValue@31..177
+                  TableKey@31..45
+                    Index@31..45
+                      LBracket@31..32 "["
+                      Literal@32..44
+                        Str@32..44 "\"lua-format\""
+                      RBracket@44..45 "]"
+                  Whitespace@45..46 " "
+                  Eq@46..47 "="
+                  Whitespace@47..48 " "
+                  TableExpr@48..177
+                    LBrace@48..49 "{"
+                    Whitespace@49..56 "\n      "
+                    TableContent@56..78
+                      KeyValue@56..78
+                        TableKey@56..63
+                          Name@56..63
+                            Ident@56..63 "command"
+                        Whitespace@63..64 " "
+                        Eq@64..65 "="
+                        Whitespace@65..66 " "
+                        Literal@66..78
+                          Str@66..78 "\"lua-format\""
+                    TableSep@78..79
+                      Comma@78..79 ","
+                    Whitespace@79..86 "\n      "
+                    TableContent@86..170
+                      KeyValue@86..170
+                        TableKey@86..90
+                          Name@86..90
+                            Ident@86..90 "args"
+                        Whitespace@90..91 " "
+                        Eq@91..92 "="
+                        Whitespace@92..93 " "
+                        TableExpr@93..170
+                          LBrace@93..94 "{"
+                          TableContent@94..105
+                            PositionalValue@94..105
+                              Literal@94..105
+                                Str@94..105 "\"%filepath\""
+                          TableSep@105..106
+                            Comma@105..106 ","
+                          Whitespace@106..107 " "
+                          TableContent@107..117
+                            PositionalValue@107..117
+                              Literal@107..117
+                                Str@107..117 "\"--config\""
+                          TableSep@117..118
+                            Comma@117..118 ","
+                          Whitespace@118..119 " "
+                          TableContent@119..169
+                            PositionalValue@119..169
+                              CallExpr@119..169
+                                DotExpr@119..132
+                                  DotExpr@119..125
+                                    NameRef@119..122
+                                      Ident@119..122 "vim"
+                                    Dot@122..123 "."
+                                    Ident@123..125 "fn"
+                                  Dot@125..126 "."
+                                  Ident@126..132 "expand"
+                                CallArgs@132..169
+                                  ArgList@132..169
+                                    LParen@132..133 "("
+                                    MultivalExpr@133..168
+                                      Literal@133..168
+                                        Str@133..168 "\"~/.config/luaformatt ..."
+                                    RParen@168..169 ")"
+                          RBrace@169..170 "}"
+                    TableSep@170..171
+                      Comma@170..171 ","
+                    Whitespace@171..176 "\n    "
+                    RBrace@176..177 "}"
+              TableSep@177..178
+                Comma@177..178 ","
+              Whitespace@178..181 "\n  "
+              RBrace@181..182 "}"
+        TableSep@182..183
+          Comma@182..183 ","
+        Whitespace@183..184 "\n"
+        RBrace@184..185 "}"
+  Whitespace@185..186 "\n"
+
+=============================
+Errors:
+=============================
+[]

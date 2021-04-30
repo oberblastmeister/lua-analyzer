@@ -1,6 +1,6 @@
 use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP, NOT_AN_OP_INFIX, NOT_AN_OP_PREFIX};
 
-use super::{block, name_r, name_ref, param_list, VARARG_ERROR_MSG};
+use super::{block, name_r, name_ref, param_list, VARARG_ERROR_MSG, name_unchecked};
 use crate::{
     parser::{MarkerComplete, MarkerRegular, Parser},
     SyntaxKind,
@@ -259,14 +259,22 @@ fn table_content(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     match p.current() {
         T![ident] => {
-            let m = name_r(p, TS![]).unwrap();
-            if p.at(T![=]) {
-                let m = m.precede_unit(p, N![TableKey]).precede(p);
+            if p.nth(1) == T![=] {
+                let m = p.start();
+
+                {
+                    let m = p.start();
+                    name_unchecked(p);
+                    m.complete(p, N![TableKey]);
+                }
+
                 p.bump(T![=]);
                 expr_single(p);
                 m.complete(p, N![KeyValue]);
             } else {
-                m.change_kind(p, N![NameRef]).precede_unit(p, N![PositionalValue]);
+                let m = p.start();
+                expr_single(p);
+                m.complete(p, N![PositionalValue]);
             }
         }
         T!['['] => {

@@ -2,7 +2,7 @@ mod expressions;
 mod statements;
 
 use crate::{
-    parser::{MarkerComplete, Parser},
+    parser::{MarkerComplete, MarkerRegular, Parser},
     SyntaxKind, TokenSet, TS,
 };
 use expressions::expr_single;
@@ -53,20 +53,28 @@ fn multi_name_r(p: &mut Parser, recovery: TokenSet, vararg: bool) {
 
 fn name_r(p: &mut Parser, recovery: TokenSet) -> Option<MarkerComplete> {
     if p.at(T![ident]) {
-        let m = p.start();
-        p.bump(T![ident]);
-        Some(m.complete(p, N![Name]))
+        Some(name_unchecked(p))
     } else {
         p.err_recover("expected a name", recovery);
         None
     }
 }
 
+fn name_unchecked(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T![ident]);
+    m.complete(p, N![Name])
+}
+
+fn name_ref_unchecked(p: &mut Parser) -> MarkerComplete {
+    let m = p.start();
+    p.bump(T![ident]);
+    m.complete(p, N![NameRef])
+}
+
 fn name_ref_r(p: &mut Parser, recovery: TokenSet) {
     if p.at(T![ident]) {
-        let m = p.start();
-        p.bump(T![ident]);
-        m.complete(p, N![NameRef]);
+        name_ref_unchecked(p);
     } else {
         p.err_recover("expected a name referencer", recovery);
     }

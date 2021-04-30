@@ -14,7 +14,7 @@ pub use token_set::TokenSet;
 
 use rowan::TextRange;
 
-use parser::Parser;
+use self::parser::Parser;
 
 #[macro_export]
 #[doc(hidden)]

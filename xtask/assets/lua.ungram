@@ -12,8 +12,9 @@ Stmt =
   | WhileStmt
   | ExprStmt
   | BreakStmt
-  | LabelStmt
   | RepeatUntilStmt
+  | LabelStmt
+  | GotoStmt
 
 StmtItem =
   LocalAssignStmt

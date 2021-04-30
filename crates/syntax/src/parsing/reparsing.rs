@@ -201,7 +201,5 @@ local person = "$0$0"
             "my name",
             2,
         );
-
-        check(r"print($0$0)", r"'hello'", 0);
     }
 }
