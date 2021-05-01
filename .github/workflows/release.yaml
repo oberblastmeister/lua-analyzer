@@ -27,6 +27,10 @@ jobs:
         #   target: x86_64-pc-windows-msvc
 
     steps:
+    - run: echo "TAG=nightly" >> $GITHUB_ENV
+      if: github.ref != 'refs/heads/release'
+    - run: 'echo "TAG: $TAG"'
+
     - name: Checkout repository
       uses: actions/checkout@v2
 
