@@ -4,8 +4,8 @@ version = "0.1.0"
 authors = ["Brian Shu <littlebubu.shu@gmail.com>"]
 edition = "2018"
 
-[profile.release]
-debug = true
+# [profile.release]
+# debug = true
 
 [dependencies]
 anyhow = "1.0.38"
