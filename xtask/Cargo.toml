@@ -9,6 +9,7 @@ publish = false
 
 [dependencies]
 anyhow = "1.0.38"
+flate2 = "1.0.20"
 heck = "0.3.2"
 proc-macro2 = "1.0.24"
 quote = "1.0.9"

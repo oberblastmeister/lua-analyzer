@@ -1,0 +1,56 @@
+name: release
+on:
+  schedule:
+  - cron: '0 0 * * *' # midnight UTC
+
+  push:
+    branches:
+    - release
+
+jobs:
+  build-release:
+    name: build-release
+    runs-on: ${{ matrix.os }}
+    env:
+      LA_TARGET: ${{ matrix.target }}
+
+    strategy:
+      matrix:
+        include:
+        - os: ubuntu-latest
+          target: x86_64-unknown-linux-gnu
+
+        # - os: macos-latest
+        #   target: x86_64-apple-darwin
+
+        # - os: windows-latest
+        #   target: x86_64-pc-windows-msvc
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        override: true
+
+    - name: Build
+      run: |
+        cargo build --manifest-path ./crates/lua-analyzer/Cargo.toml --bin lua-analyzer --target ${{ matrix.target }} --release
+
+    - name: Package
+      run: |
+        mkdir dist
+        cp "target/${{ matrix.target }}/release/lua-analyzer" "dist/lua-analyzer"
+        pushd dist
+        tar czf "lua-analyzer.tar.gz" lua-analyzer
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/lua-analyzer.tar.gz
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
