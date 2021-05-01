@@ -8,22 +8,7 @@ on:
     - release
 
 jobs:
-  set-tag:
-    name: set-tag
-    runs-on: ubuntu-latest
-
-    steps:
-    - run: echo "TAG=$(date --iso -u)" >> $GITHUB_ENV
-      if: github.ref == 'refs/heads/release'
-
-    - run: echo "TAG=nightly" >> $GITHUB_ENV
-      if: github.ref != 'refs/heads/release'
-
-    - run: 'echo "TAG: $TAG"'
-
-  build-release:
     name: build-release
-    needs: ['set-tag']
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -39,7 +24,27 @@ jobs:
           target: x86_64-pc-windows-msvc
 
     steps:
+    - name: Install packages (macOS)
+      if: matrix.os == 'macos-latest'
+      run: brew install coreutils
+
+    - if: matrix.os == 'macos-latest'
+      run: echo "DATE_CMD=gdate" >> $GITHUB_ENV
+    - if: matrix.os != 'macos-latest'
+      run: echo "DATE_CMD=date" >> $GITHUB_ENV
+
+    - run: echo "TAG=$(${{ env.DATE_CMD }} --iso -u)" >> $GITHUB_ENV
+      shell: bash
+      if: github.ref == 'refs/heads/release'
+
+    - run: echo "TAG=nightly" >> $GITHUB_ENV
+      shell: bash
+      if: github.ref != 'refs/heads/release'
+
+    - run: 'echo "TAG: $TAG"'
+
     - name: Checkout repository
+
       uses: actions/checkout@v2
 
     - name: Install Rust toolchain
