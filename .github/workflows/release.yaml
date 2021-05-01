@@ -26,10 +26,15 @@ jobs:
 
     steps:
     - run: echo "TAG=$(date --iso -u)" >> $GITHUB_ENV
+      shell: bash
       if: github.ref == 'refs/heads/release'
+
     - run: echo "TAG=nightly" >> $GITHUB_ENV
+      shell: bash
       if: github.ref != 'refs/heads/release'
+
     - run: 'echo "TAG: $TAG"'
+      shell: bash
 
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -46,6 +51,7 @@ jobs:
         cargo build --manifest-path ./crates/lua-analyzer/Cargo.toml --bin lua-analyzer --target ${{ matrix.target }} --release
 
     - name: Package
+      shell: bash
       run: |
         if [ "${{ matrix.os }}" = "windows-latest" ]; then
           cp "target/${{ matrix.target }}/release/lua-analyzer.exe" "lua-analyzer-${{ matrix.target }}.exe"
