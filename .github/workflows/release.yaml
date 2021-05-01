@@ -55,9 +55,17 @@ jobs:
         pushd dist
         tar czf "lua-analyzer.tar.gz" lua-analyzer
 
+    # - name: Release
+    #   uses: softprops/action-gh-release@v1
+    #   with:
+    #     file: dist/lua-analyzer.tar.gz
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Release
-      uses: softprops/action-gh-release@v1
+      uses: svenstaro/upload-release-action@v2
       with:
-        files: dist/lua-analyzer.tar.gz
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: dist/lua-analyzer.tar.gz
+        tag: ${{ github.ref }}
+        overwrite: true
