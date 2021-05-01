@@ -1,8 +1,8 @@
-mod generated;
 mod expr_ext;
-mod stmt_ext;
-mod node_ext;
+mod generated;
 mod grammar_ext;
+mod node_ext;
+mod stmt_ext;
 
 pub use self::generated::{nodes::*, tokens::*};
 pub use expr_ext::LiteralKind;
@@ -63,10 +63,7 @@ pub struct AstChildren<N> {
 
 impl<N> AstChildren<N> {
     fn new(parent: &SyntaxNode) -> Self {
-        AstChildren {
-            inner: parent.children(),
-            ph: PhantomData,
-        }
+        AstChildren { inner: parent.children(), ph: PhantomData }
     }
 }
 
@@ -90,9 +87,6 @@ mod support {
     }
 
     pub(super) fn token(parent: &SyntaxNode, kind: SyntaxKind) -> Option<SyntaxToken> {
-        parent
-            .children_with_tokens()
-            .filter_map(|it| it.into_token())
-            .find(|it| it.kind() == kind)
+        parent.children_with_tokens().filter_map(|it| it.into_token()).find(|it| it.kind() == kind)
     }
 }

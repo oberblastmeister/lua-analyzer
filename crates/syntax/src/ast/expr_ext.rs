@@ -6,17 +6,14 @@ use parser::LuaOp;
 
 impl ast::InfixExpr {
     pub fn op_details(&self) -> Option<(SyntaxToken, LuaOp)> {
-        self.syntax()
-            .children_with_tokens()
-            .filter_map(|it| it.into_token())
-            .find_map(|c| {
-                let kind = c.kind();
-                if kind == T![not] {
-                    None
-                } else {
-                    <Option<LuaOp>>::from(kind).map(|op| (c, op))
-                }
-            })
+        self.syntax().children_with_tokens().filter_map(|it| it.into_token()).find_map(|c| {
+            let kind = c.kind();
+            if kind == T![not] {
+                None
+            } else {
+                <Option<LuaOp>>::from(kind).map(|op| (c, op))
+            }
+        })
     }
 
     pub fn op_kind(&self) -> Option<LuaOp> {

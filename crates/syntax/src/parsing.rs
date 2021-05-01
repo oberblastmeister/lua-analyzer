@@ -1,6 +1,6 @@
+mod reparsing;
 mod text_token_source;
 mod text_tree_sink;
-mod reparsing;
 
 pub(crate) use reparsing::incremental_reparse;
 

@@ -19,16 +19,8 @@ pub(crate) struct TextTokenSource<'t> {
 impl<'t> TextTokenSource<'t> {
     pub(crate) fn new(text: &'t str, raw_tokens: &'t [Token]) -> TextTokenSource<'t> {
         let first = mk_token(0, &raw_tokens, TextRange::new(0.into(), 0.into()));
-        let tokens = raw_tokens
-            .iter()
-            .cloned()
-            .filter(|token| !token.kind.is_trivia())
-            .collect();
-        TextTokenSource {
-            text,
-            tokens,
-            curr: (first, 0),
-        }
+        let tokens = raw_tokens.iter().cloned().filter(|token| !token.kind.is_trivia()).collect();
+        TextTokenSource { text, tokens, curr: (first, 0) }
     }
 
     fn curr_range(&self) -> TextRange {
@@ -51,26 +43,17 @@ impl<'t> TokenSource for TextTokenSource<'t> {
         }
 
         let pos = self.curr.1 + 1;
-        self.curr = (
-            mk_token(pos, &self.tokens, self.curr_range()),
-            self.curr.1 + 1,
-        );
+        self.curr = (mk_token(pos, &self.tokens, self.curr_range()), self.curr.1 + 1);
     }
 
     fn is_keyword(&self, kw: &str) -> bool {
-        self.tokens
-            .get(self.curr.1)
-            .map(|token| &self.text[token.range] == kw)
-            .unwrap_or(false)
+        self.tokens.get(self.curr.1).map(|token| &self.text[token.range] == kw).unwrap_or(false)
     }
 }
 
 fn mk_token(pos: usize, tokens: &[Token], eof_range: TextRange) -> Token {
     match tokens.get(pos) {
         Some(token) => *token,
-        None => Token {
-            kind: T![eof],
-            range: eof_range,
-        },
+        None => Token { kind: T![eof], range: eof_range },
     }
 }

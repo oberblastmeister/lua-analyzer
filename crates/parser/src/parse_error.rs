@@ -8,10 +8,7 @@ pub enum ParseError {
     Message(&'static str),
 
     #[error("Expected {expected:?}, got {got:?}")]
-    Expected {
-        expected: SyntaxKind,
-        got: SyntaxKind,
-    },
+    Expected { expected: SyntaxKind, got: SyntaxKind },
 }
 
 impl ParseError {

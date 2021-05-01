@@ -1,9 +1,9 @@
 mod ast_id_map;
-mod name;
-mod item_tree;
-mod semantics;
 pub mod body;
 pub mod expr;
+mod item_tree;
+mod name;
+mod semantics;
 pub mod stmt;
 
 use std::sync::Arc;

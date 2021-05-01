@@ -7,7 +7,7 @@ use std::{
 
 use path_interner::PathInterner;
 
-use stdx::paths::{AbsPathBuf, AbsPath};
+use stdx::paths::{AbsPath, AbsPathBuf};
 
 #[derive(Copy, Clone, Debug, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct FileId(pub u32);
@@ -114,10 +114,7 @@ impl Vfs {
         };
 
         *self.get_mut(file_id) = contents;
-        self.changes.push(ChangedFile {
-            file_id,
-            change_kind,
-        });
+        self.changes.push(ChangedFile { file_id, change_kind });
         true
     }
 
@@ -167,8 +164,6 @@ impl Vfs {
 
 impl fmt::Debug for Vfs {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Vfs")
-            .field("n_files", &self.data.len())
-            .finish()
+        f.debug_struct("Vfs").field("n_files", &self.data.len()).finish()
     }
 }

@@ -2,9 +2,9 @@ mod cancellation;
 mod change;
 
 pub use cancellation::Canceled;
+pub use change::Change;
 pub use salsa;
 pub use vfs::FileId;
-pub use change::Change;
 
 use syntax::{
     ast::{self, SourceFile},

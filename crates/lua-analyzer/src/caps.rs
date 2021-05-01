@@ -5,20 +5,16 @@ use lsp_types::{
 
 pub fn server_capabilities() -> ServerCapabilities {
     ServerCapabilities {
-        text_document_sync: Some(TextDocumentSyncCapability::Options(
-            TextDocumentSyncOptions {
-                open_close: Some(true),
-                change: Some(TextDocumentSyncKind::Incremental),
-                ..Default::default()
-            },
-        )),
+        text_document_sync: Some(TextDocumentSyncCapability::Options(TextDocumentSyncOptions {
+            open_close: Some(true),
+            change: Some(TextDocumentSyncKind::Incremental),
+            ..Default::default()
+        })),
         completion_provider: Some(CompletionOptions {
             resolve_provider: None,
             trigger_characters: Some(vec![":".to_string(), ".".to_string()]),
             all_commit_characters: None,
-            work_done_progress_options: WorkDoneProgressOptions {
-                work_done_progress: None,
-            },
+            work_done_progress_options: WorkDoneProgressOptions { work_done_progress: None },
         }),
         ..Default::default()
     }

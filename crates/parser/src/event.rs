@@ -5,10 +5,7 @@ use crate::{ParseError, SyntaxKind, TreeSink};
 /// TODO: add node error event
 #[derive(Debug)]
 pub enum Event {
-    Start {
-        kind: SyntaxKind,
-        forward_parent: Option<u32>,
-    },
+    Start { kind: SyntaxKind, forward_parent: Option<u32> },
 
     Finish,
 
@@ -23,10 +20,7 @@ pub enum Event {
 
 impl Event {
     pub(crate) fn tombstone() -> Event {
-        Event::Start {
-            kind: T![__],
-            forward_parent: None,
-        }
+        Event::Start { kind: T![__], forward_parent: None }
     }
 }
 
@@ -36,10 +30,7 @@ pub(super) fn process<TS: TreeSink>(sink: &mut TS, mut events: Vec<Event>) {
     for i in 0..events.len() {
         match mem::replace(&mut events[i], Event::tombstone()) {
             Event::Start { kind: T![__], .. } => (),
-            Event::Start {
-                kind,
-                forward_parent,
-            } => {
+            Event::Start { kind, forward_parent } => {
                 // For events[A, B, C], B is A's forward_parent, C is B's forward_parent,
                 // in the normal control flow, the parent-child relation: `A -> B -> C`,
                 // while with the magic forward_parent, it writes: `C <- B <- A`.
@@ -52,10 +43,7 @@ pub(super) fn process<TS: TreeSink>(sink: &mut TS, mut events: Vec<Event>) {
                     idx += fwd as usize;
                     // append `A`'s forward_parent `B`
                     fp = match mem::replace(&mut events[idx], Event::tombstone()) {
-                        Event::Start {
-                            kind,
-                            forward_parent,
-                        } => {
+                        Event::Start { kind, forward_parent } => {
                             if kind != T![__] {
                                 forward_parents.push(kind);
                             }
@@ -74,7 +62,7 @@ pub(super) fn process<TS: TreeSink>(sink: &mut TS, mut events: Vec<Event>) {
             Event::Finish => sink.finish_node(),
             Event::Token => sink.token(),
             Event::StartError => sink.start_error_node(),
-            Event::FinishError(e) => sink.finish_error_node(e)
+            Event::FinishError(e) => sink.finish_error_node(e),
         }
     }
 }

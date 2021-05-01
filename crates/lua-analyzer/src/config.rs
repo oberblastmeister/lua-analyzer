@@ -89,8 +89,7 @@ fn get_field<T: DeserializeOwned>(
         .find_map(move |field| {
             let mut pointer = field.replace('_', "/");
             pointer.insert(0, '/');
-            json.pointer_mut(&pointer)
-                .and_then(|it| serde_json::from_value(it.take()).ok())
+            json.pointer_mut(&pointer).and_then(|it| serde_json::from_value(it.take()).ok())
         })
         .unwrap_or(default)
 }
@@ -102,17 +101,11 @@ fn manual(fields: &[(&'static str, &'static str, &[&str], &str)]) -> String {
         .map(|(field, _ty, doc, default)| {
             let name = format!("lua-analyzer.{}", field.replace("_", "."));
             let doc = doc_comment_to_string(*doc);
-            format!(
-                "[[{}]]{} (default: `{}`)::\n+\n--\n{}--\n",
-                name, name, default, doc
-            )
+            format!("[[{}]]{} (default: `{}`)::\n+\n--\n{}--\n", name, name, default, doc)
         })
         .collect::<String>()
 }
 
 fn doc_comment_to_string(doc: &[&str]) -> String {
-    doc.iter()
-        .map(|it| it.strip_prefix(' ').unwrap_or(it))
-        .map(|it| format!("{}\n", it))
-        .collect()
+    doc.iter().map(|it| it.strip_prefix(' ').unwrap_or(it)).map(|it| format!("{}\n", it)).collect()
 }

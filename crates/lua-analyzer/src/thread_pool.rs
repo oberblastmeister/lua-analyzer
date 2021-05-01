@@ -8,13 +8,9 @@ pub(crate) struct TaskPool<T> {
 
 impl<T> TaskPool<T> {
     pub(crate) fn new(sender: Sender<T>) -> TaskPool<T> {
-        let thread_pool = ThreadPoolBuilder::new()
-            .build()
-            .expect("Failed to initialize threadpool");
-        TaskPool {
-            sender,
-            inner: thread_pool,
-        }
+        let thread_pool =
+            ThreadPoolBuilder::new().build().expect("Failed to initialize threadpool");
+        TaskPool { sender, inner: thread_pool }
     }
 
     pub(crate) fn spawn<F>(&mut self, task: F)

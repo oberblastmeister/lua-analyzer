@@ -9,27 +9,11 @@ pub enum Expr {
     Missing,
     Call(Call),
     Literal(Literal),
-    BinaryOp {
-        lhs: ExprId,
-        op: BinaryOp,
-        rhs: ExprId,
-    },
-    UnaryOp {
-        op: UnaryOp,
-        expr: ExprId,
-    },
-    Index {
-        base: ExprId,
-        index: ExprId,
-    },
-    Dot {
-        base: ExprId,
-        index: Name,
-    },
-    Function {
-        args: Vec<Name>,
-        body: StmtId,
-    },
+    BinaryOp { lhs: ExprId, op: BinaryOp, rhs: ExprId },
+    UnaryOp { op: UnaryOp, expr: ExprId },
+    Index { base: ExprId, index: ExprId },
+    Dot { base: ExprId, index: Name },
+    Function { args: Vec<Name>, body: StmtId },
     Table(Table),
 }
 

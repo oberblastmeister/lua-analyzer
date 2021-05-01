@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use crate::FileId;
 
 use rustc_hash::FxHashMap;
-use stdx::paths::{AbsPathBuf, AbsPath};
+use stdx::paths::{AbsPath, AbsPathBuf};
 
 #[derive(Default)]
 pub(crate) struct PathInterner {

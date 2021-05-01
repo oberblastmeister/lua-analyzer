@@ -10,7 +10,17 @@ use rayon::{ThreadPool, ThreadPoolBuilder};
 use rustc_hash::FxHashMap;
 use stdx::paths::AbsPathBuf;
 
-use crate::{config::Config, diagnostics::DiagnosticCollection, dispatch::{NotificationDispatcher, RequestDispatcher}, document::DocumentData, handlers, lsp_utils::is_canceled, main_loop::{Event, Task}, thread_pool::TaskPool, to_proto::url_from_abs_path};
+use crate::{
+    config::Config,
+    diagnostics::DiagnosticCollection,
+    dispatch::{NotificationDispatcher, RequestDispatcher},
+    document::DocumentData,
+    handlers,
+    lsp_utils::is_canceled,
+    main_loop::{Event, Task},
+    thread_pool::TaskPool,
+    to_proto::url_from_abs_path,
+};
 
 pub(crate) type ReqHandler = fn(&mut GlobalState, lsp_server::Response);
 pub(crate) type ReqQueue = lsp_server::ReqQueue<(String, Instant), ReqHandler>;
@@ -84,10 +94,7 @@ impl GlobalState {
     }
 
     pub(crate) fn snapshot(&self) -> GlobalStateSnapshot {
-        GlobalStateSnapshot {
-            analysis: self.analysis_host.analysis(),
-            vfs: self.vfs.clone(),
-        }
+        GlobalStateSnapshot { analysis: self.analysis_host.analysis(), vfs: self.vfs.clone() }
     }
 
     pub(crate) fn send_request<R: lsp_types::request::Request>(
@@ -95,10 +102,7 @@ impl GlobalState {
         params: R::Params,
         handler: ReqHandler,
     ) {
-        let request = self
-            .req_queue
-            .outgoing
-            .register(R::METHOD.to_string(), params, handler);
+        let request = self.req_queue.outgoing.register(R::METHOD.to_string(), params, handler);
         self.send(request.into());
     }
 
@@ -130,10 +134,9 @@ impl GlobalState {
         request: &lsp_server::Request,
         request_received: Instant,
     ) {
-        self.req_queue.incoming.register(
-            request.id.clone(),
-            (request.method.clone(), request_received),
-        );
+        self.req_queue
+            .incoming
+            .register(request.id.clone(), (request.method.clone(), request_received));
     }
 
     pub(crate) fn respond(&mut self, response: lsp_server::Response) {
@@ -145,17 +148,11 @@ impl GlobalState {
     }
 
     pub(crate) fn notification_dispatcher(&mut self, not: Notification) -> NotificationDispatcher {
-        NotificationDispatcher {
-            not: Some(not),
-            global_state: self,
-        }
+        NotificationDispatcher { not: Some(not), global_state: self }
     }
 
     pub(crate) fn request_dispatcher(&mut self, req: Request) -> RequestDispatcher {
-        RequestDispatcher {
-            req: Some(req),
-            global_state: self,
-        }
+        RequestDispatcher { req: Some(req), global_state: self }
     }
 
     pub(crate) fn maybe_update_diagnostics(&mut self) {

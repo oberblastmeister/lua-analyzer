@@ -41,10 +41,8 @@ fn run_server() -> Result<()> {
 
     let server_capabilities = lua_analyzer::server_capabilities();
 
-    let initialize_result = lsp_types::InitializeResult {
-        capabilities: server_capabilities,
-        server_info: None,
-    };
+    let initialize_result =
+        lsp_types::InitializeResult { capabilities: server_capabilities, server_info: None };
     let initialize_result = serde_json::to_value(initialize_result).unwrap();
 
     connection.initialize_finish(initialize_id, initialize_result)?;

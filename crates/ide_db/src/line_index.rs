@@ -78,10 +78,7 @@ impl LineIndex {
             }
 
             if !c.is_ascii() {
-                utf16_chars.push(Utf16Char {
-                    start: curr_col,
-                    end: curr_col + c_len,
-                });
+                utf16_chars.push(Utf16Char { start: curr_col, end: curr_col + c_len });
             }
 
             curr_col += c_len;
@@ -92,20 +89,14 @@ impl LineIndex {
             utf16_lines.insert(line, utf16_chars);
         }
 
-        LineIndex {
-            newlines,
-            utf16_lines,
-        }
+        LineIndex { newlines, utf16_lines }
     }
 
     pub fn line_col(&self, offset: TextSize) -> LineCol {
         let line = partition_point(&self.newlines, |&it| it <= offset) - 1;
         let line_start_offset = self.newlines[line];
         let col = offset - line_start_offset;
-        LineCol {
-            line: line as u32,
-            col: col.into(),
-        }
+        LineCol { line: line as u32, col: col.into() }
     }
 
     pub fn offset(&self, line_col: LineCol) -> TextSize {
@@ -114,10 +105,7 @@ impl LineIndex {
 
     pub fn to_utf8(&self, line_col: LineColUtf16) -> LineCol {
         let col = self.utf16_to_utf8_col(line_col.line, line_col.col);
-        LineCol {
-            line: line_col.line,
-            col: col.into(),
-        }
+        LineCol { line: line_col.line, col: col.into() }
     }
 
     pub fn to_utf16(&self, line_col: LineCol) -> LineColUtf16 {

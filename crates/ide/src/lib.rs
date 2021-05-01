@@ -2,12 +2,12 @@ mod diagnostics;
 
 use std::sync::Arc;
 
+pub use diagnostics::Severity;
 pub use ide_db::{
     base_db::{Change, FileId},
     line_index::{LineCol, LineColUtf16, LineIndex},
     LineIndexDatabase,
 };
-pub use diagnostics::Severity;
 
 use ide_db::{
     base_db::{salsa, Canceled, CheckCanceled},
@@ -25,17 +25,13 @@ pub struct AnalysisHost {
 
 impl AnalysisHost {
     pub fn new() -> AnalysisHost {
-        AnalysisHost {
-            db: RootDatabase::new(),
-        }
+        AnalysisHost { db: RootDatabase::new() }
     }
 
     /// Returns a snapshot of the current state, which you can query for
     /// semantic information.
     pub fn analysis(&self) -> Analysis {
-        Analysis {
-            db: self.db.snapshot(),
-        }
+        Analysis { db: self.db.snapshot() }
     }
 
     /// Applies changes to the current state of the world. If there are

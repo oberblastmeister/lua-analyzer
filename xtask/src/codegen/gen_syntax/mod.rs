@@ -58,11 +58,8 @@ fn gen_syntax_kinds(kinds_src: &KindsSrc, ast_src: &AstSrc) -> Result<String> {
         .iter()
         .map(|keyword| format_ident!("{}Kw", keyword.to_camel_case()))
         .collect();
-    let keyword_matches: Vec<_> = kinds_src
-        .keywords
-        .iter()
-        .map(|keyword| format_ident!("{}", keyword))
-        .collect();
+    let keyword_matches: Vec<_> =
+        kinds_src.keywords.iter().map(|keyword| format_ident!("{}", keyword)).collect();
 
     let literal_matches: Vec<_> = kinds_src
         .literals
@@ -75,27 +72,16 @@ fn gen_syntax_kinds(kinds_src: &KindsSrc, ast_src: &AstSrc) -> Result<String> {
         .map(|literal| format_ident!("{}", literal.to_camel_case()))
         .collect();
 
-    let token_matches: Vec<_> = kinds_src
-        .tokens
-        .iter()
-        .map(|token| format_ident!("{}", token.to_snake_case()))
-        .collect();
-    let tokens = kinds_src
-        .tokens
-        .iter()
-        .map(|name| format_ident!("{}", name))
-        .collect::<Vec<_>>();
+    let token_matches: Vec<_> =
+        kinds_src.tokens.iter().map(|token| format_ident!("{}", token.to_snake_case())).collect();
+    let tokens = kinds_src.tokens.iter().map(|name| format_ident!("{}", name)).collect::<Vec<_>>();
 
     let trivia_matches: Vec<_> = kinds_src
         .trivia
         .iter()
         .map(|name| format_ident!("{}", name.to_snake_case()))
         .collect::<Vec<_>>();
-    let trivia = kinds_src
-        .trivia
-        .iter()
-        .map(|name| format_ident!("{}", name))
-        .collect::<Vec<_>>();
+    let trivia = kinds_src.trivia.iter().map(|name| format_ident!("{}", name)).collect::<Vec<_>>();
 
     let node_names = ast_src.names().map(|s| format_ident!("{}", s)).collect::<Vec<_>>();
 
@@ -176,11 +162,8 @@ fn gen_syntax_kinds(kinds_src: &KindsSrc, ast_src: &AstSrc) -> Result<String> {
 }
 
 fn gen_tokens(kinds_src: &KindsSrc) -> Result<String> {
-    let all_tokens = kinds_src
-        .tokens
-        .iter()
-        .chain(kinds_src.literals.iter())
-        .chain(kinds_src.trivia.iter());
+    let all_tokens =
+        kinds_src.tokens.iter().chain(kinds_src.literals.iter()).chain(kinds_src.trivia.iter());
 
     let tokens = all_tokens.map(|token| {
         let name = format_ident!("{}", token);
@@ -294,11 +277,8 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
         .enums
         .iter()
         .map(|en| {
-            let variants: Vec<_> = en
-                .variants
-                .iter()
-                .map(|var| format_ident!("{}", var.to_camel_case()))
-                .collect();
+            let variants: Vec<_> =
+                en.variants.iter().map(|var| format_ident!("{}", var.to_camel_case())).collect();
             let name = format_ident!("{}", en.name);
             let kinds: Vec<_> = variants
                 .iter()
@@ -368,10 +348,8 @@ fn gen_nodes(kinds: KindsSrc, grammar: &AstSrc) -> Result<String> {
     let enum_names = grammar.enums.iter().map(|it| &it.name);
     let node_names = grammar.nodes.iter().map(|it| &it.name);
 
-    let display_impls = enum_names
-        .chain(node_names.clone())
-        .map(|it| format_ident!("{}", it))
-        .map(|name| {
+    let display_impls =
+        enum_names.chain(node_names.clone()).map(|it| format_ident!("{}", it)).map(|name| {
             quote! {
                 impl std::fmt::Display for #name {
                     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

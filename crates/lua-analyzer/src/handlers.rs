@@ -20,11 +20,7 @@ pub(crate) fn handle_completion(
 }
 
 fn completion_item(s: String) -> CompletionItem {
-    CompletionItem {
-        label: s,
-        kind: Some(CompletionItemKind::Function),
-        ..Default::default()
-    }
+    CompletionItem { label: s, kind: Some(CompletionItemKind::Function), ..Default::default() }
 }
 
 pub(crate) fn publish_diagnostics(

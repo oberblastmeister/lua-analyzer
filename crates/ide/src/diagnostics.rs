@@ -14,19 +14,11 @@ pub struct Diagnostic {
 
 impl Diagnostic {
     fn error(range: TextRange, message: String) -> Self {
-        Self {
-            message,
-            range,
-            severity: Severity::Error,
-        }
+        Self { message, range, severity: Severity::Error }
     }
 
     fn hint(range: TextRange, message: String) -> Self {
-        Self {
-            message,
-            range,
-            severity: Severity::WeakWarning,
-        }
+        Self { message, range, severity: Severity::WeakWarning }
     }
 }
 
