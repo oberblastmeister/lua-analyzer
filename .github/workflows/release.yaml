@@ -27,6 +27,8 @@ jobs:
         #   target: x86_64-pc-windows-msvc
 
     steps:
+    - run: echo "TAG=$(date --iso -u)" >> $GITHUB_ENV
+      if: github.ref == 'refs/heads/release'
     - run: echo "TAG=nightly" >> $GITHUB_ENV
       if: github.ref != 'refs/heads/release'
     - run: 'echo "TAG: $TAG"'
