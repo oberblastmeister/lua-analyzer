@@ -1,8 +1,8 @@
 mod codegen;
+mod dist;
 mod flags;
 mod fuzz_tests;
 mod utils;
-mod dist;
 
 use anyhow::Result;
 use xshell::{cmd, pushd};
