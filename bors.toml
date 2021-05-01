@@ -1,0 +1,5 @@
+status = [
+    "test (ubuntu-latest)",
+    "test (windows-latest)",
+    "test (macos-latest)",
+]
