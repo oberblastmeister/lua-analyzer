@@ -11,8 +11,6 @@ jobs:
   build-release:
     name: build-release
     runs-on: ${{ matrix.os }}
-    env:
-      LA_TARGET: ${{ matrix.target }}
 
     strategy:
       matrix:
@@ -20,12 +18,11 @@ jobs:
         - os: ubuntu-latest
           target: x86_64-unknown-linux-gnu
 
-          #
-        # - os: macos-latest
-        #   target: x86_64-apple-darwin
+        - os: macos-latest
+          target: x86_64-apple-darwin
 
-        # - os: windows-latest
-        #   target: x86_64-pc-windows-msvc
+        - os: windows-latest
+          target: x86_64-pc-windows-msvc
 
     steps:
     - run: echo "TAG=$(date --iso -u)" >> $GITHUB_ENV
@@ -50,22 +47,19 @@ jobs:
 
     - name: Package
       run: |
-        mkdir dist
-        cp "target/${{ matrix.target }}/release/lua-analyzer" "dist/lua-analyzer"
-        pushd dist
-        tar czf "lua-analyzer.tar.gz" lua-analyzer
-
-    # - name: Release
-    #   uses: softprops/action-gh-release@v1
-    #   with:
-    #     file: dist/lua-analyzer.tar.gz
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if [ "${{ matrix.os }}" = "windows-latest" ]; then
+          cp "target/${{ matrix.target }}/release/lua-analyzer.exe" "lua-analyzer-${{ matrix.target }}.exe"
+          echo "ASSET=lua-analyzer-${{ matrix.target }}.exe" >> $GITHUB_ENV
+        else
+          cp "target/${{ matrix.target }}/release/lua-analyzer" "lua-analyzer"
+          tar czf lua-analyzer-${{ matrix.target }}.tar.gz lua-analyzer
+          echo "ASSET=lua-analyzer-${{ matrix.target }}.tar.gz" >> $GITHUB_ENV
+        fi
 
     - name: Release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: dist/lua-analyzer.tar.gz
-        tag: ${{ github.ref }}
+        file: ${{ env.ASSET }}
+        tag: ${{ env.TAG }}
         overwrite: true
