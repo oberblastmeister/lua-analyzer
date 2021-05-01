@@ -31,8 +31,11 @@ jobs:
 
     - if: matrix.os == 'macos-latest'
       run: echo "DATE_CMD=gdate" >> $GITHUB_ENV
+      shell: bash
+
     - if: matrix.os != 'macos-latest'
       run: echo "DATE_CMD=date" >> $GITHUB_ENV
+      shell: bash
 
     - run: echo "TAG=$(${{ env.DATE_CMD }} --iso -u)" >> $GITHUB_ENV
       shell: bash
