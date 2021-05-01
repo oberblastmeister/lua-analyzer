@@ -5,7 +5,7 @@ authors = ["Brian Shu <littlebubu.shu@gmail.com>"]
 edition = "2018"
 
 [lib]
-doc-tests = false
+doctest = false
 
 [dependencies]
 text-size = "1.1.0"

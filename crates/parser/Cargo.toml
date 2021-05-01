@@ -7,7 +7,7 @@ edition = "2018"
 description = "lua parser"
 
 [lib]
-doc-tests = false
+doctest = false
 
 [dependencies]
 drop_bomb = "0.1.5"

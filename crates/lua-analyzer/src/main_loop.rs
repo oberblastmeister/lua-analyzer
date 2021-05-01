@@ -89,7 +89,9 @@ impl GlobalState {
 
         let state_changed = self.process_changes();
 
-        self.maybe_update_diagnostics();
+        if state_changed {
+            self.maybe_update_diagnostics();
+        }
 
         if let Some(diagnostic_changes) = self.diagnostics.take_changes() {
             for file_id in diagnostic_changes {
