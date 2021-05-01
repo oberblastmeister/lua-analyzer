@@ -1,1 +1,7 @@
 /target
+perf.data
+perf.data.old
+stacks.folded
+flamegraph.svg
+make_flamegraph
+run_flamegraph

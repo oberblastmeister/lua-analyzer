@@ -207,7 +207,7 @@ impl GlobalState {
                 Ok(())
             })?
             .on::<DidSaveTextDocument>(|this, params| Ok(()))?
-            .on::<lsp_types::notification::DidChangeConfiguration>(|this, _params| {
+            .on::<DidChangeConfiguration>(|this, _params| {
                 // As stated in https://github.com/microsoft/language-server-protocol/issues/676,
                 // this notification's parameters should be ignored and the actual config queried separately.
                 this.send_request::<lsp_types::request::WorkspaceConfiguration>(
