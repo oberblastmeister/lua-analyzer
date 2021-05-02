@@ -76,7 +76,7 @@ jobs:
         path: ${{ env.ASSET }}
 
   create-release:
-    name: release
+    name: create-release
     runs-on: ubuntu-latest
     needs: ['build-release']
 
@@ -107,7 +107,8 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: dist/lua-analyzer*
+        # file: dist/lua-analyzer*
+        file: dist/lua-analyzer-x86_64-unknown-linux-gnu
         tag: ${{ env.TAG }}
         overwrite: true
         file_glob: true
