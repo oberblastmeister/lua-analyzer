@@ -1,22 +1,19 @@
 use std::time::Instant;
 
-use anyhow::{anyhow, bail, Result};
+use anyhow::{bail, Result};
 
 use crossbeam_channel::{select, Receiver};
 use ide::FileId;
-use log::info;
 use lsp_server::{Connection, Notification, Request, Response};
 use lsp_types::{notification::Notification as _, Diagnostic};
 
 use crate::{
     config::Config,
-    dispatch::{NotificationDispatcher, RequestDispatcher},
     document::DocumentData,
     from_proto,
     global_state::{file_id_to_url, GlobalState},
     handlers,
     lsp_utils::apply_document_changes,
-    to_proto::{self, url_from_abs_path},
 };
 
 #[derive(Debug)]
