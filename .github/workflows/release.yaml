@@ -88,16 +88,16 @@ jobs:
         tag: ${{ env.TAG }}
         overwrite: true
 
-    release:
-      name: release
-      runs-on: ubuntu-latest
-      needs: ['build-release']
+  release:
+    name: release
+    runs-on: ubuntu-latest
+    needs: ['build-release']
 
-      steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: lua-analyzer
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: lua-analyzer
 
-      - name: List downloaded files
-        run: ls -R
+    - name: List downloaded files
+      run: ls -R
