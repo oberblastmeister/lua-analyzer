@@ -8,7 +8,7 @@ on:
     - release
 
 jobs:
-  create-release:
+  build-release:
     name: create-release
     runs-on: ${{ matrix.os }}
 
@@ -87,3 +87,17 @@ jobs:
         file: ${{ env.ASSET }}
         tag: ${{ env.TAG }}
         overwrite: true
+
+    release:
+      name: release
+      runs-on: ubuntu-latest
+      needs: ['build-release']
+
+      steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: lua-analyzer
+
+      - name: List downloaded files
+        run: ls -R
