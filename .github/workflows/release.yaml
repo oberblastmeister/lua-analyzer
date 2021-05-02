@@ -108,7 +108,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         # file: dist/lua-analyzer*
-        file: dist/lua-analyzer-x86_64-unknown-linux-gnu
+        file: dist/lua-analyzer-x86_64-unknown-linux-gnu.tar.gz
         tag: ${{ env.TAG }}
         overwrite: true
         file_glob: true
