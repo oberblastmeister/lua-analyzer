@@ -37,7 +37,6 @@ jobs:
         - os: windows-latest
           target: aarch64-pc-windows-msvc
 
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -49,6 +48,9 @@ jobs:
         target: ${{ matrix.target }}
         profile: minimal
         override: true
+
+    - if: matrix.target == 'aarch64-unknown-linux-gnu'
+      run: sudo apt-get install gcc-aarch64-linux-gnu
 
     - name: Build
       run: |
