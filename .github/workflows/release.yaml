@@ -77,7 +77,8 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: lua-analyzer
+        # upload everything to dist
+        name: dist
         path: ${{ env.ASSET }}
 
     - name: Release
@@ -94,10 +95,16 @@ jobs:
     needs: ['build-release']
 
     steps:
+    - name: Make directories
+      run: mkdir dist
+
     - name: Download artifacts
       uses: actions/download-artifact@v2
       with:
-        name: lua-analyzer
+        # download dist to directory named dist
+        name: dist
+        path: dist
 
     - name: List downloaded files
       run: ls -R
+      working-directory: dist
