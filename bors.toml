@@ -3,3 +3,5 @@ status = [
     "test (windows-latest)",
     "test (macos-latest)",
 ]
+delete_merged_branches = true
+timeout_sec = 1200 # 20 min
