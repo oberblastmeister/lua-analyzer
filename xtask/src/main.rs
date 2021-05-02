@@ -5,7 +5,7 @@ mod fuzz_tests;
 mod utils;
 
 use anyhow::Result;
-use xshell::{cmd, pushd};
+use xshell::pushd;
 
 fn main() -> Result<()> {
     use flags::{Xtask, XtaskCmd::*};
@@ -18,7 +18,6 @@ fn main() -> Result<()> {
         Help(_) => println!("{}", Xtask::HELP),
         Codegen(cmd) => cmd.run()?,
         FuzzTests(cmd) => cmd.run()?,
-        _ => (),
     };
 
     Ok(())

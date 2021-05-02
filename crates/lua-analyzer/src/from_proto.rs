@@ -1,7 +1,6 @@
 use std::convert::TryFrom;
-use std::path::PathBuf;
 
-use anyhow::{anyhow, Context, Result};
+use anyhow::{anyhow, Result};
 
 use ide::{LineColUtf16, LineIndex};
 use stdx::paths::AbsPathBuf;

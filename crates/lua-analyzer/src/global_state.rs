@@ -1,12 +1,10 @@
-use std::{path::PathBuf, sync::Arc, time::Instant};
+use std::{sync::Arc, time::Instant};
 
-use anyhow::Result;
 use crossbeam_channel::{unbounded, Receiver, Sender};
 use ide::{Analysis, AnalysisHost, Cancelable, Change, FileId, LineIndex};
 use lsp_server::{Notification, Request};
 use lsp_types::Url;
 use parking_lot::RwLock;
-use rayon::{ThreadPool, ThreadPoolBuilder};
 use rustc_hash::FxHashMap;
 use stdx::paths::AbsPathBuf;
 
@@ -17,7 +15,7 @@ use crate::{
     document::DocumentData,
     handlers,
     lsp_utils::is_canceled,
-    main_loop::{Event, Task},
+    main_loop::Task,
     thread_pool::TaskPool,
     to_proto::url_from_abs_path,
 };
