@@ -6,6 +6,7 @@ on:
   push:
     branches:
     - release
+    - trigger-nightly
 
 jobs:
   build-release:
