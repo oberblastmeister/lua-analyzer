@@ -60,7 +60,7 @@ pub(super) fn stmt(p: &mut Parser) {
         T![end] => {
             let e = p.start_error();
             p.bump(T![end]);
-            e.complete(p, ParseError::Message("Unmatched end token"));
+            e.complete(p, ParseError::msg("Unmatched end token"));
         }
         _ => p.err_and_bump("Expected a statement"),
     };

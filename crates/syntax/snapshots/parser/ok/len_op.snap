@@ -1,0 +1,31 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/len_op.lua
+
+---
+SourceFile@0..38
+  LocalAssignStmt@0..37
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    MultiName@6..19
+      Name@6..11
+        Ident@6..11 "first"
+      Comma@11..12 ","
+      Whitespace@12..13 " "
+      Name@13..19
+        Ident@13..19 "second"
+    Whitespace@19..20 " "
+    Eq@20..21 "="
+    Whitespace@21..22 " "
+    MultivalExpr@22..37
+      PrefixExpr@22..37
+        Hash@22..23 "#"
+        NameRef@23..37
+          Ident@23..37 "cached_buffers"
+  Whitespace@37..38 "\n"
+
+=============================
+Errors:
+=============================
+[]

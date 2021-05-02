@@ -1,0 +1,54 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/err/unknown_symbol.lua
+
+---
+SourceFile@0..20
+  LocalAssignStmt@0..13
+    LocalKw@0..5 "local"
+    Whitespace@5..6 " "
+    MultiName@6..9
+      Name@6..9
+        Ident@6..9 "var"
+    Whitespace@9..10 " "
+    Eq@10..11 "="
+    Whitespace@11..12 " "
+    MultivalExpr@12..13
+      Error@12..13
+        Unknown@12..13 "@"
+  Error@13..14
+    Unknown@13..14 "@"
+  Error@14..15
+    Unknown@14..15 "@"
+  ExprStmt@15..19
+    MultivalExpr@15..19
+      NameRef@15..19
+        Ident@15..19 "asdf"
+  Whitespace@19..20 "\n"
+
+=============================
+Errors:
+=============================
+[
+    SyntaxError(
+        "Got an unknown token. Expected an expression",
+        12..13,
+    ),
+    SyntaxError(
+        "Got an unknown token. Expected a statement",
+        13..14,
+    ),
+    SyntaxError(
+        "Got an unknown token. Expected a statement",
+        14..15,
+    ),
+    SyntaxError(
+        "Expression statements can only be call expressions",
+        15..19,
+    ),
+    SyntaxError(
+        "Expected a call expression",
+        15..19,
+    ),
+]

@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use std::{fmt, marker::PhantomData};
 
 use drop_bomb::DropBomb;
 
@@ -54,8 +54,8 @@ impl<'a> Parser<'a> {
         self.events.push(event)
     }
 
-    pub(crate) fn error(&mut self, message: &'static str) {
-        self.push_event(Event::Error(ParseError::Message(message)))
+    pub(crate) fn error<S: fmt::Display>(&mut self, message: S) {
+        self.push_event(Event::Error(ParseError::Message(message.to_string())))
     }
 
     pub(crate) fn at_ts(&self, kinds: TokenSet) -> bool {
@@ -70,11 +70,20 @@ impl<'a> Parser<'a> {
         self.do_bump()
     }
 
+    fn get_msg<S: fmt::Display>(&self, message: S) -> String {
+        let msg = if self.current() == T![unknown] {
+            format!("Got an unknown token. {}", message)
+        } else {
+            message.to_string()
+        };
+        msg
+    }
+
     /// Create an error node and consume the next token.
-    pub(crate) fn err_recover(&mut self, message: &'static str, recovery: TokenSet) {
+    pub(crate) fn err_recover<S: fmt::Display>(&mut self, message: S, recovery: TokenSet) {
         match self.current() {
             T![end] => {
-                self.error(message);
+                self.error(message.to_string());
                 return;
             }
             _ => (),
@@ -86,8 +95,9 @@ impl<'a> Parser<'a> {
         }
 
         let m = self.start_error();
+        let msg = self.get_msg(message);
         self.bump_any();
-        m.complete(self, ParseError::Message(message));
+        m.complete(self, ParseError::Message(msg));
     }
 
     pub(crate) fn err_and_bump(&mut self, message: &'static str) {
@@ -103,7 +113,7 @@ impl<'a> Parser<'a> {
             self.bump_any()
         }
 
-        m.complete(self, ParseError::Message(message));
+        m.complete(self, ParseError::Message(message.to_string()));
     }
 
     fn do_bump(&mut self) {

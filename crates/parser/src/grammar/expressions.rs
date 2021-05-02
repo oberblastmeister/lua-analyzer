@@ -238,6 +238,8 @@ fn table_sep(p: &mut Parser) -> MarkerComplete {
     m.complete(p, N![TableSep])
 }
 
+const TABLE_RECOVERY: TokenSet = TS!['}', '['].union(TABLE_SEP);
+
 fn table_expr(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
 
@@ -245,29 +247,21 @@ fn table_expr(p: &mut Parser) -> MarkerComplete {
 
     const END: TokenSet = TS![eof, end, '}'];
 
-    'outer: while !p.at_ts(END) {
+    // might need to make this part faster
+    while !p.at_ts(END) {
         table_content(p);
 
-        if !p.at_ts(TABLE_SEP) {
-            break;
-        } else {
-            table_sep(p);
-            // p.bump_any();
+        while !p.at_ts(END) {
+            if p.at_ts(TABLE_SEP) {
+                table_sep(p);
+                break;
+            } else if p.at_ts(TABLE_RECOVERY) {
+                break;
+            } else {
+                table_correct(p);
+                continue;
+            }
         }
-        // while !p.at_ts(END) {
-        //     if p.at_ts(TABLE_SEP) {
-        //         p.bump_ts(TABLE_SEP);
-
-        //         if p.at(T!['}']) {
-        //             break 'outer;
-        //         }
-
-        //         break;
-        //     } else {
-        //         table_correct(p);
-        //         continue;
-        //     }
-        // }
     }
 
     p.expect(T!['}']);
@@ -275,7 +269,7 @@ fn table_expr(p: &mut Parser) -> MarkerComplete {
 }
 
 fn table_correct(p: &mut Parser) {
-    p.err_until("Failed to find comma or closing bracket", TS!['}'].union(TABLE_SEP));
+    p.err_until("Failed to find comma or closing bracket", TABLE_RECOVERY);
 }
 
 fn table_content(p: &mut Parser) -> MarkerComplete {
