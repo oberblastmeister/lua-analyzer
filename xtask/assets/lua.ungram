@@ -1,3 +1,12 @@
+Name =
+  'ident'
+
+NameRef =
+  'ident'
+
+MultiName =
+  Name (',' Name)*
+
 SourceFile = 
   Stmt*
 
@@ -20,99 +29,6 @@ StmtItem =
   LocalAssignStmt
   | LocalFunctionDefStmt
   | FunctionDefStmt
-
-Expr =
-  Literal
-  | TableExpr
-  | InfixExpr
-  | PrefixExpr
-  | IndexExpr
-  | DotExpr
-  | FunctionExpr
-  | CallExpr
-  | MethodCallExpr
-  | NameRef
-
-CallExpr =
-  fun:Expr CallArgs
-
-MethodCallExpr =
-  fun:Expr ':' NameRef CallArgs
-
-MultivalExpr =
-  Expr (',' Expr)*
-
-CallArgs =
-  ArgList
-  | TableExpr
-  | 'str'
-
-ArgList =
-  '(' args:(Expr (',' Expr)*)? (',' '...')? ')'
-
-Literal =
-  'number'
-  | 'str'
-  | 'true'
-  | 'false'
-
-FunctionExpr =
-  'function'
-  params:ParamList
-  body:Block
-  'end'
-
-// TableExpr =
-//   '{'
-//   (TableContent (',' TableContent)* ','?)
-//   '}'
-
-TableExpr =
-  '{'
-  (TableContent (TableSep TableContent)* TableSep?)
-  '}'
-
-TableSep =
-  ',' | ';'
-
-DotExpr =
-  Expr '.' 'ident'
-
-ParenExpr =
-  '('
-  Expr
-  ')'
-
-TableContent =
-  KeyValue
-  | PositionalValue
-
-PositionalValue =
-  Expr
-
-KeyValue =
-  key:TableKey value:Expr
-  
-TableKey =
-  Index
-  | Name
-
-IdentKey =
-  'ident'
-
-InfixExpr =
-  lhs:Expr
-  op:('^' | '*' | '/' | '+' | '-' | '..' | '<' | '>' | '<=' | '>=' | '~=' | '==' | 'and' | 'or')
-  rhs:Expr
-
-PrefixExpr =
-  op:('not' | '-') Expr
-
-IndexExpr =
-  base:Expr Index
-
-Index =
-  '[' Expr ']'
 
 LabelStmt =
   start:LabelDelim Name finish:LabelDelim
@@ -142,9 +58,6 @@ FunctionDefContent =
   FunctionMethod
   | FunctionStatic
   | Name
-
-IndexPath =
-  NameRef ('.' NameRef)*
 
 FunctionMethod =
   IndexPath
@@ -222,19 +135,101 @@ RepeatUntilStmt =
   'until'
   Expr
   
-Name =
-  'ident'
-
-NameRef =
-  'ident'
-
 LocalAssignStmt =
   'local' MultiName ('=' MultivalExpr)?
 
 AssignStmt =
   lhs:MultivalExpr ('=' rhs:MultivalExpr)?
 
-MultiName =
-  Name (',' Name)*
+Expr =
+  Literal
+  | TableExpr
+  | InfixExpr
+  | PrefixExpr
+  | IndexExpr
+  | DotExpr
+  | FunctionExpr
+  | CallExpr
+  | MethodCallExpr
+  | NameRef
+
+CallExpr =
+  fun:Expr CallArgs
+
+MethodCallExpr =
+  fun:Expr ':' NameRef CallArgs
+
+MultivalExpr =
+  Expr (',' Expr)*
+
+CallArgs =
+  ArgList
+  | TableExpr
+  | 'str'
+
+ArgList =
+  '(' args:(Expr (',' Expr)*)? (',' '...')? ')'
+
+Literal =
+  'number'
+  | 'str'
+  | 'true'
+  | 'false'
+
+FunctionExpr =
+  'function'
+  params:ParamList
+  body:Block
+  'end'
+
+TableExpr =
+  '{'
+  (TableContent (TableSep TableContent)* TableSep?)
+  '}'
+
+TableSep =
+  ',' | ';'
+
+DotExpr =
+  Expr '.' 'ident'
+
+ParenExpr =
+  '('
+  Expr
+  ')'
+
+TableContent =
+  KeyValue
+  | PositionalValue
+
+PositionalValue =
+  Expr
+
+KeyValue =
+  key:TableKey value:Expr
+  
+TableKey =
+  Index
+  | Name
+
+IdentKey =
+  'ident'
+
+InfixExpr =
+  lhs:Expr
+  op:('^' | '*' | '/' | '+' | '-' | '..' | '<' | '>' | '<=' | '>=' | '~=' | '==' | 'and' | 'or')
+  rhs:Expr
+
+PrefixExpr =
+  op:('not' | '-') Expr
+
+IndexExpr =
+  base:Expr Index
+
+Index =
+  '[' Expr ']'
+
+IndexPath =
+  NameRef ('.' NameRef)*
 
 // vim: set shiftwidth=2
