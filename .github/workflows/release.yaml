@@ -111,4 +111,4 @@ jobs:
         file: dist/lua-analyzer-x86_64-unknown-linux-gnu.tar.gz
         tag: ${{ env.TAG }}
         overwrite: true
-        file_glob: true
+        # file_glob: true
