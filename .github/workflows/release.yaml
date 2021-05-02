@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-release:
-    name: create-release
+    name: build-release
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -107,7 +107,7 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: dist/lua-analyzer*
+        file: "dist/lua-analyzer*"
         # file: dist/lua-analyzer-x86_64-unknown-linux-gnu.tar.gz
         tag: ${{ env.TAG }}
         overwrite: true
