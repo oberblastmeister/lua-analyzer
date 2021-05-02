@@ -74,6 +74,12 @@ jobs:
           echo "ASSET=lua-analyzer-${{ matrix.target }}.tar.gz" >> $GITHUB_ENV
         fi
 
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: lua-analyzer
+        path: ${{ env.ASSET }}
+
     - name: Release
       uses: svenstaro/upload-release-action@v2
       with:
