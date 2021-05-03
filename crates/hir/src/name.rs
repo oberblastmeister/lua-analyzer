@@ -5,7 +5,7 @@ use crate::item_tree::IdRange;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct MultiName {
-    names: IdRange<Name>,
+    names: Vec<Name>,
 }
 
 impl MultiName {
