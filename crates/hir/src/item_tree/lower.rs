@@ -117,8 +117,7 @@ impl Ctx {
     }
 
     fn lower_multiname(&mut self, multi_name: &ast::MultiName) -> MultiName {
-        todo!()
-        // let names: Vec<_> = multi_name.names().map(|n| n.as_name()).collect();
-        // MultiName::new(names)
+        let names: Vec<_> = multi_name.names().map(|n| n.as_name()).collect();
+        MultiName::new(names)
     }
 }

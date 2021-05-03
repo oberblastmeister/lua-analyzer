@@ -113,9 +113,9 @@ jobs:
         tag: ${{ env.TAG }}
         # files: ${{ env.CONTENTS }}
         files: >
-          dist/lua-analyzer-x86_64-unknown-linux-gnu
-          dist/lua-analyzer-x86_64-apple-darwin
-          dist/lua-analyzer-x86_64-pc-windows-msvc
+          dist/lua-analyzer-x86_64-unknown-linux-gnu.tar.gz
+          dist/lua-analyzer-x86_64-apple-darwin.tar.gz
+          dist/lua-analyzer-x86_64-pc-windows-msvc.exe
         gzip: false
       
         #
