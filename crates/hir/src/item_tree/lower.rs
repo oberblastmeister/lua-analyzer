@@ -42,7 +42,7 @@ impl Ctx {
 
     fn lower_mod_item(&mut self, item: &ast::StmtItem, inner: bool) -> Option<ModItem> {
         // match item {
-            // ast::StmtItem::FunctionDefStmt(_) | ast::StmtItem::func
+        // ast::StmtItem::FunctionDefStmt(_) | ast::StmtItem::func
         // }
 
         let items = match item {

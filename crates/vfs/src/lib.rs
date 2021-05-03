@@ -1,11 +1,8 @@
-mod path_interner;
 pub mod handle;
 pub mod loader;
+mod path_interner;
 
-use std::{
-    fmt, mem,
-    path::Path,
-};
+use std::{fmt, mem, path::Path};
 
 use path_interner::PathInterner;
 
