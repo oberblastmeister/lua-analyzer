@@ -111,6 +111,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ env.TAG }}
         files: ${{ env.CONTENTS }}
+        allow_override: true
         # files: >
         #   dist/lua-analyzer-x86_64-unknown-linux-gnu.tar.gz
         #   dist/lua-analyzer-x86_64-apple-darwin.tar.gz
