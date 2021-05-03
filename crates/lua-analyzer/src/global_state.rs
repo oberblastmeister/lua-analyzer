@@ -35,6 +35,7 @@ pub struct GlobalState {
     pub(crate) shutdown_requested: bool,
     pub(crate) sender: Sender<lsp_server::Message>,
     pub(crate) task_pool: Handle<TaskPool<Task>, Receiver<Task>>,
+    pub(crate) loader: Handle<Box<dyn vfs::handle::Handle>, Receiver<vfs::handle::Message>>,
     pub(crate) mem_docs: FxHashMap<AbsPathBuf, DocumentData>,
     pub(crate) vfs: Arc<RwLock<vfs::Vfs>>,
     pub(crate) config: Arc<Config>,
@@ -43,6 +44,14 @@ pub struct GlobalState {
 
 impl GlobalState {
     pub(crate) fn new(sender: Sender<lsp_server::Message>, config: Config) -> GlobalState {
+        let loader = {
+            let (sender, receiver) = unbounded::<vfs::handle::Message>();
+            let handle: vfs::loader::FileLoaderHandle =
+                vfs::handle::Handle::spawn(Box::new(move |msg| sender.send(msg).unwrap()));
+            let handle = Box::new(handle) as Box<dyn vfs::handle::Handle>;
+            Handle { handle, receiver }
+        };
+
         let task_pool = {
             let (sender, receiver) = unbounded();
             let handle = TaskPool::new(sender);
@@ -54,6 +63,7 @@ impl GlobalState {
             sender,
             vfs: Arc::new(RwLock::new(vfs::Vfs::default())),
             task_pool,
+            loader,
             mem_docs: FxHashMap::default(),
             config: Arc::new(config),
             analysis_host: AnalysisHost::new(),
@@ -92,7 +102,12 @@ impl GlobalState {
     }
 
     pub(crate) fn snapshot(&self) -> GlobalStateSnapshot {
-        GlobalStateSnapshot { analysis: self.analysis_host.analysis(), vfs: self.vfs.clone() }
+        GlobalStateSnapshot {
+            analysis: self.analysis_host.analysis(),
+            vfs: self.vfs.clone(),
+            mem_docs: self.mem_docs.clone(),
+            config: self.config.clone(),
+        }
     }
 
     pub(crate) fn send_request<R: lsp_types::request::Request>(
@@ -185,6 +200,8 @@ impl GlobalState {
 pub(crate) struct GlobalStateSnapshot {
     pub(crate) analysis: Analysis,
     vfs: Arc<RwLock<vfs::Vfs>>,
+    mem_docs: FxHashMap<AbsPathBuf, DocumentData>,
+    pub(crate) config: Arc<Config>,
 }
 
 impl GlobalStateSnapshot {

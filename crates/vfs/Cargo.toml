@@ -7,6 +7,11 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+crossbeam-channel = "0.5.1"
+indexmap = "1.6.2"
+jod-thread = "0.1.2"
+log = "0.4.14"
 rustc-hash = "1.1.0"
 
 stdx = { path = "../stdx", version = "0.0.0" }
+walkdir = "2.3.2"

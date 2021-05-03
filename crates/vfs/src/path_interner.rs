@@ -1,35 +1,30 @@
-use std::path::{Path, PathBuf};
+use std::hash::BuildHasherDefault;
+
+use indexmap::IndexSet;
+use rustc_hash::FxHasher;
+use stdx::paths::{AbsPath, AbsPathBuf};
 
 use crate::FileId;
 
-use rustc_hash::FxHashMap;
-use stdx::paths::{AbsPath, AbsPathBuf};
+type FxIndexSet<T> = IndexSet<T, BuildHasherDefault<FxHasher>>;
 
 #[derive(Default)]
 pub(crate) struct PathInterner {
-    /// path to id
-    map: FxHashMap<AbsPathBuf, FileId>,
-    /// id to path
-    vec: Vec<AbsPathBuf>,
+    map: FxIndexSet<AbsPathBuf>,
 }
 
 impl PathInterner {
     pub(crate) fn get(&self, path: &AbsPath) -> Option<FileId> {
-        self.map.get(path).copied()
+        self.map.get_index_of(path).map(|i| FileId(i as u32))
     }
 
     pub(crate) fn intern(&mut self, path: AbsPathBuf) -> FileId {
-        if let Some(id) = self.get(&path) {
-            return id;
-        }
-
-        let id = FileId(self.vec.len() as u32);
-        self.map.insert(path.clone(), id);
-        self.vec.push(path);
-        id
+        let (id, _added) = self.map.insert_full(path);
+        assert!(id < u32::MAX as usize);
+        FileId(id as u32)
     }
 
     pub(crate) fn lookup(&self, id: FileId) -> &AbsPath {
-        &self.vec[id.0 as usize]
+        self.map.get_index(id.0 as usize).unwrap()
     }
 }
