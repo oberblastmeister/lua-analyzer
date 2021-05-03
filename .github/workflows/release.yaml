@@ -100,15 +100,26 @@ jobs:
         path: dist
 
     - name: List downloaded files
-      run: ls -R
+      run: |
+        contents=$(find $(pwd) -maxdepth 1 | tail -n +2 | paste -sd " ")
+        echo "CONTENTS=$contents" >> $GITHUB_ENV
+        echo $contents
       working-directory: dist
 
     - name: Release
-      uses: svenstaro/upload-release-action@v2
+      uses: meeDamian/github-release@2.0
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: "dist/lua-analyzer*"
-        # file: dist/lua-analyzer-x86_64-unknown-linux-gnu.tar.gz
+        token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ env.TAG }}
-        overwrite: true
-        file_glob: true
+        files: ${{ env.CONTENTS }}
+        gzip: false
+      
+    # - name: Release
+    #   uses: svenstaro/upload-release-action@v2
+    #   with:
+    #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+    #     file: "dist/lua-analyzer*"
+    #     # file: dist/lua-analyzer-x86_64-unknown-linux-gnu.tar.gz
+    #     tag: ${{ env.TAG }}
+    #     overwrite: true
+    #     file_glob: true
