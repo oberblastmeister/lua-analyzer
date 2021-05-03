@@ -9,7 +9,7 @@ pub struct MultiName {
 }
 
 impl MultiName {
-    pub fn new(names: IdRange<Name>) -> Self {
+    pub fn new(names: Vec<Name>) -> Self {
         Self { names }
     }
 }
