@@ -6,10 +6,7 @@ pub use change::Change;
 pub use salsa;
 pub use vfs::FileId;
 
-use syntax::{
-    ast::{self, SourceFile},
-    Parse,
-};
+use syntax::{Parse, SyntaxNode, ast::{self, AstNode, SourceFile}};
 
 use std::{panic, sync::Arc};
 

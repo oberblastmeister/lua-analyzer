@@ -13,7 +13,7 @@ use item_tree::ItemTree;
 pub use semantics::Semantics;
 
 use base_db::{salsa, FileId, SourceDatabase, Upcast};
-use syntax::ast::AstNode;
+use syntax::{ast::AstNode, SyntaxNode};
 
 #[salsa::query_group(InternDatabaseStorage)]
 pub trait InternDatabase: SourceDatabase {
@@ -23,6 +23,13 @@ pub trait InternDatabase: SourceDatabase {
 #[salsa::query_group(AstDatabaseStorage)]
 pub trait AstDatabase: SourceDatabase {
     fn ast_id_map(&self, file_id: FileId) -> Arc<AstIdMap>;
+
+    #[salsa::transparent]
+    fn syntax_node(&self, file_id: FileId) -> SyntaxNode;
+}
+
+fn syntax_node(db: &dyn SourceDatabase, file_id: FileId) -> SyntaxNode {
+    db.parse(file_id).tree().syntax().clone()
 }
 
 fn ast_id_map(db: &dyn AstDatabase, file_id: FileId) -> Arc<AstIdMap> {

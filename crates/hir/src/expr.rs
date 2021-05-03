@@ -22,8 +22,8 @@ pub enum Expr {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ParamList {
-    names: MultiName,
-    vararg: bool,
+    pub names: MultiName,
+    pub vararg: bool,
 }
 
 pub struct Call {

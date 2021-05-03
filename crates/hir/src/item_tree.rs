@@ -306,7 +306,7 @@ pub type AstId<N> = InFile<FileAstId<N>>;
 
 impl<N: AstNode> AstId<N> {
     pub fn to_node(&self, db: &dyn crate::AstDatabase) -> N {
-        let root = db.parse(self.file_id).tree().syntax();
+        let root = db.parse(self.file_id).syntax_node();
         db.ast_id_map(self.file_id).get(self.value).to_node(&root)
     }
 }
