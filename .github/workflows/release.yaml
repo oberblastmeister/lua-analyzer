@@ -101,21 +101,20 @@ jobs:
 
     - name: List downloaded files
       run: |
-        contents=$(find $(pwd) -maxdepth 1 | tail -n +2 | paste -sd " ")
+        contents=$(find dist -maxdepth 1 | tail -n +2 | paste -sd " ")
         echo "CONTENTS=$contents" >> $GITHUB_ENV
-        echo $contents
-      working-directory: dist
+        echo "${{ env.CONTENTS }}"
 
     - name: Release
       uses: meeDamian/github-release@2.0
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ env.TAG }}
-        # files: ${{ env.CONTENTS }}
-        files: >
-          dist/lua-analyzer-x86_64-unknown-linux-gnu.tar.gz
-          dist/lua-analyzer-x86_64-apple-darwin.tar.gz
-          dist/lua-analyzer-x86_64-pc-windows-msvc.exe
+        files: ${{ env.CONTENTS }}
+        # files: >
+        #   dist/lua-analyzer-x86_64-unknown-linux-gnu.tar.gz
+        #   dist/lua-analyzer-x86_64-apple-darwin.tar.gz
+        #   dist/lua-analyzer-x86_64-pc-windows-msvc.exe
         gzip: false
       
         #
