@@ -4,10 +4,10 @@ use base_db::FileId;
 use la_arena::Idx;
 use syntax::{
     ast::{self, AstNode},
-    SourceFile,
+    match_ast, SourceFile, SyntaxNode, WalkEvent,
 };
 
-use crate::{ast_id_map::AstIdMap, name::AsName, DefDatabase};
+use crate::{ast_id_map::AstIdMap, expr::ParamList, name::AsName, DefDatabase};
 
 use super::{
     FileItemTreeId, Function, IndexPath, ItemTree, ItemTreeData, ItemTreeNode, LocalAssign,
@@ -41,6 +41,10 @@ impl Ctx {
     }
 
     fn lower_mod_item(&mut self, item: &ast::StmtItem, inner: bool) -> Option<ModItem> {
+        // match item {
+            // ast::StmtItem::FunctionDefStmt(_) | ast::StmtItem::func
+        // }
+
         let items = match item {
             ast::StmtItem::LocalAssignStmt(ast) => self.lower_local_assign(ast).map(Into::into),
             ast::StmtItem::LocalFunctionDefStmt(ast) => {
@@ -52,11 +56,42 @@ impl Ctx {
         items
     }
 
+    fn collect_inner_items(&mut self, container: &SyntaxNode) {
+        let mut block_stack = Vec::new();
+
+        for event in container.preorder().skip(1) {
+            match event {
+                WalkEvent::Enter(node) => {
+                    match_ast! {
+                        match node {
+                            ast::Block(block) => {
+                                block_stack.push(self.ast_id_map.ast_id(&block));
+                            },
+                            ast::StmtItem(item) => {
+                                let mod_item = self.lower_mod_item(&item, true);
+                                let current_block = block_stack.last();
+                                if let (Some(mod_item), Some(block)) = (mod_item, current_block) {
+                                    self.data().inner_items.entry(*block).or_default().push(mod_item);
+                                }
+                            },
+                            _ => (),
+                        }
+                    }
+                }
+                WalkEvent::Leave(node) => {
+                    if ast::Block::cast(node).is_some() {
+                        block_stack.pop();
+                    }
+                }
+            }
+        }
+    }
+
     fn lower_local_assign(
         &mut self,
         assign: &ast::LocalAssignStmt,
     ) -> Option<FileItemTreeId<LocalAssign>> {
-        let multi_name = self.lower_multiname(&assign.multi_name()?);
+        let multi_name = self.lower_multi_name(&assign.multi_name()?);
         let ast_id = self.ast_id_map.ast_id(assign);
 
         let res = LocalAssign { multi_name, ast_id };
@@ -69,7 +104,7 @@ impl Ctx {
         func: &ast::LocalFunctionDefStmt,
     ) -> Option<FileItemTreeId<LocalFunction>> {
         let name = func.name()?.as_name();
-        let params = self.lower_multiname(&func.param_list()?.multi_name()?);
+        let params = self.lower_params(&func.param_list()?)?;
         let ast_id = self.ast_id_map.ast_id(func);
 
         let res = LocalFunction { name, params, ast_id };
@@ -80,7 +115,7 @@ impl Ctx {
     fn lower_function(&mut self, func: &ast::FunctionDefStmt) -> Option<FileItemTreeId<Function>> {
         let (path, name, is_method) = self.lower_function_content(&func.function_def_content()?)?;
         let ast_id = self.ast_id_map.ast_id(func);
-        let params = self.lower_multiname(&func.param_list()?.multi_name()?);
+        let params = self.lower_params(&func.param_list()?)?;
 
         let res = Function { path, name, is_method, params, ast_id };
 
@@ -116,9 +151,15 @@ impl Ctx {
         IndexPath::new(text)
     }
 
-    fn lower_multiname(&mut self, multi_name: &ast::MultiName) -> MultiName {
-        todo!()
-        // let names: Vec<_> = multi_name.names().map(|n| n.as_name()).collect();
-        // MultiName::new(names)
+    fn lower_multi_name(&mut self, multi_name: &ast::MultiName) -> MultiName {
+        let names: Vec<_> = multi_name.names().map(|n| n.as_name()).collect();
+        MultiName::new(names)
+    }
+
+    fn lower_params(&mut self, params: &ast::ParamList) -> Option<ParamList> {
+        let names = self.lower_multi_name(&params.multi_name()?);
+        let vararg = params.triple_dot_token().is_some();
+        let res = ParamList { names, vararg };
+        Some(res)
     }
 }

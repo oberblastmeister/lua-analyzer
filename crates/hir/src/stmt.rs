@@ -1,14 +1,16 @@
 use la_arena::Idx;
+use syntax::ast::{self, MultiName, MultivalExpr};
 
 use crate::{
-    expr::{Call, Expr, ExprId},
-    name::{MultiName, Name},
+    expr::{Call, ExprId},
+    item_tree::AstId,
+    name::Name,
 };
 
 pub type StmtId = Idx<Stmt>;
 
 pub enum Stmt {
-    Assign { name: MultiName, initializer: Option<ExprId> },
+    Assign { lhs: MultivalExpr, rhs: MultivalExpr },
     Do(Block),
     While { condition: ExprId, body: Block },
     For { content: ForContent, body: Block },
@@ -22,10 +24,14 @@ pub enum Stmt {
 
 pub enum ForContent {
     Numeric { name: Name, start: ExprId, end: ExprId, increment: Option<ExprId> },
-    // change to multiname
-    Generic { name: Name, expr: ExprId },
+    Generic { multi_name: MultiName, expr: ExprId },
 }
 
 pub struct Block {
+    block_loc: BlockLoc,
     stmts: Vec<StmtId>,
+}
+
+pub struct BlockLoc {
+    ast_id: AstId<ast::Block>,
 }

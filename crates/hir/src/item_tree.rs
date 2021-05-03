@@ -14,11 +14,12 @@ use rustc_hash::FxHashMap;
 use smol_str::SmolStr;
 use syntax::{
     ast::{self, AstNode},
-    match_ast,
+    match_ast, SyntaxNode,
 };
 
 use crate::{
     ast_id_map::FileAstId,
+    expr::ParamList,
     name::{MultiName, Name},
     DefDatabase,
 };
@@ -70,7 +71,7 @@ pub struct ItemTreeData {
     local_functions: Arena<LocalFunction>,
     functions: Arena<Function>,
 
-    inner_items: FxHashMap<FileAstId<ast::Block>, ModItem>,
+    inner_items: FxHashMap<FileAstId<ast::Block>, Vec<ModItem>>,
 }
 
 pub trait ItemTreeNode: Clone {
@@ -181,7 +182,7 @@ pub struct LocalAssign {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct LocalFunction {
     pub name: Name,
-    pub params: MultiName,
+    pub params: ParamList,
     pub ast_id: FileAstId<ast::LocalFunctionDefStmt>,
 }
 
@@ -190,7 +191,7 @@ pub struct Function {
     pub path: IndexPath,
     pub name: Name,
     pub is_method: bool,
-    pub params: MultiName,
+    pub params: ParamList,
     pub ast_id: FileAstId<ast::FunctionDefStmt>,
 }
 
@@ -298,3 +299,60 @@ impl<T> PartialEq for IdRange<T> {
 }
 
 impl<T> Eq for IdRange<T> {}
+
+///
+/// It is stable across reparses, and can be used as salsa key/value.
+pub type AstId<N> = InFile<FileAstId<N>>;
+
+impl<N: AstNode> AstId<N> {
+    pub fn to_node(&self, db: &dyn crate::AstDatabase) -> N {
+        let root = db.parse(self.file_id).tree().syntax();
+        db.ast_id_map(self.file_id).get(self.value).to_node(&root)
+    }
+}
+
+/// `InFile<T>` stores a value of `T` inside a particular file/syntax tree.
+///
+/// Typical usages are:
+///
+/// * `InFile<SyntaxNode>` -- syntax node in a file
+/// * `InFile<ast::FnDef>` -- ast node in a file
+/// * `InFile<TextSize>` -- offset in a file
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+pub struct InFile<T> {
+    pub file_id: FileId,
+    pub value: T,
+}
+
+impl<T> InFile<T> {
+    pub fn new(file_id: FileId, value: T) -> InFile<T> {
+        InFile { file_id, value }
+    }
+
+    pub fn with_value<U>(&self, value: U) -> InFile<U> {
+        InFile::new(self.file_id, value)
+    }
+
+    pub fn map<F: FnOnce(T) -> U, U>(self, f: F) -> InFile<U> {
+        InFile::new(self.file_id, f(self.value))
+    }
+    pub fn as_ref(&self) -> InFile<&T> {
+        self.with_value(&self.value)
+    }
+    pub fn file_syntax(&self, db: &dyn crate::AstDatabase) -> SyntaxNode {
+        db.parse(self.file_id).tree().syntax().clone()
+    }
+}
+
+impl<T: Clone> InFile<&T> {
+    pub fn cloned(&self) -> InFile<T> {
+        self.with_value(self.value.clone())
+    }
+}
+
+impl<T> InFile<Option<T>> {
+    pub fn transpose(self) -> Option<InFile<T>> {
+        let value = self.value?;
+        Some(InFile::new(self.file_id, value))
+    }
+}

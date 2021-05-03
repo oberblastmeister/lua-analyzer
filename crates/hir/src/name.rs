@@ -1,15 +1,13 @@
 use smol_str::SmolStr;
 use syntax::ast::{self, AstNode};
 
-use crate::item_tree::IdRange;
-
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct MultiName {
-    names: IdRange<Name>,
+    names: Vec<Name>,
 }
 
 impl MultiName {
-    pub fn new(names: IdRange<Name>) -> Self {
+    pub fn new(names: Vec<Name>) -> Self {
         Self { names }
     }
 }
