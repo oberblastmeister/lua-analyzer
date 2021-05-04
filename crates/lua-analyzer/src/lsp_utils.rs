@@ -6,9 +6,16 @@ use crate::from_proto;
 
 use ide::LineIndex;
 use ide_db::base_db::Canceled;
+use lsp_server::Notification;
 
 pub(crate) fn is_canceled(e: &(dyn Error + 'static)) -> bool {
     e.downcast_ref::<Canceled>().is_some()
+}
+
+pub(crate) fn notification_is<N: lsp_types::notification::Notification>(
+    notification: &Notification,
+) -> bool {
+    notification.method == N::METHOD
 }
 
 pub(crate) fn apply_document_changes(

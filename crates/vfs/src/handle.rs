@@ -23,7 +23,6 @@ pub struct Config {
 }
 
 /// Message about an action taken by a [`Handle`].
-#[derive(Debug)]
 pub enum Message {
     /// Indicate a gradual progress.
     ///
@@ -46,4 +45,20 @@ pub trait Handle: fmt::Debug {
     fn invalidate(&mut self, path: AbsPathBuf);
 
     fn load_sync(&mut self, path: &AbsPath) -> Option<Vec<u8>>;
+}
+
+impl fmt::Debug for Message {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Message::Loaded { files } => {
+                f.debug_struct("Loaded").field("n_files", &files.len()).finish()
+            }
+            Message::Progress { n_total, n_done, config_version } => f
+                .debug_struct("Progress")
+                .field("n_total", n_total)
+                .field("n_done", n_done)
+                .field("config_version", config_version)
+                .finish(),
+        }
+    }
 }

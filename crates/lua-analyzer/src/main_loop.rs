@@ -1,9 +1,10 @@
-use std::time::Instant;
+use std::{fmt, time::Instant};
 
 use anyhow::{bail, Result};
 
 use crossbeam_channel::{select, Receiver};
 use ide::FileId;
+use log::info;
 use lsp_server::{Connection, Notification, Request, Response};
 use lsp_types::{notification::Notification as _, Diagnostic};
 use stdx::paths::AbsPathBuf;
@@ -14,14 +15,46 @@ use crate::{
     from_proto,
     global_state::{file_id_to_url, GlobalState},
     handlers,
-    lsp_utils::apply_document_changes,
+    lsp_utils::{apply_document_changes, notification_is},
 };
 
-#[derive(Debug)]
 pub(crate) enum Event {
     Lsp(lsp_server::Message),
     Task(Task),
     Vfs(vfs::handle::Message),
+}
+
+impl fmt::Debug for Event {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let debug_verbose_not = |not: &Notification, f: &mut fmt::Formatter| {
+            f.debug_struct("Notification").field("method", &not.method).finish()
+        };
+
+        match self {
+            Event::Lsp(lsp_server::Message::Notification(not)) => {
+                use lsp_types::notification::*;
+
+                if notification_is::<DidOpenTextDocument>(not)
+                    || notification_is::<DidChangeTextDocument>(not)
+                {
+                    return debug_verbose_not(not, f);
+                }
+            }
+            Event::Task(Task::Response(resp)) => {
+                return f
+                    .debug_struct("Response")
+                    .field("id", &resp.id)
+                    .field("error", &resp.error)
+                    .finish();
+            }
+            _ => (),
+        }
+        match self {
+            Event::Lsp(it) => fmt::Debug::fmt(it, f),
+            Event::Task(it) => fmt::Debug::fmt(it, f),
+            Event::Vfs(it) => fmt::Debug::fmt(it, f),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -39,7 +72,7 @@ impl GlobalState {
         while let Some(event) = self.next_event(&inbox) {
             if let Event::Lsp(lsp_server::Message::Notification(not)) = &event {
                 if not.method == lsp_types::notification::Exit::METHOD {
-                    log::error!("We exited properly");
+                    log::info!("We exited properly");
                     return Ok(());
                 }
             }
@@ -56,11 +89,17 @@ impl GlobalState {
 
             recv(self.task_pool.receiver) -> task =>
                 Some(Event::Task(task.unwrap())),
+
+            recv(self.loader.receiver) -> task =>
+                Some(Event::Vfs(task.unwrap())),
         }
     }
 
     fn handle_event(&mut self, event: Event) -> Result<()> {
         let loop_start = Instant::now();
+
+        info!("handle_event({:?})", event);
+
         match event {
             Event::Lsp(msg) => self.handle_lsp(msg, loop_start)?,
             Event::Task(task) => self.handle_task(task)?,

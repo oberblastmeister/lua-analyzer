@@ -1,5 +1,7 @@
+use std::fmt;
+
 use crossbeam_channel::{select, unbounded, Receiver, Sender};
-use log::debug;
+use log::info;
 use stdx::paths::{AbsPath, AbsPathBuf};
 use walkdir::WalkDir;
 
@@ -28,12 +30,16 @@ impl handle::Handle for FileLoaderHandle {
         FileLoaderHandle { sender, thread }
     }
 
-    fn set_config(&mut self, config: Config) {}
+    fn set_config(&mut self, config: Config) {
+        self.sender.send(Message::Config(config)).unwrap();
+    }
 
-    fn invalidate(&mut self, path: AbsPathBuf) {}
+    fn invalidate(&mut self, path: AbsPathBuf) {
+        self.sender.send(Message::Invalidate(path)).unwrap();
+    }
 
     fn load_sync(&mut self, path: &AbsPath) -> Option<Vec<u8>> {
-        todo!()
+        read(path)
     }
 }
 
@@ -54,7 +60,7 @@ impl FileLoaderActor {
 
     fn run(mut self, inbox: Receiver<Message>) {
         while let Some(event) = self.next_event(&inbox) {
-            debug!("vfs file loader event: {:#?}", event);
+            info!("vfs file loader event: {:#?}", event);
 
             match event {
                 Message::Config(config) => {

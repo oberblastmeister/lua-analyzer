@@ -2,7 +2,7 @@ use std::{sync::Arc, time::Instant};
 
 use crossbeam_channel::{unbounded, Receiver, Sender};
 use ide::{Analysis, AnalysisHost, Cancelable, Change, FileId, LineIndex};
-use log::{error, trace};
+use log::{error, info, trace};
 use lsp_server::{Notification, Request};
 use lsp_types::Url;
 use parking_lot::RwLock;
