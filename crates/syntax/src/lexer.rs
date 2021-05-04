@@ -19,9 +19,6 @@ macro_rules! done {
 }
 
 macro_rules! bail {
-    () => {
-        return LexResult::new(T![unknown], None)
-    };
     (T![$match:tt]) => {
         return LexResult::new(T![$match], None)
     };
@@ -62,9 +59,10 @@ impl TokenErr {
     }
 }
 
+/// Tokenize text into a vector of tokens and errors
 pub fn tokenize(text: &str) -> (Vec<Token>, Vec<SyntaxError>) {
     let mut errors = Vec::new();
-    let tokens = tokenize_iter(text)
+    let tokens = tokenizer(text)
         .map(|res| {
             let (token, err) = res.inner();
             errors.extend(err);
@@ -75,11 +73,12 @@ pub fn tokenize(text: &str) -> (Vec<Token>, Vec<SyntaxError>) {
     (tokens, errors)
 }
 
-pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = SyntaxResult<Token>> + '_ {
+/// Returns a tokenizer iterator that will turn the source text into tokens
+pub fn tokenizer(mut text: &str) -> impl Iterator<Item = SyntaxResult<Token>> + '_ {
     let mut pos = TextSize::from(0);
 
     iter::from_fn(move || {
-        let res = lex_first_token(input)?;
+        let res = lex_first_token(text)?;
 
         let range = res.ok_ref().range;
 
@@ -90,7 +89,7 @@ pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = SyntaxResult<Token
         let len = range.len();
 
         pos += len;
-        input = &input[len.into()..];
+        text = &text[len.into()..];
 
         Some(res)
     })
@@ -280,7 +279,10 @@ impl<'a> Lexer<'a> {
             _ if is_number(c) => return self.number(),
             _ if is_whitespace(c) => done!(self.whitespace()),
 
-            _ => T![unknown],
+            _ => {
+                self.bump(Any);
+                bail!(T![unknown], "Got an unknown token")
+            }
         };
 
         // if we got here, that means that the token was only length 1

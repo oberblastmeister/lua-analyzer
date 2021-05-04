@@ -70,15 +70,6 @@ impl<'a> Parser<'a> {
         self.do_bump()
     }
 
-    fn get_msg<S: fmt::Display>(&self, message: S) -> String {
-        let msg = if self.current() == T![unknown] {
-            format!("Got an unknown token. {}", message)
-        } else {
-            message.to_string()
-        };
-        msg
-    }
-
     /// Create an error node and consume the next token.
     pub(crate) fn err_recover<S: fmt::Display>(&mut self, message: S, recovery: TokenSet) {
         match self.current() {
@@ -95,9 +86,8 @@ impl<'a> Parser<'a> {
         }
 
         let m = self.start_error();
-        let msg = self.get_msg(message);
         self.bump_any();
-        m.complete(self, ParseError::Message(msg));
+        m.complete(self, ParseError::Message(message.to_string()));
     }
 
     pub(crate) fn err_and_bump(&mut self, message: &'static str) {

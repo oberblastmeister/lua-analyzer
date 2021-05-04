@@ -1,4 +1,4 @@
-use super::lexer::{tokenize, tokenize_iter};
+use super::lexer::{tokenize, tokenizer};
 use super::*;
 use std::{
     fmt, fs,

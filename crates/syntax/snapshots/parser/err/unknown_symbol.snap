@@ -32,15 +32,27 @@ Errors:
 =============================
 [
     SyntaxError(
-        "Got an unknown token. Expected an expression",
+        "Expected an expression",
         12..13,
     ),
     SyntaxError(
-        "Got an unknown token. Expected a statement",
+        "Expected a statement",
         13..14,
     ),
     SyntaxError(
-        "Got an unknown token. Expected a statement",
+        "Expected a statement",
+        14..15,
+    ),
+    SyntaxError(
+        "Got an unknown token",
+        12..13,
+    ),
+    SyntaxError(
+        "Got an unknown token",
+        13..14,
+    ),
+    SyntaxError(
+        "Got an unknown token",
         14..15,
     ),
     SyntaxError(

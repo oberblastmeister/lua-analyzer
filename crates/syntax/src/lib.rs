@@ -11,7 +11,7 @@ mod tests;
 mod token_text;
 mod validation;
 
-pub use lexer::{lex_first_syntax_kind, tokenize, tokenize_iter};
+pub use lexer::{lex_first_syntax_kind, tokenize, tokenizer};
 pub use parser::{SyntaxKind, Token, N, T};
 pub use ptr::{AstPtr, SyntaxNodePtr};
 pub use rowan::{TextRange, TextSize, WalkEvent};
