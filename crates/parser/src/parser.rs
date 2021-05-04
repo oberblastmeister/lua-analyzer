@@ -282,11 +282,6 @@ impl CompletedMarker<RegularMarker> {
         new_pos
     }
 
-    pub(crate) fn precede_unit(self, p: &mut Parser, kind: SyntaxKind) -> MarkerComplete {
-        let m = self.precede(p);
-        m.complete(p, kind)
-    }
-
     /// Undo this completion and turns into a `Marker`
     pub(crate) fn undo_completion(self, p: &mut Parser) -> Marker<RegularMarker> {
         let start_idx = self.start_pos as usize;

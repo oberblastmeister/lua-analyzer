@@ -1,7 +1,7 @@
 use smol_str::SmolStr;
 use syntax::ast::{self, AstNode};
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub struct MultiName {
     names: Vec<Name>,
 }
@@ -12,7 +12,7 @@ impl MultiName {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Name(SmolStr);
 
 impl Name {

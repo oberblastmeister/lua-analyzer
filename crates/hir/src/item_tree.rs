@@ -17,12 +17,7 @@ use syntax::{
     match_ast, SyntaxNode,
 };
 
-use crate::{
-    ast_id_map::FileAstId,
-    expr::ParamList,
-    name::{MultiName, Name},
-    DefDatabase,
-};
+use crate::{DefDatabase, InFile, ast_id_map::FileAstId, expr::ParamList, name::{MultiName, Name}};
 
 #[derive(Debug, Default, Eq, PartialEq)]
 pub struct ItemTree {
@@ -162,7 +157,7 @@ impl<N: ItemTreeNode> Hash for ItemTreeId<N> {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Default)]
+#[derive(Debug, Clone, Eq, PartialEq, Default, Hash)]
 pub struct IndexPath {
     segments: Vec<Name>,
 }
@@ -173,20 +168,20 @@ impl IndexPath {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct LocalAssign {
     pub multi_name: MultiName,
     pub ast_id: FileAstId<ast::LocalAssignStmt>,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct LocalFunction {
     pub name: Name,
     pub params: ParamList,
     pub ast_id: FileAstId<ast::LocalFunctionDefStmt>,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Function {
     pub path: IndexPath,
     pub name: Name,
@@ -311,48 +306,8 @@ impl<N: AstNode> AstId<N> {
     }
 }
 
-/// `InFile<T>` stores a value of `T` inside a particular file/syntax tree.
-///
-/// Typical usages are:
-///
-/// * `InFile<SyntaxNode>` -- syntax node in a file
-/// * `InFile<ast::FnDef>` -- ast node in a file
-/// * `InFile<TextSize>` -- offset in a file
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
-pub struct InFile<T> {
-    pub file_id: FileId,
-    pub value: T,
-}
-
-impl<T> InFile<T> {
-    pub fn new(file_id: FileId, value: T) -> InFile<T> {
-        InFile { file_id, value }
-    }
-
-    pub fn with_value<U>(&self, value: U) -> InFile<U> {
-        InFile::new(self.file_id, value)
-    }
-
-    pub fn map<F: FnOnce(T) -> U, U>(self, f: F) -> InFile<U> {
-        InFile::new(self.file_id, f(self.value))
-    }
-    pub fn as_ref(&self) -> InFile<&T> {
-        self.with_value(&self.value)
-    }
-    pub fn file_syntax(&self, db: &dyn crate::AstDatabase) -> SyntaxNode {
-        db.parse(self.file_id).tree().syntax().clone()
-    }
-}
-
-impl<T: Clone> InFile<&T> {
-    pub fn cloned(&self) -> InFile<T> {
-        self.with_value(self.value.clone())
-    }
-}
-
-impl<T> InFile<Option<T>> {
-    pub fn transpose(self) -> Option<InFile<T>> {
-        let value = self.value?;
-        Some(InFile::new(self.file_id, value))
-    }
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct ItemLoc<N: ItemTreeNode> {
+    pub id: ItemTreeId<N>,
+    pub node: InFile<N>,
 }

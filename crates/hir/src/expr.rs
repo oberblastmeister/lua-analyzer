@@ -6,8 +6,14 @@ use crate::{
     stmt::StmtId,
 };
 
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct Label {
+    name: Name,
+}
+
 pub type ExprId = Idx<Expr>;
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Expr {
     Missing,
     Call(Call),
@@ -20,28 +26,33 @@ pub enum Expr {
     Table(Table),
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct ParamList {
     pub names: MultiName,
     pub vararg: bool,
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Call {
     callee: ExprId,
     method_name: Option<Name>,
     args: CallArgs,
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum CallArgs {
     ArgList { args: Vec<ExprId> },
     Str(String),
     Table(Table),
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct BinaryOp {}
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct UnaryOp {}
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Table {}
 
 #[derive(Debug, Clone, Eq, PartialEq)]
