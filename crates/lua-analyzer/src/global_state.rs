@@ -2,6 +2,7 @@ use std::{sync::Arc, time::Instant};
 
 use crossbeam_channel::{unbounded, Receiver, Sender};
 use ide::{Analysis, AnalysisHost, Cancelable, Change, FileId, LineIndex};
+use log::{error, trace};
 use lsp_server::{Notification, Request};
 use lsp_types::Url;
 use parking_lot::RwLock;
@@ -40,6 +41,7 @@ pub struct GlobalState {
     pub(crate) vfs: Arc<RwLock<vfs::Vfs>>,
     pub(crate) config: Arc<Config>,
     pub(crate) analysis_host: AnalysisHost,
+    pub(crate) vfs_config_version: u32,
 }
 
 impl GlobalState {
@@ -69,6 +71,7 @@ impl GlobalState {
             analysis_host: AnalysisHost::new(),
             diagnostics: Default::default(),
             shutdown_requested: false,
+            vfs_config_version: 0,
         }
     }
 
@@ -175,7 +178,7 @@ impl GlobalState {
             .map(|path| self.vfs.read().file_id(&path).unwrap())
             .collect::<Vec<_>>();
 
-        log::trace!("updating notifications for {:?}", subscriptions);
+        trace!("updating notifications for {:?}", subscriptions);
         let snapshot = self.snapshot();
         self.task_pool.handle.spawn(move || {
             let diagnostics = subscriptions
@@ -184,7 +187,7 @@ impl GlobalState {
                     handlers::publish_diagnostics(&snapshot, file_id)
                         .map_err(|err| {
                             if !is_canceled(&*err) {
-                                log::error!("failed to compute diagnostics: {:?}", err);
+                                error!("failed to compute diagnostics: {:?}", err);
                             }
                             ()
                         })

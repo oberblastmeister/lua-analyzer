@@ -27,12 +27,17 @@ impl Config {
     pub fn new(root_path: AbsPathBuf, caps: ClientCapabilities) -> Self {
         Config { caps, data: ConfigData::default(), root_path }
     }
+
     pub fn update(&mut self, json: serde_json::Value) {
         log::info!("updating config from JSON: {:#}", json);
         if json.is_null() || json.as_object().map_or(false, |it| it.is_empty()) {
             return;
         }
         self.data = ConfigData::from_json(json);
+    }
+
+    pub fn library(&self) -> &[String] {
+        &self.data.workspace_library
     }
 }
 

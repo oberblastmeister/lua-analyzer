@@ -3,7 +3,7 @@
 use std::{
     borrow::Borrow,
     convert::{TryFrom, TryInto},
-    ops,
+    fmt, ops,
     path::{Component, Path, PathBuf},
 };
 
@@ -71,9 +71,12 @@ impl AbsPathBuf {
     /// # Panics
     ///
     /// Panics if `path` is not absolute.
-    pub fn assert(path: PathBuf) -> AbsPathBuf {
-        AbsPathBuf::try_from(path)
-            .unwrap_or_else(|path| panic!("expected absolute path, got {}", path.display()))
+    pub fn assert<P>(path: P) -> AbsPathBuf
+    where
+        P: TryInto<AbsPathBuf> + fmt::Debug,
+        <P as TryInto<AbsPathBuf>>::Error: fmt::Debug,
+    {
+        path.try_into().unwrap_or_else(|path| panic!("expected absolute path, got {:?}", path))
     }
 
     /// Coerces to a `AbsPath` slice.

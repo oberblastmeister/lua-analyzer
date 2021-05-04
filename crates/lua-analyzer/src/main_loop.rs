@@ -6,6 +6,7 @@ use crossbeam_channel::{select, Receiver};
 use ide::FileId;
 use lsp_server::{Connection, Notification, Request, Response};
 use lsp_types::{notification::Notification as _, Diagnostic};
+use stdx::paths::AbsPathBuf;
 
 use crate::{
     config::Config,
@@ -20,6 +21,7 @@ use crate::{
 pub(crate) enum Event {
     Lsp(lsp_server::Message),
     Task(Task),
+    Vfs(vfs::handle::Message),
 }
 
 #[derive(Debug)]
@@ -60,28 +62,9 @@ impl GlobalState {
     fn handle_event(&mut self, event: Event) -> Result<()> {
         let loop_start = Instant::now();
         match event {
-            Event::Lsp(msg) => match msg {
-                lsp_server::Message::Request(req) => self.on_request(loop_start, req)?,
-                lsp_server::Message::Notification(not) => {
-                    self.on_notification(not)?;
-                }
-                lsp_server::Message::Response(resp) => self.complete_request(resp),
-            },
-            Event::Task(mut task) => loop {
-                match task {
-                    Task::Response(response) => self.respond(response),
-                    Task::Diagnostics(diagnostics_per_file) => {
-                        for (file_id, diagnostics) in diagnostics_per_file {
-                            self.diagnostics.set_native_diagnostics(file_id, diagnostics)
-                        }
-                    }
-                }
-
-                task = match self.task_pool.receiver.try_recv() {
-                    Ok(task) => task,
-                    Err(_) => break,
-                };
-            },
+            Event::Lsp(msg) => self.handle_lsp(msg, loop_start)?,
+            Event::Task(task) => self.handle_task(task)?,
+            Event::Vfs(task) => self.handle_vfs(task)?,
         }
 
         let state_changed = self.process_changes();
@@ -101,6 +84,61 @@ impl GlobalState {
                 self.send_notification::<lsp_types::notification::PublishDiagnostics>(
                     lsp_types::PublishDiagnosticsParams { uri: url, diagnostics, version },
                 );
+            }
+        }
+
+        Ok(())
+    }
+
+    fn handle_lsp(&mut self, msg: lsp_server::Message, loop_start: Instant) -> Result<()> {
+        Ok(match msg {
+            lsp_server::Message::Request(req) => self.on_request(loop_start, req)?,
+            lsp_server::Message::Notification(not) => {
+                self.on_notification(not)?;
+            }
+            lsp_server::Message::Response(resp) => self.complete_request(resp),
+        })
+    }
+
+    fn handle_task(&mut self, mut task: Task) -> Result<()> {
+        loop {
+            match task {
+                Task::Response(response) => self.respond(response),
+                Task::Diagnostics(diagnostics_per_file) => {
+                    for (file_id, diagnostics) in diagnostics_per_file {
+                        self.diagnostics.set_native_diagnostics(file_id, diagnostics)
+                    }
+                }
+            }
+
+            task = match self.task_pool.receiver.try_recv() {
+                Ok(task) => task,
+                Err(_) => break,
+            };
+        }
+
+        Ok(())
+    }
+
+    fn handle_vfs(&mut self, mut task: vfs::handle::Message) -> Result<()> {
+        loop {
+            match task {
+                vfs::handle::Message::Loaded { files } => {
+                    let vfs = &mut self.vfs.write();
+                    for (path, contents) in files {
+                        let path = AbsPathBuf::from(path);
+                        if !self.mem_docs.contains_key(&path) {
+                            vfs.set_file_contents(path, contents);
+                        }
+                    }
+                }
+                vfs::handle::Message::Progress { n_total, n_done, config_version } => {}
+            }
+
+            // Coalesce many VFS event into a single loop turn
+            task = match self.loader.receiver.try_recv() {
+                Ok(task) => task,
+                Err(_) => break,
             }
         }
 

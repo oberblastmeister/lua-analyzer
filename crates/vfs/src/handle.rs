@@ -7,6 +7,12 @@ pub struct Entry {
     pub root: AbsPathBuf,
 }
 
+impl Entry {
+    pub fn new(root: AbsPathBuf) -> Self {
+        Self { root }
+    }
+}
+
 #[derive(Debug)]
 pub struct Config {
     /// Version number to associate progress updates to the right config
@@ -17,6 +23,7 @@ pub struct Config {
 }
 
 /// Message about an action taken by a [`Handle`].
+#[derive(Debug)]
 pub enum Message {
     /// Indicate a gradual progress.
     ///
