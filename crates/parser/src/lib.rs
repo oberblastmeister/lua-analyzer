@@ -35,10 +35,7 @@ pub struct Token {
 
 impl Token {
     pub fn with_range(self, range: TextRange) -> Token {
-        Token {
-            kind: self.kind,
-            range
-        }
+        Token { kind: self.kind, range }
     }
 }
 
