@@ -34,6 +34,15 @@ pub struct Token {
 }
 
 impl Token {
+    pub fn with_range(self, range: TextRange) -> Token {
+        Token {
+            kind: self.kind,
+            range
+        }
+    }
+}
+
+impl Token {
     pub fn new(kind: SyntaxKind, range: TextRange) -> Token {
         Token { kind, range }
     }

@@ -39,20 +39,6 @@ pub trait Accept: Lexable {
     {
         assert!(self.accept(l), "Failed to accept");
     }
-
-    fn accept_repeat(self, l: &mut Lexer<'_>, repeat: u32) -> bool
-    where
-        Self: Lexable + Sized + Copy,
-    {
-        if (0..repeat).all(|i| self.nth(l, i)) {
-            for _ in 0..repeat {
-                l.bump_raw().unwrap();
-            }
-            true
-        } else {
-            false
-        }
-    }
 }
 
 impl Lexable for char {
@@ -298,5 +284,30 @@ impl<T: Copy + Lexable + Accept> Accept for Until<T> {
         Self: Lexable + Sized,
     {
         While(Not(self.0)).accept_count(l)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Repeat<T>(pub T, pub u32);
+
+impl<T: Lexable + Copy> Lexable for Repeat<T> {
+    fn nth(self, p: &Lexer<'_>, n: u32) -> bool {
+        (0..self.1).all(|i| self.0.nth(p, n + i))
+    }
+}
+
+impl<T: Copy + Lexable + Accept> Accept for Repeat<T> {
+    fn accept(self, l: &mut Lexer<'_>) -> bool
+    where
+        Self: Lexable + Sized,
+    {
+        if self.peek(l) {
+            for _ in 0..self.1 {
+                self.0.accept(l);
+            }
+            true
+        } else {
+            false
+        }
     }
 }

@@ -23,7 +23,7 @@ impl Language for LuaLanguage {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct SyntaxError(pub(crate) String, pub(crate) TextRange);
+pub struct SyntaxError(String, TextRange);
 
 impl SyntaxError {
     pub fn new(msg: String, range: TextRange) -> SyntaxError {

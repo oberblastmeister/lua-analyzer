@@ -42,7 +42,7 @@ fn reparse_token(
             }
 
             let mut new_text = get_text_after_edit(prev_token.clone().into(), &edit);
-            let (new_token_kind, new_err) = lex_first_syntax_kind(&new_text)?;
+            let (new_token_kind, new_err) = lex_first_syntax_kind(&new_text)?.inner();
 
             if new_token_kind != prev_token_kind {
                 return None;

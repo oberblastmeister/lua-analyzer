@@ -1,0 +1,16 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/lexer/ok/multiline_comment.lua
+
+---
+[
+    Token {
+        kind: Comment,
+        range: 0..60,
+    },
+    Token {
+        kind: Whitespace,
+        range: 60..61,
+    },
+]

@@ -1,10 +1,12 @@
+mod error;
+
+use std::iter;
 use std::str::Chars;
-use std::{iter, ops::Range};
 
 use rowan::{TextRange, TextSize};
-use thiserror::Error;
 
-use crate::accept::{and, not, or, seq, Accept, Any, Lexable, Until, While};
+use self::error::{LexResult, SyntaxResult};
+use crate::accept::{not, or, seq, Accept, Any, Lexable, Repeat, Until, While};
 use crate::{SyntaxError, SyntaxKind, T};
 use parser::Token;
 
@@ -12,22 +14,22 @@ pub(crate) const EOF_CHAR: char = '\0';
 
 macro_rules! done {
     ($expr:expr) => {
-        return ($expr, None);
+        return LexResult::new($expr, None);
     };
 }
 
 macro_rules! bail {
     () => {
-        return (T![unknown], None)
+        return LexResult::new(T![unknown], None)
     };
     (T![$match:tt]) => {
-        return (T![$match], None)
+        return LexResult::new(T![$match], None)
     };
     (T![$match:tt], $( $stuff:tt )*) => {
-        return (T![$match], Some(LexErrorMsg(format!($( $stuff)* ))))
+        return LexResult::new(T![$match], Some(format!($( $stuff)* )))
     };
     ($expr:expr, $( $stuff:tt )*) => {
-        return ($expr, Some(LexErrorMsg(format!($( $stuff)* ))))
+        return LexResult::new($expr, Some(format!($( $stuff)* )))
     };
 }
 
@@ -63,7 +65,8 @@ impl TokenErr {
 pub fn tokenize(text: &str) -> (Vec<Token>, Vec<SyntaxError>) {
     let mut errors = Vec::new();
     let tokens = tokenize_iter(text)
-        .map(|TokenErr { token, err }| {
+        .map(|res| {
+            let (token, err) = res.inner();
             errors.extend(err);
             token
         })
@@ -72,51 +75,48 @@ pub fn tokenize(text: &str) -> (Vec<Token>, Vec<SyntaxError>) {
     (tokens, errors)
 }
 
-pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = TokenErr> + '_ {
+pub fn tokenize_iter(mut input: &str) -> impl Iterator<Item = SyntaxResult<Token>> + '_ {
     let mut pos = TextSize::from(0);
 
     iter::from_fn(move || {
-        let mut token_err = lex_first_token(input)?;
-        token_err.token.range += pos;
-        token_err.err.as_mut().map(|err| {
-            err.1 += pos;
-        });
+        let res = lex_first_token(input)?;
 
-        let len = token_err.token.range.len();
+        let range = res.ok_ref().range;
+
+        let res = res
+            .map(|token| token.with_range(range + pos))
+            .map_err(|err| err.with_range(range + pos));
+
+        let len = range.len();
 
         pos += len;
         input = &input[len.into()..];
 
-        Some(token_err)
+        Some(res)
     })
 }
 
-pub fn lex_first_syntax_kind(text: &str) -> Option<(SyntaxKind, Option<SyntaxError>)> {
-    let TokenErr { token, err } = lex_first_token(text)?;
-    Some((token.kind, err))
+pub fn lex_first_syntax_kind(text: &str) -> Option<SyntaxResult<SyntaxKind>> {
+    Some(lex_first_token(text)?.map(|token| token.kind))
 }
 
-pub fn lex_first_token(text: &str) -> Option<TokenErr> {
+pub fn lex_first_token(text: &str) -> Option<SyntaxResult<Token>> {
     if text.is_empty() {
         return None;
     }
 
-    let WithLen { len, inner: (kind, err) } = first_lex_result(text);
+    let WithLen { len, inner: lex_result } = first_lex_result(text);
     let range = TextRange::up_to(len);
-    let token = Token::new(kind, range);
-    let err = err.map(|err| SyntaxError::new(err.0, range));
-    Some(TokenErr::new(token, err))
+    Some(
+        lex_result
+            .map(|kind| Token::new(kind, range))
+            .map_err(|e| SyntaxError::new(e.to_string(), range)),
+    )
 }
 
 fn first_lex_result(text: &str) -> WithLen<LexResult<SyntaxKind>> {
     Lexer::new(text).next_lex_result()
 }
-
-#[derive(Debug, Error, PartialEq, Eq)]
-#[error("{0}")]
-pub struct LexErrorMsg(String);
-
-type LexResult<T> = (T, Option<LexErrorMsg>);
 
 pub struct Lexer<'a> {
     input_len: u32,
@@ -187,10 +187,6 @@ impl<'a> Lexer<'a> {
 
     fn accept_count<T: Accept + Copy>(&mut self, t: T) -> u32 {
         t.accept_count(self)
-    }
-
-    fn accept_repeat<T: Accept + Copy>(&mut self, t: T, repeat: u32) -> bool {
-        t.accept_repeat(self, repeat)
     }
 
     fn lex_main(&mut self) -> LexResult<SyntaxKind> {
@@ -274,7 +270,7 @@ impl<'a> Lexer<'a> {
             '!' => T![!],
 
             '-' => match self.bump_then(Any) {
-                '-' => done!(self.comment()),
+                '-' => return self.comment(),
                 _ => done!(T![-]),
             },
 
@@ -290,7 +286,7 @@ impl<'a> Lexer<'a> {
         // if we got here, that means that the token was only length 1
         self.bump(Any);
 
-        (kind, None)
+        LexResult::just(kind)
     }
 
     fn number(&mut self) -> LexResult<SyntaxKind> {
@@ -298,7 +294,7 @@ impl<'a> Lexer<'a> {
 
         if self.accept(seq!('0', 'x')) {
             self.accept(While(is_hex));
-            return (T![number], None);
+            return LexResult::just(T![number]);
         }
 
         self.accept(While(is_number));
@@ -321,12 +317,18 @@ impl<'a> Lexer<'a> {
         T![whitespace]
     }
 
-    fn comment(&mut self) -> SyntaxKind {
+    fn comment(&mut self) -> LexResult<SyntaxKind> {
         self.bump('-');
+
+        if self.accept('[') {
+            if self.at('[') {
+                self.bracket_enclosed();
+            }
+        }
 
         self.accept(Until('\n'));
 
-        T![comment]
+        LexResult::just(T![comment])
     }
 
     fn bracket_enclosed(&mut self) -> LexResult<()> {
@@ -335,7 +337,7 @@ impl<'a> Lexer<'a> {
 
             let mut set_err = || {
                 if err.is_none() {
-                    err = Some(LexErrorMsg("Invalid bracket notation".to_string()));
+                    err = Some("Invalid bracket notation".to_string());
                 }
             };
 
@@ -367,7 +369,7 @@ impl<'a> Lexer<'a> {
 
             expect!(l.accept(']'));
 
-            ((), err)
+            LexResult::unit(err)
         }
 
         assert_matches!(self.current(), '[' | '=');
@@ -378,22 +380,20 @@ impl<'a> Lexer<'a> {
             let count = self.accept_count(While('='));
             close(self, count)
         } else {
-            ((), None)
+            LexResult::unit(None)
         }
     }
 
     fn multiline_string(&mut self) -> LexResult<SyntaxKind> {
         assert!(self.at(or!('[', '=')));
 
-        let res = self.bracket_enclosed();
-        (T![str], res.1)
+        self.bracket_enclosed().map(|_| T![str])
     }
 
     fn multiline_comment(&mut self) -> LexResult<SyntaxKind> {
         assert!(self.at(or!('[', '=')));
 
-        let res = self.bracket_enclosed();
-        (T![comment], res.1)
+        self.bracket_enclosed().map(|_| T![comment])
     }
 
     fn string(&mut self, delimit: char) -> LexResult<SyntaxKind> {
@@ -413,7 +413,7 @@ impl<'a> Lexer<'a> {
             self.bump(or!(seq!('\\', delimit), Any));
         }
 
-        (T![str], None)
+        LexResult::just(T![str])
     }
 
     fn ident(&mut self) -> SyntaxKind {
@@ -471,23 +471,23 @@ mod tests {
     #[test]
     fn accept_repeat() {
         let mut lexer = Lexer::new("===================");
-        lexer.accept_repeat('=', 19);
+        lexer.accept(Repeat('=', 19));
         assert!(lexer.is_eof());
     }
 
     #[test]
     fn accept_repeat_not_enough() {
         let mut lexer = Lexer::new("==");
-        lexer.accept_repeat('=', 4);
+        lexer.accept(Repeat('=', 4));
         assert_eq!(lexer.pos(), 0);
-        lexer.accept_repeat('=', 2);
+        lexer.accept(Repeat('=', 2));
         assert!(lexer.is_eof());
     }
 
     #[test]
     fn accept_repeat_none() {
         let mut lexer = Lexer::new("not");
-        assert!(lexer.accept_repeat('=', 0));
+        assert!(lexer.accept(Repeat('=', 0)));
         assert_eq!(lexer.pos(), 0);
     }
 
