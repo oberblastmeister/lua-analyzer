@@ -39,18 +39,14 @@ dependencies = [
 
 [[package]]
 name = "binding_powers"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "21fdc9e512c4d71bc3c6d1d1d0e0dfa87daac7d8c9918a651549ec2bff59149a"
+version = "0.0.0"
 dependencies = [
  "binding_powers_impl",
 ]
 
 [[package]]
 name = "binding_powers_impl"
-version = "0.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a2b4f81476ffb152023f73b92bbe30d18420fb661a5585e4eadff1e23f4237e"
+version = "0.0.0"
 
 [[package]]
 name = "bitflags"
