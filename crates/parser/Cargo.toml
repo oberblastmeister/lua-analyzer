@@ -16,6 +16,7 @@ rowan = "0.12.6"
 thiserror = "1.0.24"
 
 binding_powers = { path = "../../lib/binding_powers", version = "0.0.0" }
+accept = { path = "../../lib/accept", version = "0.0.0" }
 
 [dev-dependencies]
 insta = "1.7.0"

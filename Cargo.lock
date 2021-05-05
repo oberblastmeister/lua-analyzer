@@ -589,6 +589,7 @@ dependencies = [
 name = "parser"
 version = "0.0.0"
 dependencies = [
+ "accept",
  "binding_powers",
  "drop_bomb",
  "insta",

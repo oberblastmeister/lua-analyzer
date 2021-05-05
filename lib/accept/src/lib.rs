@@ -20,7 +20,9 @@ pub trait Advancer {
     fn nth_is_eof(&self, n: u32) -> bool;
 }
 
-pub trait Acceptor: Advancer {
+impl<A: Advancer> private::Sealed for A {}
+
+pub trait Acceptor: Advancer + private::Sealed {
     fn at<T: Lexable<Self>>(&self, t: T) -> bool
     where
         Self: Sized,
@@ -411,4 +413,8 @@ where
             false
         }
     }
+}
+
+mod private {
+    pub trait Sealed {}
 }
