@@ -45,11 +45,7 @@ pub struct BindingPowers<const N: usize>([Precedences; N]);
 
 impl<const N: usize> BindingPowers<N> {
     pub const fn new(kinds: &[(usize, PrecType)]) -> BindingPowers<N> {
-        let mut res = [Precedences {
-            prefix: None,
-            infix: None,
-            postfix: None,
-        }; N];
+        let mut res = [Precedences { prefix: None, infix: None, postfix: None }; N];
 
         let mut counter = 1;
         let mut idx: usize = 0;

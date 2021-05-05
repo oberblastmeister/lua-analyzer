@@ -55,12 +55,7 @@ fn try_deduplicate_enum(token_stream: TokenStream) -> Result<TokenStream> {
     let deduplicated = token_stream
         .into_iter()
         .skip(1)
-        .map(|token| {
-            Hashable {
-                ident: token.to_string(),
-                span: token.span(),
-            }
-        })
+        .map(|token| Hashable { ident: token.to_string(), span: token.span() })
         .collect::<BTreeSet<_>>();
 
     let mut res = TokenStream::new();
