@@ -7,54 +7,54 @@ input_file: crates/syntax/snapshots/lexer/ok/numbers.lua
 [
     Token {
         kind: Whitespace,
-        range: 0..13,
+        len: 13,
     },
     Token {
         kind: Number,
-        range: 13..14,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 14..15,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 15..18,
+        len: 3,
     },
     Token {
         kind: Whitespace,
-        range: 18..21,
+        len: 3,
     },
     Token {
         kind: Number,
-        range: 21..27,
+        len: 6,
     },
     Token {
         kind: Whitespace,
-        range: 27..31,
+        len: 4,
     },
     Token {
         kind: Number,
-        range: 31..40,
+        len: 9,
     },
     Token {
         kind: Whitespace,
-        range: 40..47,
+        len: 7,
     },
     Token {
         kind: Number,
-        range: 47..55,
+        len: 8,
     },
     Token {
         kind: Whitespace,
-        range: 55..57,
+        len: 2,
     },
     Token {
         kind: Number,
-        range: 57..61,
+        len: 4,
     },
     Token {
         kind: Whitespace,
-        range: 61..62,
+        len: 1,
     },
 ]

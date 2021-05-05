@@ -14,11 +14,8 @@ pub struct Body {
     block_scopes: Vec<BlockLoc>,
 }
 
-impl Body {
-    
-}
+impl Body {}
 
-pub struct Expander {
-}
-    // pub fn new(db: &dyn DefDatabase, file_id: FileId) -> Expander {
-    // }
+pub struct Expander {}
+// pub fn new(db: &dyn DefDatabase, file_id: FileId) -> Expander {
+// }

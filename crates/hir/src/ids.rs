@@ -2,7 +2,7 @@ use base_db::salsa;
 
 use crate::{
     item_tree::{Function, ItemLoc, LocalAssign, LocalFunction},
-    InFile, Intern, Lookup,
+    Intern, Lookup,
 };
 
 macro_rules! impl_intern_key {

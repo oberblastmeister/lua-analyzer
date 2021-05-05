@@ -7,10 +7,10 @@ input_file: crates/syntax/snapshots/lexer/ok/multiline_comment.lua
 [
     Token {
         kind: Comment,
-        range: 0..60,
+        len: 60,
     },
     Token {
         kind: Whitespace,
-        range: 60..61,
+        len: 1,
     },
 ]

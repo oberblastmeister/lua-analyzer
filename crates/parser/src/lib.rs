@@ -12,7 +12,7 @@ pub use parse_error::ParseError;
 pub use syntax_kind::SyntaxKind;
 pub use token_set::TokenSet;
 
-use rowan::TextRange;
+use rowan::TextSize;
 
 use self::parser::Parser;
 
@@ -30,18 +30,18 @@ pub struct Token {
     /// The kind of token.
     pub kind: SyntaxKind,
     /// The range of the token.
-    pub range: TextRange,
+    pub len: TextSize,
 }
 
 impl Token {
-    pub fn with_range(self, range: TextRange) -> Token {
-        Token { kind: self.kind, range }
+    pub fn with_range(self, len: TextSize) -> Token {
+        Token { kind: self.kind, len }
     }
 }
 
 impl Token {
-    pub fn new(kind: SyntaxKind, range: TextRange) -> Token {
-        Token { kind, range }
+    pub fn new(kind: SyntaxKind, len: TextSize) -> Token {
+        Token { kind, len }
     }
 }
 

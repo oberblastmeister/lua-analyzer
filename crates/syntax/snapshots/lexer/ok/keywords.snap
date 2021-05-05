@@ -7,218 +7,218 @@ input_file: crates/syntax/snapshots/lexer/ok/keywords.lua
 [
     Token {
         kind: Comment,
-        range: 0..31,
+        len: 31,
     },
     Token {
         kind: Whitespace,
-        range: 31..33,
+        len: 2,
     },
     Token {
         kind: AndKw,
-        range: 33..36,
+        len: 3,
     },
     Token {
         kind: Whitespace,
-        range: 36..43,
+        len: 7,
     },
     Token {
         kind: BreakKw,
-        range: 43..48,
+        len: 5,
     },
     Token {
         kind: Whitespace,
-        range: 48..53,
+        len: 5,
     },
     Token {
         kind: DoKw,
-        range: 53..55,
+        len: 2,
     },
     Token {
         kind: Whitespace,
-        range: 55..63,
+        len: 8,
     },
     Token {
         kind: ElseKw,
-        range: 63..67,
+        len: 4,
     },
     Token {
         kind: Whitespace,
-        range: 67..73,
+        len: 6,
     },
     Token {
         kind: ElseifKw,
-        range: 73..79,
+        len: 6,
     },
     Token {
         kind: Whitespace,
-        range: 79..83,
+        len: 4,
     },
     Token {
         kind: EndKw,
-        range: 83..86,
+        len: 3,
     },
     Token {
         kind: Whitespace,
-        range: 86..88,
+        len: 2,
     },
     Token {
         kind: FalseKw,
-        range: 88..93,
+        len: 5,
     },
     Token {
         kind: Whitespace,
-        range: 93..98,
+        len: 5,
     },
     Token {
         kind: ForKw,
-        range: 98..101,
+        len: 3,
     },
     Token {
         kind: Whitespace,
-        range: 101..108,
+        len: 7,
     },
     Token {
         kind: FunctionKw,
-        range: 108..116,
+        len: 8,
     },
     Token {
         kind: Whitespace,
-        range: 116..118,
+        len: 2,
     },
     Token {
         kind: GotoKw,
-        range: 118..122,
+        len: 4,
     },
     Token {
         kind: Whitespace,
-        range: 122..128,
+        len: 6,
     },
     Token {
         kind: IfKw,
-        range: 128..130,
+        len: 2,
     },
     Token {
         kind: Whitespace,
-        range: 130..138,
+        len: 8,
     },
     Token {
         kind: InKw,
-        range: 138..140,
+        len: 2,
     },
     Token {
         kind: Whitespace,
-        range: 140..142,
+        len: 2,
     },
     Token {
         kind: LocalKw,
-        range: 142..147,
+        len: 5,
     },
     Token {
         kind: Whitespace,
-        range: 147..152,
+        len: 5,
     },
     Token {
         kind: NilKw,
-        range: 152..155,
+        len: 3,
     },
     Token {
         kind: Whitespace,
-        range: 155..162,
+        len: 7,
     },
     Token {
         kind: NotKw,
-        range: 162..165,
+        len: 3,
     },
     Token {
         kind: Whitespace,
-        range: 165..172,
+        len: 7,
     },
     Token {
         kind: OrKw,
-        range: 172..174,
+        len: 2,
     },
     Token {
         kind: Whitespace,
-        range: 174..182,
+        len: 8,
     },
     Token {
         kind: RepeatKw,
-        range: 182..188,
+        len: 6,
     },
     Token {
         kind: Whitespace,
-        range: 188..192,
+        len: 4,
     },
     Token {
         kind: ReturnKw,
-        range: 192..198,
+        len: 6,
     },
     Token {
         kind: Whitespace,
-        range: 198..200,
+        len: 2,
     },
     Token {
         kind: ThenKw,
-        range: 200..204,
+        len: 4,
     },
     Token {
         kind: Whitespace,
-        range: 204..210,
+        len: 6,
     },
     Token {
         kind: TrueKw,
-        range: 210..214,
+        len: 4,
     },
     Token {
         kind: Whitespace,
-        range: 214..220,
+        len: 6,
     },
     Token {
         kind: UntilKw,
-        range: 220..225,
+        len: 5,
     },
     Token {
         kind: Whitespace,
-        range: 225..230,
+        len: 5,
     },
     Token {
         kind: WhileKw,
-        range: 230..235,
+        len: 5,
     },
     Token {
         kind: Whitespace,
-        range: 235..237,
+        len: 2,
     },
     Token {
         kind: LocalKw,
-        range: 237..242,
+        len: 5,
     },
     Token {
         kind: Whitespace,
-        range: 242..243,
+        len: 1,
     },
     Token {
         kind: Ident,
-        range: 243..246,
+        len: 3,
     },
     Token {
         kind: Whitespace,
-        range: 246..247,
+        len: 1,
     },
     Token {
         kind: Eq,
-        range: 247..248,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 248..249,
+        len: 1,
     },
     Token {
         kind: Str,
-        range: 249..255,
+        len: 6,
     },
     Token {
         kind: Whitespace,
-        range: 255..256,
+        len: 1,
     },
 ]

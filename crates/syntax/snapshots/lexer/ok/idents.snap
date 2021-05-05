@@ -7,30 +7,30 @@ input_file: crates/syntax/snapshots/lexer/ok/idents.lua
 [
     Token {
         kind: Whitespace,
-        range: 0..12,
+        len: 12,
     },
     Token {
         kind: Ident,
-        range: 12..17,
+        len: 5,
     },
     Token {
         kind: Whitespace,
-        range: 17..21,
+        len: 4,
     },
     Token {
         kind: Ident,
-        range: 21..26,
+        len: 5,
     },
     Token {
         kind: Whitespace,
-        range: 26..27,
+        len: 1,
     },
     Token {
         kind: Ident,
-        range: 27..30,
+        len: 3,
     },
     Token {
         kind: Whitespace,
-        range: 30..31,
+        len: 1,
     },
 ]

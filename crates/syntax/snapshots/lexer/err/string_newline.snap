@@ -7,23 +7,23 @@ input_file: crates/syntax/snapshots/lexer/err/string_newline.lua
 [
     Token {
         kind: Str,
-        range: 0..1,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 1..2,
+        len: 1,
     },
     Token {
         kind: Ident,
-        range: 2..10,
+        len: 8,
     },
     Token {
         kind: Str,
-        range: 10..11,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 11..12,
+        len: 1,
     },
 ]
 

@@ -7,26 +7,26 @@ input_file: crates/syntax/snapshots/lexer/ok/hex_numbers.lua
 [
     Token {
         kind: Number,
-        range: 0..10,
+        len: 10,
     },
     Token {
         kind: Whitespace,
-        range: 10..11,
+        len: 1,
     },
     Token {
         kind: Ident,
-        range: 11..16,
+        len: 5,
     },
     Token {
         kind: Whitespace,
-        range: 16..17,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 17..27,
+        len: 10,
     },
     Token {
         kind: Whitespace,
-        range: 27..28,
+        len: 1,
     },
 ]

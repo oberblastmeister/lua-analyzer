@@ -7,34 +7,34 @@ input_file: crates/syntax/snapshots/lexer/ok/punct.lua
 [
     Token {
         kind: Comma,
-        range: 0..1,
+        len: 1,
     },
     Token {
         kind: Dot,
-        range: 1..2,
+        len: 1,
     },
     Token {
         kind: Ident,
-        range: 2..5,
+        len: 3,
     },
     Token {
         kind: Semicolon,
-        range: 5..6,
+        len: 1,
     },
     Token {
         kind: Colon,
-        range: 6..7,
+        len: 1,
     },
     Token {
         kind: Bang,
-        range: 7..8,
+        len: 1,
     },
     Token {
         kind: Semicolon,
-        range: 8..9,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 9..10,
+        len: 1,
     },
 ]

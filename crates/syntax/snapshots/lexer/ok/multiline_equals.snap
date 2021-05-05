@@ -7,18 +7,18 @@ input_file: crates/syntax/snapshots/lexer/ok/multiline_equals.lua
 [
     Token {
         kind: Str,
-        range: 0..15,
+        len: 15,
     },
     Token {
         kind: Whitespace,
-        range: 15..16,
+        len: 1,
     },
     Token {
         kind: Str,
-        range: 16..26,
+        len: 10,
     },
     Token {
         kind: Whitespace,
-        range: 26..27,
+        len: 1,
     },
 ]

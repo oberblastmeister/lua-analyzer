@@ -7,26 +7,26 @@ input_file: crates/syntax/snapshots/lexer/ok/operators.lua
 [
     Token {
         kind: Bang,
-        range: 0..1,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 1..3,
+        len: 2,
     },
     Token {
         kind: Whitespace,
-        range: 3..4,
+        len: 1,
     },
     Token {
         kind: Bang,
-        range: 4..5,
+        len: 1,
     },
     Token {
         kind: TrueKw,
-        range: 5..9,
+        len: 4,
     },
     Token {
         kind: Whitespace,
-        range: 9..10,
+        len: 1,
     },
 ]

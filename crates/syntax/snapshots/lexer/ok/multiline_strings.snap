@@ -7,26 +7,26 @@ input_file: crates/syntax/snapshots/lexer/ok/multiline_strings.lua
 [
     Token {
         kind: Str,
-        range: 0..33,
+        len: 33,
     },
     Token {
         kind: Whitespace,
-        range: 33..34,
+        len: 1,
     },
     Token {
         kind: Str,
-        range: 34..59,
+        len: 25,
     },
     Token {
         kind: Whitespace,
-        range: 59..60,
+        len: 1,
     },
     Token {
         kind: Str,
-        range: 60..71,
+        len: 11,
     },
     Token {
         kind: Whitespace,
-        range: 71..72,
+        len: 1,
     },
 ]

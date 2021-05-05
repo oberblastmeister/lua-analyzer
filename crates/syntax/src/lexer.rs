@@ -78,15 +78,12 @@ pub fn tokenizer(mut text: &str) -> impl Iterator<Item = SyntaxResult<Token>> + 
     let mut pos = TextSize::from(0);
 
     iter::from_fn(move || {
-        let res = lex_first_token(text)?;
+        let res = lex_first_token(text)?.map_err(|err| {
+            let range = err.range();
+            err.with_range(range + pos)
+        });
 
-        let range = res.ok_ref().range;
-
-        let res = res
-            .map(|token| token.with_range(range + pos))
-            .map_err(|err| err.with_range(range + pos));
-
-        let len = range.len();
+        let len = res.ok_ref().len;
 
         pos += len;
         text = &text[len.into()..];
@@ -108,7 +105,7 @@ pub fn lex_first_token(text: &str) -> Option<SyntaxResult<Token>> {
     let range = TextRange::up_to(len);
     Some(
         lex_result
-            .map(|kind| Token::new(kind, range))
+            .map(|kind| Token::new(kind, len))
             .map_err(|e| SyntaxError::new(e.to_string(), range)),
     )
 }

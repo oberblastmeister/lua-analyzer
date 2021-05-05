@@ -17,7 +17,12 @@ use syntax::{
     match_ast, SyntaxNode,
 };
 
-use crate::{DefDatabase, InFile, ast_id_map::FileAstId, expr::ParamList, name::{MultiName, Name}};
+use crate::{
+    ast_id_map::FileAstId,
+    expr::ParamList,
+    name::{MultiName, Name},
+    DefDatabase, InFile,
+};
 
 #[derive(Debug, Default, Eq, PartialEq)]
 pub struct ItemTree {

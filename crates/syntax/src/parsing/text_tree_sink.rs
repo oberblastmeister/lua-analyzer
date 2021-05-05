@@ -100,11 +100,12 @@ impl<'a> TextTreeSink<'a> {
 
     fn do_token(&mut self) {
         let token = self.current_token();
-        let text = &self.text[token.range];
+        let range = TextRange::at(self.text_pos, token.len);
+        let text = &self.text[range];
         self.token_pos += 1;
-        self.text_pos += token.range.len();
+        self.text_pos += token.len;
         self.inner.token(token.kind, text);
-        self.update_error_ranges(token.range);
+        self.update_error_ranges(range);
     }
 
     fn update_error_ranges(&mut self, range: TextRange) {

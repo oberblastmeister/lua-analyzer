@@ -7,34 +7,34 @@ input_file: crates/syntax/snapshots/lexer/ok/double_colon.lua
 [
     Token {
         kind: DoubleColon,
-        range: 0..2,
+        len: 2,
     },
     Token {
         kind: Ident,
-        range: 2..10,
+        len: 8,
     },
     Token {
         kind: DoubleColon,
-        range: 10..12,
+        len: 2,
     },
     Token {
         kind: Whitespace,
-        range: 12..13,
+        len: 1,
     },
     Token {
         kind: DoubleColon,
-        range: 13..15,
+        len: 2,
     },
     Token {
         kind: Ident,
-        range: 15..18,
+        len: 3,
     },
     Token {
         kind: DoubleColon,
-        range: 18..20,
+        len: 2,
     },
     Token {
         kind: Whitespace,
-        range: 20..21,
+        len: 1,
     },
 ]

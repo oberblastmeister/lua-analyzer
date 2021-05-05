@@ -7,34 +7,34 @@ input_file: crates/syntax/snapshots/lexer/ok/assignment.lua
 [
     Token {
         kind: LocalKw,
-        range: 0..5,
+        len: 5,
     },
     Token {
         kind: Whitespace,
-        range: 5..6,
+        len: 1,
     },
     Token {
         kind: Ident,
-        range: 6..11,
+        len: 5,
     },
     Token {
         kind: Whitespace,
-        range: 11..12,
+        len: 1,
     },
     Token {
         kind: Eq,
-        range: 12..13,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 13..14,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 14..15,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 15..16,
+        len: 1,
     },
 ]

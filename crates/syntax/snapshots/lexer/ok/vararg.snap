@@ -7,50 +7,50 @@ input_file: crates/syntax/snapshots/lexer/ok/vararg.lua
 [
     Token {
         kind: FunctionKw,
-        range: 0..8,
+        len: 8,
     },
     Token {
         kind: LParen,
-        range: 8..9,
+        len: 1,
     },
     Token {
         kind: TripleDot,
-        range: 9..12,
+        len: 3,
     },
     Token {
         kind: RParen,
-        range: 12..13,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 13..14,
+        len: 1,
     },
     Token {
         kind: Ident,
-        range: 14..19,
+        len: 5,
     },
     Token {
         kind: LParen,
-        range: 19..20,
+        len: 1,
     },
     Token {
         kind: TripleDot,
-        range: 20..23,
+        len: 3,
     },
     Token {
         kind: RParen,
-        range: 23..24,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 24..25,
+        len: 1,
     },
     Token {
         kind: EndKw,
-        range: 25..28,
+        len: 3,
     },
     Token {
         kind: Whitespace,
-        range: 28..29,
+        len: 1,
     },
 ]

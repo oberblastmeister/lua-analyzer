@@ -7,130 +7,130 @@ input_file: crates/syntax/snapshots/lexer/ok/math.lua
 [
     Token {
         kind: Number,
-        range: 0..1,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 1..2,
+        len: 1,
     },
     Token {
         kind: Plus,
-        range: 2..3,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 3..4,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 4..5,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 5..6,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 6..8,
+        len: 2,
     },
     Token {
         kind: Whitespace,
-        range: 8..9,
+        len: 1,
     },
     Token {
         kind: Asterisk,
-        range: 9..10,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 10..11,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 11..12,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 12..13,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 13..15,
+        len: 2,
     },
     Token {
         kind: Whitespace,
-        range: 15..16,
+        len: 1,
     },
     Token {
         kind: Minus,
-        range: 16..17,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 17..18,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 18..20,
+        len: 2,
     },
     Token {
         kind: Whitespace,
-        range: 20..21,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 21..22,
+        len: 1,
     },
     Token {
         kind: Slash,
-        range: 22..23,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 23..24,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 24..25,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 25..26,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 26..27,
+        len: 1,
     },
     Token {
         kind: Modulo,
-        range: 27..28,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 28..29,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 29..30,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 30..31,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 31..32,
+        len: 1,
     },
     Token {
         kind: Caret,
-        range: 32..33,
+        len: 1,
     },
     Token {
         kind: Number,
-        range: 33..34,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 34..35,
+        len: 1,
     },
 ]

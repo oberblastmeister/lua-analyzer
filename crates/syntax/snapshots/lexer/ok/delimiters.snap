@@ -7,70 +7,70 @@ input_file: crates/syntax/snapshots/lexer/ok/delimiters.lua
 [
     Token {
         kind: LBrace,
-        range: 0..1,
+        len: 1,
     },
     Token {
         kind: Ident,
-        range: 1..6,
+        len: 5,
     },
     Token {
         kind: Whitespace,
-        range: 6..7,
+        len: 1,
     },
     Token {
         kind: Eq,
-        range: 7..8,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 8..9,
+        len: 1,
     },
     Token {
         kind: Str,
-        range: 9..18,
+        len: 9,
     },
     Token {
         kind: RBrace,
-        range: 18..19,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 19..20,
+        len: 1,
     },
     Token {
         kind: Ident,
-        range: 20..24,
+        len: 4,
     },
     Token {
         kind: LParen,
-        range: 24..25,
+        len: 1,
     },
     Token {
         kind: RParen,
-        range: 25..26,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 26..27,
+        len: 1,
     },
     Token {
         kind: LBracket,
-        range: 27..28,
+        len: 1,
     },
     Token {
         kind: RBracket,
-        range: 28..29,
+        len: 1,
     },
     Token {
         kind: LBracket,
-        range: 29..30,
+        len: 1,
     },
     Token {
         kind: RBracket,
-        range: 30..31,
+        len: 1,
     },
     Token {
         kind: Whitespace,
-        range: 31..32,
+        len: 1,
     },
 ]
