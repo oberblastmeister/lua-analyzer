@@ -1,4 +1,3 @@
-mod accept;
 pub mod ast;
 #[doc(hidden)]
 pub mod fuzz;

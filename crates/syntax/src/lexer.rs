@@ -6,7 +6,7 @@ use std::str::Chars;
 use rowan::{TextRange, TextSize};
 
 use self::error::{LexResult, SyntaxResult};
-use crate::accept::{not, or, seq, Accept, Any, Lexable, Repeat, Until, While};
+use accept::{not, or, seq, Accept, Acceptor, Advancer, Any, Lexable, Repeat, Until, While};
 use crate::{SyntaxError, SyntaxKind, T};
 use parser::Token;
 
@@ -44,18 +44,6 @@ struct WithLen<T> {
 impl<T> WithLen<T> {
     fn new(t: T, len: TextSize) -> Self {
         Self { inner: t, len }
-    }
-}
-
-/// A token with an optional error
-pub struct TokenErr {
-    pub token: Token,
-    pub err: Option<SyntaxError>,
-}
-
-impl TokenErr {
-    pub fn new(token: Token, err: Option<SyntaxError>) -> Self {
-        Self { token, err }
     }
 }
 
@@ -111,17 +99,37 @@ pub fn lex_first_token(text: &str) -> Option<SyntaxResult<Token>> {
 }
 
 fn first_lex_result(text: &str) -> WithLen<LexResult<SyntaxKind>> {
-    Lexer::new(text).next_lex_result()
+    LuaLexer::new(text).next_lex_result()
 }
 
-pub struct Lexer<'a> {
+pub struct LuaLexer<'a> {
     input_len: u32,
     chars: Chars<'a>,
 }
 
-impl<'a> Lexer<'a> {
-    fn new(input: &'a str) -> Lexer<'a> {
-        Lexer { input_len: input.len() as u32, chars: input.chars() }
+impl Advancer for LuaLexer<'_> {
+    type Item = char;
+
+    fn advance(&mut self) -> Option<char> {
+        self.chars.next()
+    }
+
+    fn lookahead_nth(&self, n: u32) -> char {
+        self.nth(n)
+    }
+
+    fn is_eof(&self) -> bool {
+        self.nth_is_eof(0)
+    }
+
+    fn nth_is_eof(&self, n: u32) -> bool {
+        self.chars.clone().nth(n as usize).is_none()
+    }
+}
+
+impl<'a> LuaLexer<'a> {
+    fn new(input: &'a str) -> LuaLexer<'a> {
+        LuaLexer { input_len: input.len() as u32, chars: input.chars() }
     }
 
     pub(crate) fn chars(&self) -> Chars<'a> {
@@ -136,17 +144,9 @@ impl<'a> Lexer<'a> {
         self.chars().nth(n as usize).unwrap_or(EOF_CHAR)
     }
 
-    pub(crate) fn is_eof(&self) -> bool {
-        self.chars.as_str().is_empty()
-    }
-
     /// Peeks next char from stream without consuming it
     fn current(&self) -> char {
         self.nth(0)
-    }
-
-    fn at<T: Lexable>(&self, t: T) -> bool {
-        t.peek(self)
     }
 
     fn chars_len(&self) -> u32 {
@@ -158,31 +158,10 @@ impl<'a> Lexer<'a> {
         self.input_len - self.chars_len()
     }
 
-    pub(crate) fn bump_raw(&mut self) -> Option<char> {
-        self.chars.next()
-    }
-
-    fn bump_then(&mut self, accept: impl Accept + Copy) -> char {
-        self.bump(accept);
-        self.current()
-    }
-
     fn next_lex_result(mut self) -> WithLen<LexResult<SyntaxKind>> {
         let res = self.lex_main();
         let pos = self.pos();
         WithLen::new(res, pos.into())
-    }
-
-    fn bump<T: Accept + Copy>(&mut self, t: T) {
-        t.bump(self)
-    }
-
-    fn accept<T: Accept + Copy>(&mut self, t: T) -> bool {
-        t.accept(self)
-    }
-
-    fn accept_count<T: Accept + Copy>(&mut self, t: T) -> u32 {
-        t.accept_count(self)
     }
 
     fn lex_main(&mut self) -> LexResult<SyntaxKind> {
@@ -331,7 +310,7 @@ impl<'a> Lexer<'a> {
     }
 
     fn bracket_enclosed(&mut self) -> LexResult<()> {
-        fn close(l: &mut Lexer<'_>, count: u32) -> LexResult<()> {
+        fn close(l: &mut LuaLexer<'_>, count: u32) -> LexResult<()> {
             let mut err = None;
 
             let mut set_err = || {
@@ -452,31 +431,31 @@ mod tests {
 
     #[test]
     fn accept_tuple() {
-        let mut lexer = Lexer::new("[=");
+        let mut lexer = LuaLexer::new("[=");
         lexer.accept(seq!('[', '='));
         assert!(lexer.is_eof());
     }
 
     #[test]
     fn accept_tuple_fail() {
-        let mut lexer = Lexer::new("[]");
+        let mut lexer = LuaLexer::new("[]");
         lexer.accept(seq!('[', '='));
         assert_eq!(lexer.pos(), 0);
         assert_eq!(lexer.current(), '[');
-        lexer.bump_raw().unwrap();
+        lexer.bump_raw();
         assert_eq!(lexer.current(), ']');
     }
 
     #[test]
     fn accept_repeat() {
-        let mut lexer = Lexer::new("===================");
+        let mut lexer = LuaLexer::new("===================");
         lexer.accept(Repeat('=', 19));
         assert!(lexer.is_eof());
     }
 
     #[test]
     fn accept_repeat_not_enough() {
-        let mut lexer = Lexer::new("==");
+        let mut lexer = LuaLexer::new("==");
         lexer.accept(Repeat('=', 4));
         assert_eq!(lexer.pos(), 0);
         lexer.accept(Repeat('=', 2));
@@ -485,21 +464,21 @@ mod tests {
 
     #[test]
     fn accept_repeat_none() {
-        let mut lexer = Lexer::new("not");
+        let mut lexer = LuaLexer::new("not");
         assert!(lexer.accept(Repeat('=', 0)));
         assert_eq!(lexer.pos(), 0);
     }
 
     #[test]
     fn not() {
-        let mut lexer = Lexer::new(r"\]");
+        let mut lexer = LuaLexer::new(r"\]");
         assert!(!lexer.accept(not!(seq!('\\', ']'))));
         assert_eq!(lexer.pos(), 0);
     }
 
     #[test]
     fn combinations() {
-        let mut lexer = Lexer::new(r"\]    \]  ]]");
+        let mut lexer = LuaLexer::new(r"\]    \]  ]]");
         lexer.accept(While(or!(seq!('\\', ']'), not!(']'))));
         assert_eq!(lexer.pos(), 10);
     }
