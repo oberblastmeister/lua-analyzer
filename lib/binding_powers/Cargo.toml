@@ -1,0 +1,13 @@
+[package]
+name = "binding_powers"
+version = "0.0.0"
+authors = ["Brian Shu <littlebubu.shu@gmail.com>"]
+edition = "2018"
+description = """
+A macro to create binding powers easily
+"""
+repository = "https://github.com/oberblastmeister/binding_powers"
+license = "MIT/Apache-2.0"
+
+[dependencies]
+binding_powers_impl = { path = "../binding_powers_impl", version = "0.0.0" }
