@@ -972,9 +972,9 @@ dependencies = [
 
 [[package]]
 name = "ungrammar"
-version = "1.12.1"
+version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e60bc224c274d24dc2b112b501bed6ec98e28cd39916b7020cd430d2ed0394ea"
+checksum = "76760314176cc2b94047af2f921b92c39f11a34dc05c43a3c2b0fc91cb22959f"
 
 [[package]]
 name = "unicode-bidi"
