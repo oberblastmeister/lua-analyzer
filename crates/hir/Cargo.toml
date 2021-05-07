@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 la-arena = "0.2.0"
-ordered-float = "2.1.1"
+ordered-float = "2.2.0"
 rustc-hash = "1.1.0"
 smallvec = "1.6.1"
 smol_str = "0.1.17"
