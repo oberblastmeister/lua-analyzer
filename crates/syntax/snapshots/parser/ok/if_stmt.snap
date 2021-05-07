@@ -5,44 +5,45 @@ input_file: crates/syntax/snapshots/parser/ok/if_stmt.lua
 
 ---
 SourceFile@0..57
-  IfStmt@0..56
-    IfKw@0..2 "if"
-    Whitespace@2..3 " "
-    InfixExpr@3..26
-      CallExpr@3..14
-        NameRef@3..7
-          Ident@3..7 "type"
-        CallArgs@7..14
-          ArgList@7..14
-            LParen@7..8 "("
-            MultivalExpr@8..13
-              NameRef@8..13
-                Ident@8..13 "hello"
-            RParen@13..14 ")"
-      Whitespace@14..15 " "
-      EqEq@15..17 "=="
-      Whitespace@17..18 " "
-      Literal@18..26
-        Str@18..26 "\"string\""
-    Whitespace@26..27 " "
-    ThenKw@27..31 "then"
-    Whitespace@31..34 "\n  "
-    Block@34..52
-      ExprStmt@34..52
-        MultivalExpr@34..52
-          CallExpr@34..52
-            NameRef@34..39
-              Ident@34..39 "print"
-            CallArgs@39..52
-              ArgList@39..52
-                LParen@39..40 "("
-                MultivalExpr@40..51
-                  Literal@40..51
-                    Str@40..51 "\"is string\""
-                RParen@51..52 ")"
-    Whitespace@52..53 "\n"
-    EndKw@53..56 "end"
-  Whitespace@56..57 "\n"
+  Block@0..57
+    IfStmt@0..56
+      IfKw@0..2 "if"
+      Whitespace@2..3 " "
+      InfixExpr@3..26
+        CallExpr@3..14
+          NameRef@3..7
+            Ident@3..7 "type"
+          CallArgs@7..14
+            ArgList@7..14
+              LParen@7..8 "("
+              MultivalExpr@8..13
+                NameRef@8..13
+                  Ident@8..13 "hello"
+              RParen@13..14 ")"
+        Whitespace@14..15 " "
+        EqEq@15..17 "=="
+        Whitespace@17..18 " "
+        Literal@18..26
+          Str@18..26 "\"string\""
+      Whitespace@26..27 " "
+      ThenKw@27..31 "then"
+      Whitespace@31..34 "\n  "
+      Block@34..52
+        ExprStmt@34..52
+          MultivalExpr@34..52
+            CallExpr@34..52
+              NameRef@34..39
+                Ident@34..39 "print"
+              CallArgs@39..52
+                ArgList@39..52
+                  LParen@39..40 "("
+                  MultivalExpr@40..51
+                    Literal@40..51
+                      Str@40..51 "\"is string\""
+                  RParen@51..52 ")"
+      Whitespace@52..53 "\n"
+      EndKw@53..56 "end"
+    Whitespace@56..57 "\n"
 
 =============================
 Errors:

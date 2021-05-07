@@ -162,6 +162,26 @@ impl<N: ItemTreeNode> Hash for ItemTreeId<N> {
     }
 }
 
+pub trait HasSource {
+    type Value;
+
+    fn source(&self, db: &dyn DefDatabase) -> InFile<Self::Value>;
+}
+
+impl<N: ItemTreeNode> HasSource for ItemTreeId<N> {
+    type Value = N::Source;
+
+    fn source(&self, db: &dyn DefDatabase) -> InFile<Self::Value> {
+        let tree = self.item_tree(db);
+        let file_id = self.file_id();
+        let ast_id_map = db.ast_id_map(file_id);
+        let root = db.syntax_node(file_id);
+        let node = &tree[self.value];
+
+        InFile::new(file_id, ast_id_map.get(node.ast_id()).to_node(&root))
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq, Default, Hash)]
 pub struct IndexPath {
     segments: Vec<Name>,
@@ -309,10 +329,4 @@ impl<N: AstNode> AstId<N> {
         let root = db.parse(self.file_id).syntax_node();
         db.ast_id_map(self.file_id).get(self.value).to_node(&root)
     }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct ItemLoc<N: ItemTreeNode> {
-    pub id: ItemTreeId<N>,
-    pub node: InFile<N>,
 }

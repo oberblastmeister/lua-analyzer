@@ -15,9 +15,10 @@ const RECOVERY_SET: TokenSet = TS![function, do, ::];
 
 pub(crate) fn root(p: &mut Parser) {
     let m = p.start();
-    while !p.at(T![eof]) {
-        stmt(p);
-    }
+    root_block(p);
+    // while !p.at(T![eof]) {
+    //     stmt(p);
+    // }
     m.complete(p, N![SourceFile]);
 }
 
@@ -100,14 +101,20 @@ fn name(p: &mut Parser) {
     }
 }
 
-pub(crate) fn block(p: &mut Parser) {
-    const END: TokenSet = TS![eof, end, elseif, else, until];
-
+fn block_raw(p: &mut Parser, end: TokenSet) {
     let m = p.start();
-    while !p.at(END) {
+    while !p.at(end) {
         stmt(p);
     }
     m.complete(p, N![Block]);
+}
+
+fn root_block(p: &mut Parser) {
+    block_raw(p, TS![eof])
+}
+
+pub(crate) fn block(p: &mut Parser) {
+    block_raw(p, TS![eof, end, elseif, else, until]);
 }
 
 const VARARG_ERROR_MSG: &str = "Nothing can be after a vararg";

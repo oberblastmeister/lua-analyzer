@@ -179,7 +179,10 @@ fn project_root() -> PathBuf {
 
 #[test]
 fn nothing() {
-    insta::assert_debug_snapshot!(SourceFile::parse("").syntax_node(), @"SourceFile@0..0")
+    insta::assert_debug_snapshot!(SourceFile::parse("").syntax_node(), @r###"
+    SourceFile@0..0
+      Block@0..0
+    "###)
 }
 
 #[test]

@@ -11,15 +11,18 @@ use text_tree_sink::TextTreeSink;
 
 use crate::SyntaxError;
 
+use self::text_tree_sink::DeferedTextTreeSink;
+
+const DEFER_AMOUNT: u8 = 2;
+
 pub(crate) fn parse_text(text: &str) -> (GreenNode, Vec<SyntaxError>) {
     let (tokens, errors) = tokenize(text);
 
     let mut token_source = TextTokenSource::new(text, &tokens);
-    let mut tree_sink = TextTreeSink::new(text, &tokens);
+    let tree_sink = DeferedTextTreeSink::new(text, &tokens, DEFER_AMOUNT);
 
-    parser::parse(&mut token_source, &mut tree_sink);
+    let (tree, mut parser_errors) = parser::parse(&mut token_source, tree_sink);
 
-    let (tree, mut parser_errors) = tree_sink.finish();
     parser_errors.extend(errors);
 
     (tree, parser_errors)

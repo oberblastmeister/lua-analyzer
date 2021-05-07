@@ -1,7 +1,7 @@
 use base_db::salsa;
 
 use crate::{
-    item_tree::{Function, ItemLoc, LocalAssign, LocalFunction},
+    item_tree::{Function, ItemTreeId, LocalAssign, LocalFunction},
     Intern, Lookup,
 };
 
@@ -40,12 +40,12 @@ macro_rules! impl_intern {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct FunctionId(salsa::InternId);
-pub type FunctionLoc = ItemLoc<Function>;
+pub type FunctionLoc = ItemTreeId<Function>;
 impl_intern!(FunctionId, FunctionLoc, intern_function, lookup_intern_function);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct LocalFunctionId(salsa::InternId);
-pub type LocalFunctionLoc = ItemLoc<LocalFunction>;
+pub type LocalFunctionLoc = ItemTreeId<LocalFunction>;
 impl_intern!(
     LocalFunctionId,
     LocalFunctionLoc,
@@ -55,5 +55,5 @@ impl_intern!(
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct LocalAssignId(salsa::InternId);
-pub type LocalAssignLoc = ItemLoc<LocalAssign>;
+pub type LocalAssignLoc = ItemTreeId<LocalAssign>;
 impl_intern!(LocalAssignId, LocalAssignLoc, intern_local_assign, lookup_intern_local_assign);

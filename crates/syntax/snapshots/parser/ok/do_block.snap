@@ -5,63 +5,64 @@ input_file: crates/syntax/snapshots/parser/ok/do_block.lua
 
 ---
 SourceFile@0..102
-  DoStmt@0..101
-    DoKw@0..2 "do"
-    Whitespace@2..5 "\n  "
-    Block@5..97
-      LocalAssignStmt@5..19
-        LocalKw@5..10 "local"
-        Whitespace@10..11 " "
-        MultiName@11..15
-          Name@11..15
-            Ident@11..15 "stmt"
-        Whitespace@15..16 " "
-        Eq@16..17 "="
-        Whitespace@17..18 " "
-        MultivalExpr@18..19
-          Literal@18..19
-            Number@18..19 "6"
-      Whitespace@19..23 "\n\n  "
-      DoStmt@23..97
-        DoKw@23..25 "do"
-        Whitespace@25..30 "\n    "
-        Block@30..91
-          LocalAssignStmt@30..91
-            LocalKw@30..35 "local"
-            Whitespace@35..36 " "
-            MultiName@36..42
-              Name@36..42
-                Ident@36..42 "person"
-            Whitespace@42..43 " "
-            Eq@43..44 "="
-            Whitespace@44..45 " "
-            MultivalExpr@45..91
-              FunctionExpr@45..91
-                FunctionKw@45..53 "function"
-                ParamList@53..55
-                  LParen@53..54 "("
-                  RParen@54..55 ")"
-                Whitespace@55..62 "\n      "
-                Block@62..83
-                  ExprStmt@62..83
-                    MultivalExpr@62..83
-                      CallExpr@62..83
-                        NameRef@62..67
-                          Ident@62..67 "print"
-                        CallArgs@67..83
-                          ArgList@67..83
-                            LParen@67..68 "("
-                            MultivalExpr@68..82
-                              Literal@68..82
-                                Str@68..82 "\'hello person\'"
-                            RParen@82..83 ")"
-                Whitespace@83..88 "\n    "
-                EndKw@88..91 "end"
-        Whitespace@91..94 "\n  "
-        EndKw@94..97 "end"
-    Whitespace@97..98 "\n"
-    EndKw@98..101 "end"
-  Whitespace@101..102 "\n"
+  Block@0..102
+    DoStmt@0..101
+      DoKw@0..2 "do"
+      Whitespace@2..5 "\n  "
+      Block@5..97
+        LocalAssignStmt@5..19
+          LocalKw@5..10 "local"
+          Whitespace@10..11 " "
+          MultiName@11..15
+            Name@11..15
+              Ident@11..15 "stmt"
+          Whitespace@15..16 " "
+          Eq@16..17 "="
+          Whitespace@17..18 " "
+          MultivalExpr@18..19
+            Literal@18..19
+              Number@18..19 "6"
+        Whitespace@19..23 "\n\n  "
+        DoStmt@23..97
+          DoKw@23..25 "do"
+          Whitespace@25..30 "\n    "
+          Block@30..91
+            LocalAssignStmt@30..91
+              LocalKw@30..35 "local"
+              Whitespace@35..36 " "
+              MultiName@36..42
+                Name@36..42
+                  Ident@36..42 "person"
+              Whitespace@42..43 " "
+              Eq@43..44 "="
+              Whitespace@44..45 " "
+              MultivalExpr@45..91
+                FunctionExpr@45..91
+                  FunctionKw@45..53 "function"
+                  ParamList@53..55
+                    LParen@53..54 "("
+                    RParen@54..55 ")"
+                  Whitespace@55..62 "\n      "
+                  Block@62..83
+                    ExprStmt@62..83
+                      MultivalExpr@62..83
+                        CallExpr@62..83
+                          NameRef@62..67
+                            Ident@62..67 "print"
+                          CallArgs@67..83
+                            ArgList@67..83
+                              LParen@67..68 "("
+                              MultivalExpr@68..82
+                                Literal@68..82
+                                  Str@68..82 "\'hello person\'"
+                              RParen@82..83 ")"
+                  Whitespace@83..88 "\n    "
+                  EndKw@88..91 "end"
+          Whitespace@91..94 "\n  "
+          EndKw@94..97 "end"
+      Whitespace@97..98 "\n"
+      EndKw@98..101 "end"
+    Whitespace@101..102 "\n"
 
 =============================
 Errors:

@@ -5,82 +5,83 @@ input_file: crates/syntax/snapshots/parser/ok/method_call.lua
 
 ---
 SourceFile@0..101
-  ExprStmt@0..20
-    MultivalExpr@0..20
-      MethodCallExpr@0..20
-        NameRef@0..6
-          Ident@0..6 "person"
-        Colon@6..7 ":"
-        NameRef@7..12
-          Ident@7..12 "greet"
-        Whitespace@12..13 " "
-        CallArgs@13..20
-          Str@13..20 "\"hello\""
-  Whitespace@20..22 "\n\n"
-  ExprStmt@22..71
-    MultivalExpr@22..71
-      MethodCallExpr@22..71
-        NameRef@22..26
-          Ident@22..26 "opts"
-        Colon@26..27 ":"
-        NameRef@27..31
-          Ident@27..31 "with"
-        Whitespace@31..32 " "
-        CallArgs@32..71
-          TableExpr@32..71
-            LBrace@32..33 "{"
-            Whitespace@33..36 "\n  "
-            TableContent@36..50
-              KeyValue@36..50
-                TableKey@36..41
-                  Name@36..41
-                    Ident@36..41 "first"
-                Whitespace@41..42 " "
-                Eq@42..43 "="
-                Whitespace@43..44 " "
-                Literal@44..50
-                  Str@44..50 "\"asdf\""
-            TableSep@50..51
-              Comma@50..51 ","
-            Whitespace@51..54 "\n  "
-            TableContent@54..68
-              KeyValue@54..68
-                TableKey@54..60
-                  Index@54..60
-                    LBracket@54..55 "["
-                    NameRef@55..59
-                      Ident@55..59 "asdf"
-                    RBracket@59..60 "]"
-                Whitespace@60..61 " "
-                Eq@61..62 "="
-                Whitespace@62..63 " "
-                Literal@63..68
-                  Str@63..68 "\"ads\""
-            TableSep@68..69
-              Comma@68..69 ","
-            Whitespace@69..70 "\n"
-            RBrace@70..71 "}"
-  Whitespace@71..73 "\n\n"
-  ExprStmt@73..100
-    MultivalExpr@73..100
-      MethodCallExpr@73..100
-        NameRef@73..78
-          Ident@73..78 "hello"
-        Colon@78..79 ":"
-        NameRef@79..84
-          Ident@79..84 "world"
-        CallArgs@84..100
-          ArgList@84..100
-            LParen@84..85 "("
-            MultivalExpr@85..99
-              Literal@85..91
-                Str@85..91 "\'asdf\'"
-              Comma@91..92 ","
-              Whitespace@92..93 " "
-              Literal@93..99
-                Str@93..99 "\'asdf\'"
-            RParen@99..100 ")"
-  Whitespace@100..101 "\n"
+  Block@0..101
+    ExprStmt@0..20
+      MultivalExpr@0..20
+        MethodCallExpr@0..20
+          NameRef@0..6
+            Ident@0..6 "person"
+          Colon@6..7 ":"
+          NameRef@7..12
+            Ident@7..12 "greet"
+          Whitespace@12..13 " "
+          CallArgs@13..20
+            Str@13..20 "\"hello\""
+    Whitespace@20..22 "\n\n"
+    ExprStmt@22..71
+      MultivalExpr@22..71
+        MethodCallExpr@22..71
+          NameRef@22..26
+            Ident@22..26 "opts"
+          Colon@26..27 ":"
+          NameRef@27..31
+            Ident@27..31 "with"
+          Whitespace@31..32 " "
+          CallArgs@32..71
+            TableExpr@32..71
+              LBrace@32..33 "{"
+              Whitespace@33..36 "\n  "
+              TableContent@36..50
+                KeyValue@36..50
+                  TableKey@36..41
+                    Name@36..41
+                      Ident@36..41 "first"
+                  Whitespace@41..42 " "
+                  Eq@42..43 "="
+                  Whitespace@43..44 " "
+                  Literal@44..50
+                    Str@44..50 "\"asdf\""
+              TableSep@50..51
+                Comma@50..51 ","
+              Whitespace@51..54 "\n  "
+              TableContent@54..68
+                KeyValue@54..68
+                  TableKey@54..60
+                    Index@54..60
+                      LBracket@54..55 "["
+                      NameRef@55..59
+                        Ident@55..59 "asdf"
+                      RBracket@59..60 "]"
+                  Whitespace@60..61 " "
+                  Eq@61..62 "="
+                  Whitespace@62..63 " "
+                  Literal@63..68
+                    Str@63..68 "\"ads\""
+              TableSep@68..69
+                Comma@68..69 ","
+              Whitespace@69..70 "\n"
+              RBrace@70..71 "}"
+    Whitespace@71..73 "\n\n"
+    ExprStmt@73..100
+      MultivalExpr@73..100
+        MethodCallExpr@73..100
+          NameRef@73..78
+            Ident@73..78 "hello"
+          Colon@78..79 ":"
+          NameRef@79..84
+            Ident@79..84 "world"
+          CallArgs@84..100
+            ArgList@84..100
+              LParen@84..85 "("
+              MultivalExpr@85..99
+                Literal@85..91
+                  Str@85..91 "\'asdf\'"
+                Comma@91..92 ","
+                Whitespace@92..93 " "
+                Literal@93..99
+                  Str@93..99 "\'asdf\'"
+              RParen@99..100 ")"
+    Whitespace@100..101 "\n"
 
 =============================
 Errors:

@@ -5,56 +5,57 @@ input_file: crates/syntax/snapshots/parser/ok/call_with_vararg.lua
 
 ---
 SourceFile@0..74
-  LocalFunctionDefStmt@0..73
-    LocalKw@0..5 "local"
-    Whitespace@5..6 " "
-    FunctionKw@6..14 "function"
-    Whitespace@14..15 " "
-    Name@15..19
-      Ident@15..19 "test"
-    ParamList@19..24
-      LParen@19..20 "("
-      MultiName@20..20
-      TripleDot@20..23 "..."
-      RParen@23..24 ")"
-    Whitespace@24..27 "\n  "
-    Block@27..69
-      ExprStmt@27..56
-        MultivalExpr@27..56
-          CallExpr@27..56
-            NameRef@27..32
-              Ident@27..32 "print"
-            CallArgs@32..56
-              ArgList@32..56
-                LParen@32..33 "("
-                MultivalExpr@33..55
-                  Literal@33..40
-                    Str@33..40 "\"first\""
-                  Comma@40..41 ","
-                  Whitespace@41..42 " "
-                  Literal@42..50
-                    Str@42..50 "\"second\""
-                  Comma@50..51 ","
-                  Whitespace@51..52 " "
-                  Literal@52..55
-                    TripleDot@52..55 "..."
-                RParen@55..56 ")"
-      Whitespace@56..59 "\n  "
-      ExprStmt@59..69
-        MultivalExpr@59..69
-          CallExpr@59..69
-            NameRef@59..64
-              Ident@59..64 "print"
-            CallArgs@64..69
-              ArgList@64..69
-                LParen@64..65 "("
-                MultivalExpr@65..68
-                  Literal@65..68
-                    TripleDot@65..68 "..."
-                RParen@68..69 ")"
-    Whitespace@69..70 "\n"
-    EndKw@70..73 "end"
-  Whitespace@73..74 "\n"
+  Block@0..74
+    LocalFunctionDefStmt@0..73
+      LocalKw@0..5 "local"
+      Whitespace@5..6 " "
+      FunctionKw@6..14 "function"
+      Whitespace@14..15 " "
+      Name@15..19
+        Ident@15..19 "test"
+      ParamList@19..24
+        LParen@19..20 "("
+        MultiName@20..20
+        TripleDot@20..23 "..."
+        RParen@23..24 ")"
+      Whitespace@24..27 "\n  "
+      Block@27..69
+        ExprStmt@27..56
+          MultivalExpr@27..56
+            CallExpr@27..56
+              NameRef@27..32
+                Ident@27..32 "print"
+              CallArgs@32..56
+                ArgList@32..56
+                  LParen@32..33 "("
+                  MultivalExpr@33..55
+                    Literal@33..40
+                      Str@33..40 "\"first\""
+                    Comma@40..41 ","
+                    Whitespace@41..42 " "
+                    Literal@42..50
+                      Str@42..50 "\"second\""
+                    Comma@50..51 ","
+                    Whitespace@51..52 " "
+                    Literal@52..55
+                      TripleDot@52..55 "..."
+                  RParen@55..56 ")"
+        Whitespace@56..59 "\n  "
+        ExprStmt@59..69
+          MultivalExpr@59..69
+            CallExpr@59..69
+              NameRef@59..64
+                Ident@59..64 "print"
+              CallArgs@64..69
+                ArgList@64..69
+                  LParen@64..65 "("
+                  MultivalExpr@65..68
+                    Literal@65..68
+                      TripleDot@65..68 "..."
+                  RParen@68..69 ")"
+      Whitespace@69..70 "\n"
+      EndKw@70..73 "end"
+    Whitespace@73..74 "\n"
 
 =============================
 Errors:

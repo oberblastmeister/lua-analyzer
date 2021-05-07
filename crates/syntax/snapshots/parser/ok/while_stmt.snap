@@ -5,30 +5,31 @@ input_file: crates/syntax/snapshots/parser/ok/while_stmt.lua
 
 ---
 SourceFile@0..35
-  WhileStmt@0..34
-    WhileKw@0..5 "while"
-    Whitespace@5..6 " "
-    Literal@6..10
-      TrueKw@6..10 "true"
-    Whitespace@10..11 " "
-    DoKw@11..13 "do"
-    Whitespace@13..16 "\n  "
-    Block@16..30
-      ExprStmt@16..30
-        MultivalExpr@16..30
-          CallExpr@16..30
-            NameRef@16..21
-              Ident@16..21 "print"
-            CallArgs@21..30
-              ArgList@21..30
-                LParen@21..22 "("
-                MultivalExpr@22..29
-                  Literal@22..29
-                    Str@22..29 "\"hello\""
-                RParen@29..30 ")"
-    Whitespace@30..31 "\n"
-    EndKw@31..34 "end"
-  Whitespace@34..35 "\n"
+  Block@0..35
+    WhileStmt@0..34
+      WhileKw@0..5 "while"
+      Whitespace@5..6 " "
+      Literal@6..10
+        TrueKw@6..10 "true"
+      Whitespace@10..11 " "
+      DoKw@11..13 "do"
+      Whitespace@13..16 "\n  "
+      Block@16..30
+        ExprStmt@16..30
+          MultivalExpr@16..30
+            CallExpr@16..30
+              NameRef@16..21
+                Ident@16..21 "print"
+              CallArgs@21..30
+                ArgList@21..30
+                  LParen@21..22 "("
+                  MultivalExpr@22..29
+                    Literal@22..29
+                      Str@22..29 "\"hello\""
+                  RParen@29..30 ")"
+      Whitespace@30..31 "\n"
+      EndKw@31..34 "end"
+    Whitespace@34..35 "\n"
 
 =============================
 Errors:

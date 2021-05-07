@@ -5,12 +5,13 @@ input_file: crates/syntax/snapshots/parser/ok/comments.lua
 
 ---
 SourceFile@0..68
-  Comment@0..33 "-- these are just sim ..."
-  Whitespace@33..34 "\n"
-  Comment@34..50 "-- more comments"
-  Whitespace@50..51 "\n"
-  Comment@51..67 "-- more comments"
-  Whitespace@67..68 "\n"
+  Block@0..68
+    Comment@0..33 "-- these are just sim ..."
+    Whitespace@33..34 "\n"
+    Comment@34..50 "-- more comments"
+    Whitespace@50..51 "\n"
+    Comment@51..67 "-- more comments"
+    Whitespace@67..68 "\n"
 
 =============================
 Errors:

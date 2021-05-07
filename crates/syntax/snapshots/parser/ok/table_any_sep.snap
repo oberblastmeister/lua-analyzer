@@ -5,71 +5,72 @@ input_file: crates/syntax/snapshots/parser/ok/table_any_sep.lua
 
 ---
 SourceFile@0..84
-  LocalAssignStmt@0..83
-    LocalKw@0..5 "local"
-    Whitespace@5..6 " "
-    MultiName@6..9
-      Name@6..9
-        Ident@6..9 "tbl"
-    Whitespace@9..10 " "
-    Eq@10..11 "="
-    Whitespace@11..12 " "
-    MultivalExpr@12..83
-      TableExpr@12..83
-        LBrace@12..13 "{"
-        Whitespace@13..16 "\n  "
-        TableContent@16..25
-          PositionalValue@16..25
-            Literal@16..25
-              Str@16..25 "\"asdfasd\""
-        TableSep@25..26
-          Semicolon@25..26 ";"
-        Whitespace@26..29 "\n  "
-        TableContent@29..38
-          PositionalValue@29..38
-            Literal@29..38
-              Str@29..38 "\"another\""
-        TableSep@38..39
-          Comma@38..39 ","
-        Whitespace@39..42 "\n  "
-        TableContent@42..54
-          KeyValue@42..54
-            TableKey@42..48
-              Index@42..48
-                LBracket@42..43 "["
-                NameRef@43..47
-                  Ident@43..47 "asdf"
-                RBracket@47..48 "]"
-            Whitespace@48..49 " "
-            Eq@49..50 "="
-            Whitespace@50..51 " "
-            Literal@51..54
-              Number@51..54 "234"
-        TableSep@54..55
-          Comma@54..55 ","
-        Whitespace@55..58 "\n  "
-        TableContent@58..62
-          PositionalValue@58..62
-            NameRef@58..62
-              Ident@58..62 "asdf"
-        TableSep@62..63
-          Semicolon@62..63 ";"
-        Whitespace@63..66 "\n  "
-        TableContent@66..80
-          KeyValue@66..80
-            TableKey@66..71
-              Name@66..71
-                Ident@66..71 "hello"
-            Whitespace@71..72 " "
-            Eq@72..73 "="
-            Whitespace@73..74 " "
-            Literal@74..80
-              Str@74..80 "\"worl\""
-        TableSep@80..81
-          Semicolon@80..81 ";"
-        Whitespace@81..82 "\n"
-        RBrace@82..83 "}"
-  Whitespace@83..84 "\n"
+  Block@0..84
+    LocalAssignStmt@0..83
+      LocalKw@0..5 "local"
+      Whitespace@5..6 " "
+      MultiName@6..9
+        Name@6..9
+          Ident@6..9 "tbl"
+      Whitespace@9..10 " "
+      Eq@10..11 "="
+      Whitespace@11..12 " "
+      MultivalExpr@12..83
+        TableExpr@12..83
+          LBrace@12..13 "{"
+          Whitespace@13..16 "\n  "
+          TableContent@16..25
+            PositionalValue@16..25
+              Literal@16..25
+                Str@16..25 "\"asdfasd\""
+          TableSep@25..26
+            Semicolon@25..26 ";"
+          Whitespace@26..29 "\n  "
+          TableContent@29..38
+            PositionalValue@29..38
+              Literal@29..38
+                Str@29..38 "\"another\""
+          TableSep@38..39
+            Comma@38..39 ","
+          Whitespace@39..42 "\n  "
+          TableContent@42..54
+            KeyValue@42..54
+              TableKey@42..48
+                Index@42..48
+                  LBracket@42..43 "["
+                  NameRef@43..47
+                    Ident@43..47 "asdf"
+                  RBracket@47..48 "]"
+              Whitespace@48..49 " "
+              Eq@49..50 "="
+              Whitespace@50..51 " "
+              Literal@51..54
+                Number@51..54 "234"
+          TableSep@54..55
+            Comma@54..55 ","
+          Whitespace@55..58 "\n  "
+          TableContent@58..62
+            PositionalValue@58..62
+              NameRef@58..62
+                Ident@58..62 "asdf"
+          TableSep@62..63
+            Semicolon@62..63 ";"
+          Whitespace@63..66 "\n  "
+          TableContent@66..80
+            KeyValue@66..80
+              TableKey@66..71
+                Name@66..71
+                  Ident@66..71 "hello"
+              Whitespace@71..72 " "
+              Eq@72..73 "="
+              Whitespace@73..74 " "
+              Literal@74..80
+                Str@74..80 "\"worl\""
+          TableSep@80..81
+            Semicolon@80..81 ";"
+          Whitespace@81..82 "\n"
+          RBrace@82..83 "}"
+    Whitespace@83..84 "\n"
 
 =============================
 Errors:

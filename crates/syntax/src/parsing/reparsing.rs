@@ -72,10 +72,10 @@ fn reparse_block(
     }
 
     let mut token_source = TextTokenSource::new(&text, &tokens);
-    let mut tree_sink = TextTreeSink::new(&text, &tokens);
-    reparser.parse(&mut token_source, &mut tree_sink);
+    let tree_sink = TextTreeSink::new(&text, &tokens);
 
-    let (green, mut new_parser_errors) = tree_sink.finish();
+    let (green, mut new_parser_errors) = reparser.parse(&mut token_source, tree_sink);
+
     new_parser_errors.extend(new_lexer_errors);
 
     Some((node.replace_with(green), new_parser_errors, node.text_range()))

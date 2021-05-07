@@ -5,106 +5,107 @@ input_file: crates/syntax/snapshots/parser/ok/prefix_expr.lua
 
 ---
 SourceFile@0..137
-  LocalAssignStmt@0..24
-    LocalKw@0..5 "local"
-    Whitespace@5..6 " "
-    MultiName@6..13
-      Name@6..13
-        Ident@6..13 "neg_num"
-    Whitespace@13..14 " "
-    Eq@14..15 "="
-    Whitespace@15..16 " "
-    MultivalExpr@16..24
-      InfixExpr@16..24
-        PrefixExpr@16..18
-          Minus@16..17 "-"
-          Literal@17..18
-            Number@17..18 "5"
-        Whitespace@18..19 " "
-        Asterisk@19..20 "*"
-        Whitespace@20..21 " "
-        PrefixExpr@21..24
-          Minus@21..22 "-"
-          Literal@22..24
-            Number@22..24 "10"
-  Whitespace@24..25 "\n"
-  LocalAssignStmt@25..49
-    LocalKw@25..30 "local"
-    Whitespace@30..31 " "
-    MultiName@31..38
-      Name@31..38
-        Ident@31..38 "another"
-    Whitespace@38..39 " "
-    Eq@39..40 "="
-    Whitespace@40..41 " "
-    MultivalExpr@41..49
-      PrefixExpr@41..49
-        NotKw@41..44 "not"
-        Whitespace@44..45 " "
-        Literal@45..49
-          TrueKw@45..49 "true"
-  Whitespace@49..50 "\n"
-  LocalAssignStmt@50..83
-    LocalKw@50..55 "local"
-    Whitespace@55..56 " "
-    MultiName@56..62
-      Name@56..62
-        Ident@56..62 "finaly"
-    Whitespace@62..63 " "
-    Eq@63..64 "="
-    Whitespace@64..65 " "
-    MultivalExpr@65..83
-      InfixExpr@65..83
-        Literal@65..69
-          TrueKw@65..69 "true"
-        Whitespace@69..70 " "
-        AndKw@70..73 "and"
-        Whitespace@73..74 " "
-        PrefixExpr@74..83
-          NotKw@74..77 "not"
-          Whitespace@77..78 " "
-          Literal@78..83
-            FalseKw@78..83 "false"
-  Whitespace@83..84 "\n"
-  LocalAssignStmt@84..136
-    LocalKw@84..89 "local"
-    Whitespace@89..90 " "
-    MultiName@90..97
-      Name@90..97
-        Ident@90..97 "another"
-    Whitespace@97..98 " "
-    Eq@98..99 "="
-    Whitespace@99..100 " "
-    MultivalExpr@100..136
-      InfixExpr@100..136
-        InfixExpr@100..130
-          InfixExpr@100..118
-            Literal@100..104
-              TrueKw@100..104 "true"
-            Whitespace@104..105 " "
-            AndKw@105..108 "and"
-            Whitespace@108..109 " "
-            PrefixExpr@109..118
-              NotKw@109..112 "not"
-              Whitespace@112..113 " "
-              Literal@113..118
-                FalseKw@113..118 "false"
-          Whitespace@118..119 " "
-          OrKw@119..121 "or"
-          Whitespace@121..122 " "
-          PrefixExpr@122..130
-            NotKw@122..125 "not"
-            Whitespace@125..126 " "
-            Literal@126..130
-              TrueKw@126..130 "true"
-        Whitespace@130..131 " "
-        OrKw@131..133 "or"
-        Whitespace@133..134 " "
-        PrefixExpr@134..136
-          Minus@134..135 "-"
-          Literal@135..136
-            Number@135..136 "1"
-  Whitespace@136..137 "\n"
+  Block@0..137
+    LocalAssignStmt@0..24
+      LocalKw@0..5 "local"
+      Whitespace@5..6 " "
+      MultiName@6..13
+        Name@6..13
+          Ident@6..13 "neg_num"
+      Whitespace@13..14 " "
+      Eq@14..15 "="
+      Whitespace@15..16 " "
+      MultivalExpr@16..24
+        InfixExpr@16..24
+          PrefixExpr@16..18
+            Minus@16..17 "-"
+            Literal@17..18
+              Number@17..18 "5"
+          Whitespace@18..19 " "
+          Asterisk@19..20 "*"
+          Whitespace@20..21 " "
+          PrefixExpr@21..24
+            Minus@21..22 "-"
+            Literal@22..24
+              Number@22..24 "10"
+    Whitespace@24..25 "\n"
+    LocalAssignStmt@25..49
+      LocalKw@25..30 "local"
+      Whitespace@30..31 " "
+      MultiName@31..38
+        Name@31..38
+          Ident@31..38 "another"
+      Whitespace@38..39 " "
+      Eq@39..40 "="
+      Whitespace@40..41 " "
+      MultivalExpr@41..49
+        PrefixExpr@41..49
+          NotKw@41..44 "not"
+          Whitespace@44..45 " "
+          Literal@45..49
+            TrueKw@45..49 "true"
+    Whitespace@49..50 "\n"
+    LocalAssignStmt@50..83
+      LocalKw@50..55 "local"
+      Whitespace@55..56 " "
+      MultiName@56..62
+        Name@56..62
+          Ident@56..62 "finaly"
+      Whitespace@62..63 " "
+      Eq@63..64 "="
+      Whitespace@64..65 " "
+      MultivalExpr@65..83
+        InfixExpr@65..83
+          Literal@65..69
+            TrueKw@65..69 "true"
+          Whitespace@69..70 " "
+          AndKw@70..73 "and"
+          Whitespace@73..74 " "
+          PrefixExpr@74..83
+            NotKw@74..77 "not"
+            Whitespace@77..78 " "
+            Literal@78..83
+              FalseKw@78..83 "false"
+    Whitespace@83..84 "\n"
+    LocalAssignStmt@84..136
+      LocalKw@84..89 "local"
+      Whitespace@89..90 " "
+      MultiName@90..97
+        Name@90..97
+          Ident@90..97 "another"
+      Whitespace@97..98 " "
+      Eq@98..99 "="
+      Whitespace@99..100 " "
+      MultivalExpr@100..136
+        InfixExpr@100..136
+          InfixExpr@100..130
+            InfixExpr@100..118
+              Literal@100..104
+                TrueKw@100..104 "true"
+              Whitespace@104..105 " "
+              AndKw@105..108 "and"
+              Whitespace@108..109 " "
+              PrefixExpr@109..118
+                NotKw@109..112 "not"
+                Whitespace@112..113 " "
+                Literal@113..118
+                  FalseKw@113..118 "false"
+            Whitespace@118..119 " "
+            OrKw@119..121 "or"
+            Whitespace@121..122 " "
+            PrefixExpr@122..130
+              NotKw@122..125 "not"
+              Whitespace@125..126 " "
+              Literal@126..130
+                TrueKw@126..130 "true"
+          Whitespace@130..131 " "
+          OrKw@131..133 "or"
+          Whitespace@133..134 " "
+          PrefixExpr@134..136
+            Minus@134..135 "-"
+            Literal@135..136
+              Number@135..136 "1"
+    Whitespace@136..137 "\n"
 
 =============================
 Errors:

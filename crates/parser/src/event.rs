@@ -24,7 +24,7 @@ impl Event {
     }
 }
 
-pub(super) fn process<TS: TreeSink>(sink: &mut TS, mut events: Vec<Event>) {
+pub(super) fn process<TS: TreeSink>(mut sink: TS, mut events: Vec<Event>) -> TS::FinishResult {
     let mut forward_parents = Vec::new();
 
     for i in 0..events.len() {
@@ -65,4 +65,6 @@ pub(super) fn process<TS: TreeSink>(sink: &mut TS, mut events: Vec<Event>) {
             Event::FinishError(e) => sink.finish_error_node(e),
         }
     }
+
+    sink.finish()
 }

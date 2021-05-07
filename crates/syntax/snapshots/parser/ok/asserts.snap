@@ -5,278 +5,279 @@ input_file: crates/syntax/snapshots/parser/ok/asserts.lua
 
 ---
 SourceFile@0..256
-  ExprStmt@0..61
-    MultivalExpr@0..61
-      CallExpr@0..61
-        NameRef@0..6
-          Ident@0..6 "assert"
-        CallArgs@6..61
-          ArgList@6..61
-            LParen@6..7 "("
-            MultivalExpr@7..60
-              InfixExpr@7..60
-                InfixExpr@7..47
-                  InfixExpr@7..32
-                    InfixExpr@7..16
-                      DotExpr@7..10
-                        NameRef@7..8
-                          Ident@7..8 "x"
-                        Dot@8..9 "."
-                        Ident@9..10 "a"
-                      Whitespace@10..11 " "
-                      EqEq@11..13 "=="
-                      Whitespace@13..14 " "
-                      Literal@14..16
-                        Number@14..16 "72"
-                    Whitespace@16..17 " "
-                    AndKw@17..20 "and"
-                    Whitespace@20..21 " "
-                    InfixExpr@21..32
-                      DotExpr@21..24
-                        NameRef@21..22
-                          Ident@21..22 "x"
-                        Dot@22..23 "."
-                        Ident@23..24 "b"
-                      Whitespace@24..25 " "
-                      EqEq@25..27 "=="
-                      Whitespace@27..28 " "
-                      PrefixExpr@28..32
-                        Minus@28..29 "-"
-                        Literal@29..32
-                          Number@29..32 "187"
-                  Whitespace@32..33 " "
-                  AndKw@33..36 "and"
-                  Whitespace@36..37 " "
-                  InfixExpr@37..47
-                    DotExpr@37..40
-                      NameRef@37..38
-                        Ident@37..38 "x"
-                      Dot@38..39 "."
-                      Ident@39..40 "c"
-                    Whitespace@40..41 " "
-                    EqEq@41..43 "=="
-                    Whitespace@43..44 " "
-                    Literal@44..47
-                      Number@44..47 "828"
-                Whitespace@47..48 " "
-                AndKw@48..51 "and"
-                Whitespace@51..52 " "
-                InfixExpr@52..60
-                  DotExpr@52..55
-                    NameRef@52..53
-                      Ident@52..53 "x"
-                    Dot@53..54 "."
-                    Ident@54..55 "d"
-                  Whitespace@55..56 " "
-                  EqEq@56..58 "=="
-                  Whitespace@58..59 " "
-                  Literal@59..60
-                    Number@59..60 "0"
-            RParen@60..61 ")"
-  Whitespace@61..62 "\n"
-  ExprStmt@62..122
-    MultivalExpr@62..122
-      CallExpr@62..122
-        NameRef@62..68
-          Ident@62..68 "assert"
-        CallArgs@68..122
-          ArgList@68..122
-            LParen@68..69 "("
-            MultivalExpr@69..121
-              InfixExpr@69..121
-                InfixExpr@69..108
-                  InfixExpr@69..93
-                    InfixExpr@69..78
-                      DotExpr@69..72
-                        NameRef@69..70
-                          Ident@69..70 "x"
-                        Dot@70..71 "."
-                        Ident@71..72 "e"
-                      Whitespace@72..73 " "
-                      EqEq@73..75 "=="
-                      Whitespace@75..76 " "
-                      Literal@76..78
-                        Number@76..78 "72"
-                    Whitespace@78..79 " "
-                    AndKw@79..82 "and"
-                    Whitespace@82..83 " "
-                    InfixExpr@83..93
-                      DotExpr@83..86
-                        NameRef@83..84
-                          Ident@83..84 "x"
-                        Dot@84..85 "."
-                        Ident@85..86 "f"
-                      Whitespace@86..87 " "
-                      EqEq@87..89 "=="
-                      Whitespace@89..90 " "
-                      Literal@90..93
-                        Number@90..93 "837"
-                  Whitespace@93..94 " "
-                  AndKw@94..97 "and"
-                  Whitespace@97..98 " "
-                  InfixExpr@98..108
-                    DotExpr@98..101
-                      NameRef@98..99
-                        Ident@98..99 "x"
-                      Dot@99..100 "."
-                      Ident@100..101 "g"
-                    Whitespace@101..102 " "
-                    EqEq@102..104 "=="
-                    Whitespace@104..105 " "
-                    Literal@105..108
-                      Number@105..108 "828"
-                Whitespace@108..109 " "
-                AndKw@109..112 "and"
-                Whitespace@112..113 " "
-                InfixExpr@113..121
-                  DotExpr@113..116
-                    NameRef@113..114
-                      Ident@113..114 "x"
-                    Dot@114..115 "."
-                    Ident@115..116 "h"
-                  Whitespace@116..117 " "
-                  EqEq@117..119 "=="
-                  Whitespace@119..120 " "
-                  Literal@120..121
-                    Number@120..121 "0"
-            RParen@121..122 ")"
-  Whitespace@122..123 "\n"
-  ExprStmt@123..180
-    MultivalExpr@123..180
-      CallExpr@123..180
-        NameRef@123..129
-          Ident@123..129 "assert"
-        CallArgs@129..180
-          ArgList@129..180
-            LParen@129..130 "("
-            MultivalExpr@130..179
-              InfixExpr@130..179
-                InfixExpr@130..165
-                  InfixExpr@130..151
-                    InfixExpr@130..138
-                      DotExpr@130..133
-                        NameRef@130..131
-                          Ident@130..131 "x"
-                        Dot@131..132 "."
-                        Ident@132..133 "i"
-                      Whitespace@133..134 " "
-                      EqEq@134..136 "=="
-                      Whitespace@136..137 " "
-                      Literal@137..138
-                        Number@137..138 "1"
-                    Whitespace@138..139 " "
-                    AndKw@139..142 "and"
-                    Whitespace@142..143 " "
-                    InfixExpr@143..151
-                      DotExpr@143..146
-                        NameRef@143..144
-                          Ident@143..144 "x"
-                        Dot@144..145 "."
-                        Ident@145..146 "j"
-                      Whitespace@146..147 " "
-                      EqEq@147..149 "=="
-                      Whitespace@149..150 " "
-                      Literal@150..151
-                        Number@150..151 "6"
-                  Whitespace@151..152 " "
-                  AndKw@152..155 "and"
-                  Whitespace@155..156 " "
-                  InfixExpr@156..165
-                    DotExpr@156..159
-                      NameRef@156..157
-                        Ident@156..157 "x"
-                      Dot@157..158 "."
-                      Ident@158..159 "k"
-                    Whitespace@159..160 " "
-                    EqEq@160..162 "=="
-                    Whitespace@162..163 " "
-                    Literal@163..165
-                      Number@163..165 "10"
-                Whitespace@165..166 " "
-                AndKw@166..169 "and"
-                Whitespace@169..170 " "
-                InfixExpr@170..179
-                  DotExpr@170..173
-                    NameRef@170..171
-                      Ident@170..171 "x"
-                    Dot@171..172 "."
-                    Ident@172..173 "l"
-                  Whitespace@173..174 " "
-                  EqEq@174..176 "=="
-                  Whitespace@176..177 " "
-                  PrefixExpr@177..179
-                    Minus@177..178 "-"
-                    Literal@178..179
-                      Number@178..179 "2"
-            RParen@179..180 ")"
-  Whitespace@180..181 "\n"
-  ExprStmt@181..255
-    MultivalExpr@181..255
-      CallExpr@181..255
-        NameRef@181..187
-          Ident@181..187 "assert"
-        CallArgs@187..255
-          ArgList@187..255
-            LParen@187..188 "("
-            MultivalExpr@188..254
-              InfixExpr@188..254
-                InfixExpr@188..237
-                  InfixExpr@188..219
-                    InfixExpr@188..201
-                      DotExpr@188..192
-                        NameRef@188..189
-                          Ident@188..189 "x"
-                        Dot@189..190 "."
-                        Ident@190..192 "b0"
-                      Whitespace@192..193 " "
-                      EqEq@193..195 "=="
-                      Whitespace@195..196 " "
-                      Literal@196..201
-                        FalseKw@196..201 "false"
-                    Whitespace@201..202 " "
-                    AndKw@202..205 "and"
-                    Whitespace@205..206 " "
-                    InfixExpr@206..219
-                      DotExpr@206..210
-                        NameRef@206..207
-                          Ident@206..207 "x"
-                        Dot@207..208 "."
-                        Ident@208..210 "b1"
-                      Whitespace@210..211 " "
-                      EqEq@211..213 "=="
-                      Whitespace@213..214 " "
-                      Literal@214..219
-                        FalseKw@214..219 "false"
-                  Whitespace@219..220 " "
-                  AndKw@220..223 "and"
-                  Whitespace@223..224 " "
-                  InfixExpr@224..237
-                    DotExpr@224..228
-                      NameRef@224..225
-                        Ident@224..225 "x"
-                      Dot@225..226 "."
-                      Ident@226..228 "b2"
-                    Whitespace@228..229 " "
-                    EqEq@229..231 "=="
-                    Whitespace@231..232 " "
-                    Literal@232..237
-                      FalseKw@232..237 "false"
-                Whitespace@237..238 " "
-                AndKw@238..241 "and"
-                Whitespace@241..242 " "
-                InfixExpr@242..254
-                  DotExpr@242..246
-                    NameRef@242..243
-                      Ident@242..243 "x"
-                    Dot@243..244 "."
-                    Ident@244..246 "b3"
-                  Whitespace@246..247 " "
-                  EqEq@247..249 "=="
-                  Whitespace@249..250 " "
-                  Literal@250..254
-                    TrueKw@250..254 "true"
-            RParen@254..255 ")"
-  Whitespace@255..256 "\n"
+  Block@0..256
+    ExprStmt@0..61
+      MultivalExpr@0..61
+        CallExpr@0..61
+          NameRef@0..6
+            Ident@0..6 "assert"
+          CallArgs@6..61
+            ArgList@6..61
+              LParen@6..7 "("
+              MultivalExpr@7..60
+                InfixExpr@7..60
+                  InfixExpr@7..47
+                    InfixExpr@7..32
+                      InfixExpr@7..16
+                        DotExpr@7..10
+                          NameRef@7..8
+                            Ident@7..8 "x"
+                          Dot@8..9 "."
+                          Ident@9..10 "a"
+                        Whitespace@10..11 " "
+                        EqEq@11..13 "=="
+                        Whitespace@13..14 " "
+                        Literal@14..16
+                          Number@14..16 "72"
+                      Whitespace@16..17 " "
+                      AndKw@17..20 "and"
+                      Whitespace@20..21 " "
+                      InfixExpr@21..32
+                        DotExpr@21..24
+                          NameRef@21..22
+                            Ident@21..22 "x"
+                          Dot@22..23 "."
+                          Ident@23..24 "b"
+                        Whitespace@24..25 " "
+                        EqEq@25..27 "=="
+                        Whitespace@27..28 " "
+                        PrefixExpr@28..32
+                          Minus@28..29 "-"
+                          Literal@29..32
+                            Number@29..32 "187"
+                    Whitespace@32..33 " "
+                    AndKw@33..36 "and"
+                    Whitespace@36..37 " "
+                    InfixExpr@37..47
+                      DotExpr@37..40
+                        NameRef@37..38
+                          Ident@37..38 "x"
+                        Dot@38..39 "."
+                        Ident@39..40 "c"
+                      Whitespace@40..41 " "
+                      EqEq@41..43 "=="
+                      Whitespace@43..44 " "
+                      Literal@44..47
+                        Number@44..47 "828"
+                  Whitespace@47..48 " "
+                  AndKw@48..51 "and"
+                  Whitespace@51..52 " "
+                  InfixExpr@52..60
+                    DotExpr@52..55
+                      NameRef@52..53
+                        Ident@52..53 "x"
+                      Dot@53..54 "."
+                      Ident@54..55 "d"
+                    Whitespace@55..56 " "
+                    EqEq@56..58 "=="
+                    Whitespace@58..59 " "
+                    Literal@59..60
+                      Number@59..60 "0"
+              RParen@60..61 ")"
+    Whitespace@61..62 "\n"
+    ExprStmt@62..122
+      MultivalExpr@62..122
+        CallExpr@62..122
+          NameRef@62..68
+            Ident@62..68 "assert"
+          CallArgs@68..122
+            ArgList@68..122
+              LParen@68..69 "("
+              MultivalExpr@69..121
+                InfixExpr@69..121
+                  InfixExpr@69..108
+                    InfixExpr@69..93
+                      InfixExpr@69..78
+                        DotExpr@69..72
+                          NameRef@69..70
+                            Ident@69..70 "x"
+                          Dot@70..71 "."
+                          Ident@71..72 "e"
+                        Whitespace@72..73 " "
+                        EqEq@73..75 "=="
+                        Whitespace@75..76 " "
+                        Literal@76..78
+                          Number@76..78 "72"
+                      Whitespace@78..79 " "
+                      AndKw@79..82 "and"
+                      Whitespace@82..83 " "
+                      InfixExpr@83..93
+                        DotExpr@83..86
+                          NameRef@83..84
+                            Ident@83..84 "x"
+                          Dot@84..85 "."
+                          Ident@85..86 "f"
+                        Whitespace@86..87 " "
+                        EqEq@87..89 "=="
+                        Whitespace@89..90 " "
+                        Literal@90..93
+                          Number@90..93 "837"
+                    Whitespace@93..94 " "
+                    AndKw@94..97 "and"
+                    Whitespace@97..98 " "
+                    InfixExpr@98..108
+                      DotExpr@98..101
+                        NameRef@98..99
+                          Ident@98..99 "x"
+                        Dot@99..100 "."
+                        Ident@100..101 "g"
+                      Whitespace@101..102 " "
+                      EqEq@102..104 "=="
+                      Whitespace@104..105 " "
+                      Literal@105..108
+                        Number@105..108 "828"
+                  Whitespace@108..109 " "
+                  AndKw@109..112 "and"
+                  Whitespace@112..113 " "
+                  InfixExpr@113..121
+                    DotExpr@113..116
+                      NameRef@113..114
+                        Ident@113..114 "x"
+                      Dot@114..115 "."
+                      Ident@115..116 "h"
+                    Whitespace@116..117 " "
+                    EqEq@117..119 "=="
+                    Whitespace@119..120 " "
+                    Literal@120..121
+                      Number@120..121 "0"
+              RParen@121..122 ")"
+    Whitespace@122..123 "\n"
+    ExprStmt@123..180
+      MultivalExpr@123..180
+        CallExpr@123..180
+          NameRef@123..129
+            Ident@123..129 "assert"
+          CallArgs@129..180
+            ArgList@129..180
+              LParen@129..130 "("
+              MultivalExpr@130..179
+                InfixExpr@130..179
+                  InfixExpr@130..165
+                    InfixExpr@130..151
+                      InfixExpr@130..138
+                        DotExpr@130..133
+                          NameRef@130..131
+                            Ident@130..131 "x"
+                          Dot@131..132 "."
+                          Ident@132..133 "i"
+                        Whitespace@133..134 " "
+                        EqEq@134..136 "=="
+                        Whitespace@136..137 " "
+                        Literal@137..138
+                          Number@137..138 "1"
+                      Whitespace@138..139 " "
+                      AndKw@139..142 "and"
+                      Whitespace@142..143 " "
+                      InfixExpr@143..151
+                        DotExpr@143..146
+                          NameRef@143..144
+                            Ident@143..144 "x"
+                          Dot@144..145 "."
+                          Ident@145..146 "j"
+                        Whitespace@146..147 " "
+                        EqEq@147..149 "=="
+                        Whitespace@149..150 " "
+                        Literal@150..151
+                          Number@150..151 "6"
+                    Whitespace@151..152 " "
+                    AndKw@152..155 "and"
+                    Whitespace@155..156 " "
+                    InfixExpr@156..165
+                      DotExpr@156..159
+                        NameRef@156..157
+                          Ident@156..157 "x"
+                        Dot@157..158 "."
+                        Ident@158..159 "k"
+                      Whitespace@159..160 " "
+                      EqEq@160..162 "=="
+                      Whitespace@162..163 " "
+                      Literal@163..165
+                        Number@163..165 "10"
+                  Whitespace@165..166 " "
+                  AndKw@166..169 "and"
+                  Whitespace@169..170 " "
+                  InfixExpr@170..179
+                    DotExpr@170..173
+                      NameRef@170..171
+                        Ident@170..171 "x"
+                      Dot@171..172 "."
+                      Ident@172..173 "l"
+                    Whitespace@173..174 " "
+                    EqEq@174..176 "=="
+                    Whitespace@176..177 " "
+                    PrefixExpr@177..179
+                      Minus@177..178 "-"
+                      Literal@178..179
+                        Number@178..179 "2"
+              RParen@179..180 ")"
+    Whitespace@180..181 "\n"
+    ExprStmt@181..255
+      MultivalExpr@181..255
+        CallExpr@181..255
+          NameRef@181..187
+            Ident@181..187 "assert"
+          CallArgs@187..255
+            ArgList@187..255
+              LParen@187..188 "("
+              MultivalExpr@188..254
+                InfixExpr@188..254
+                  InfixExpr@188..237
+                    InfixExpr@188..219
+                      InfixExpr@188..201
+                        DotExpr@188..192
+                          NameRef@188..189
+                            Ident@188..189 "x"
+                          Dot@189..190 "."
+                          Ident@190..192 "b0"
+                        Whitespace@192..193 " "
+                        EqEq@193..195 "=="
+                        Whitespace@195..196 " "
+                        Literal@196..201
+                          FalseKw@196..201 "false"
+                      Whitespace@201..202 " "
+                      AndKw@202..205 "and"
+                      Whitespace@205..206 " "
+                      InfixExpr@206..219
+                        DotExpr@206..210
+                          NameRef@206..207
+                            Ident@206..207 "x"
+                          Dot@207..208 "."
+                          Ident@208..210 "b1"
+                        Whitespace@210..211 " "
+                        EqEq@211..213 "=="
+                        Whitespace@213..214 " "
+                        Literal@214..219
+                          FalseKw@214..219 "false"
+                    Whitespace@219..220 " "
+                    AndKw@220..223 "and"
+                    Whitespace@223..224 " "
+                    InfixExpr@224..237
+                      DotExpr@224..228
+                        NameRef@224..225
+                          Ident@224..225 "x"
+                        Dot@225..226 "."
+                        Ident@226..228 "b2"
+                      Whitespace@228..229 " "
+                      EqEq@229..231 "=="
+                      Whitespace@231..232 " "
+                      Literal@232..237
+                        FalseKw@232..237 "false"
+                  Whitespace@237..238 " "
+                  AndKw@238..241 "and"
+                  Whitespace@241..242 " "
+                  InfixExpr@242..254
+                    DotExpr@242..246
+                      NameRef@242..243
+                        Ident@242..243 "x"
+                      Dot@243..244 "."
+                      Ident@244..246 "b3"
+                    Whitespace@246..247 " "
+                    EqEq@247..249 "=="
+                    Whitespace@249..250 " "
+                    Literal@250..254
+                      TrueKw@250..254 "true"
+              RParen@254..255 ")"
+    Whitespace@255..256 "\n"
 
 =============================
 Errors:

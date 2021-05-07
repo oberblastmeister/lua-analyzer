@@ -6,5 +6,4 @@ pub enum WithBodyId {
     ModuleId(FileId),
     FunctionId(FunctionId),
     LocalFunctionId(LocalFunctionId),
-    LocalAssignId(LocalAssignId),
 }

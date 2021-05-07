@@ -1,0 +1,28 @@
+---
+source: crates/syntax/src/tests.rs
+expression: actual
+input_file: crates/syntax/snapshots/parser/ok/comment_on_thing.lua
+
+---
+SourceFile@0..38
+  Block@0..38
+    Comment@0..20 "-- this is a comment"
+    Whitespace@20..21 "\n"
+    LocalAssignStmt@21..37
+      LocalKw@21..26 "local"
+      Whitespace@26..27 " "
+      MultiName@27..33
+        Name@27..33
+          Ident@27..33 "person"
+      Whitespace@33..34 " "
+      Eq@34..35 "="
+      Whitespace@35..36 " "
+      MultivalExpr@36..37
+        Literal@36..37
+          Number@36..37 "3"
+    Whitespace@37..38 "\n"
+
+=============================
+Errors:
+=============================
+[]

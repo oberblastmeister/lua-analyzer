@@ -5,66 +5,67 @@ input_file: crates/syntax/snapshots/parser/ok/vararg.lua
 
 ---
 SourceFile@0..110
-  LocalFunctionDefStmt@0..35
-    LocalKw@0..5 "local"
-    Whitespace@5..6 " "
-    FunctionKw@6..14 "function"
-    Whitespace@14..15 " "
-    Name@15..19
-      Ident@15..19 "asdf"
-    ParamList@19..31
-      LParen@19..20 "("
-      MultiName@20..26
-        Name@20..25
-          Ident@20..25 "hello"
-        Comma@25..26 ","
-      Whitespace@26..27 " "
-      TripleDot@27..30 "..."
-      RParen@30..31 ")"
-    Whitespace@31..32 "\n"
-    Block@32..32
-    EndKw@32..35 "end"
-  Whitespace@35..37 "\n\n"
-  LocalFunctionDefStmt@37..65
-    LocalKw@37..42 "local"
-    Whitespace@42..43 " "
-    FunctionKw@43..51 "function"
-    Whitespace@51..52 " "
-    Name@52..56
-      Ident@52..56 "adsf"
-    ParamList@56..61
-      LParen@56..57 "("
-      MultiName@57..57
-      TripleDot@57..60 "..."
-      RParen@60..61 ")"
-    Whitespace@61..62 "\n"
-    Block@62..62
-    EndKw@62..65 "end"
-  Whitespace@65..67 "\n\n"
-  LocalFunctionDefStmt@67..109
-    LocalKw@67..72 "local"
-    Whitespace@72..73 " "
-    FunctionKw@73..81 "function"
-    Whitespace@81..82 " "
-    Name@82..86
-      Ident@82..86 "asdf"
-    ParamList@86..105
-      LParen@86..87 "("
-      MultiName@87..100
-        Name@87..92
-          Ident@87..92 "hello"
-        Comma@92..93 ","
-        Whitespace@93..94 " "
-        Name@94..99
-          Ident@94..99 "world"
-        Comma@99..100 ","
-      Whitespace@100..101 " "
-      TripleDot@101..104 "..."
-      RParen@104..105 ")"
-    Whitespace@105..106 "\n"
-    Block@106..106
-    EndKw@106..109 "end"
-  Whitespace@109..110 "\n"
+  Block@0..110
+    LocalFunctionDefStmt@0..35
+      LocalKw@0..5 "local"
+      Whitespace@5..6 " "
+      FunctionKw@6..14 "function"
+      Whitespace@14..15 " "
+      Name@15..19
+        Ident@15..19 "asdf"
+      ParamList@19..31
+        LParen@19..20 "("
+        MultiName@20..26
+          Name@20..25
+            Ident@20..25 "hello"
+          Comma@25..26 ","
+        Whitespace@26..27 " "
+        TripleDot@27..30 "..."
+        RParen@30..31 ")"
+      Whitespace@31..32 "\n"
+      Block@32..32
+      EndKw@32..35 "end"
+    Whitespace@35..37 "\n\n"
+    LocalFunctionDefStmt@37..65
+      LocalKw@37..42 "local"
+      Whitespace@42..43 " "
+      FunctionKw@43..51 "function"
+      Whitespace@51..52 " "
+      Name@52..56
+        Ident@52..56 "adsf"
+      ParamList@56..61
+        LParen@56..57 "("
+        MultiName@57..57
+        TripleDot@57..60 "..."
+        RParen@60..61 ")"
+      Whitespace@61..62 "\n"
+      Block@62..62
+      EndKw@62..65 "end"
+    Whitespace@65..67 "\n\n"
+    LocalFunctionDefStmt@67..109
+      LocalKw@67..72 "local"
+      Whitespace@72..73 " "
+      FunctionKw@73..81 "function"
+      Whitespace@81..82 " "
+      Name@82..86
+        Ident@82..86 "asdf"
+      ParamList@86..105
+        LParen@86..87 "("
+        MultiName@87..100
+          Name@87..92
+            Ident@87..92 "hello"
+          Comma@92..93 ","
+          Whitespace@93..94 " "
+          Name@94..99
+            Ident@94..99 "world"
+          Comma@99..100 ","
+        Whitespace@100..101 " "
+        TripleDot@101..104 "..."
+        RParen@104..105 ")"
+      Whitespace@105..106 "\n"
+      Block@106..106
+      EndKw@106..109 "end"
+    Whitespace@109..110 "\n"
 
 =============================
 Errors:

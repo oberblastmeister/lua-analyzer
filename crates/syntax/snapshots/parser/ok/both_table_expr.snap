@@ -5,80 +5,81 @@ input_file: crates/syntax/snapshots/parser/ok/both_table_expr.lua
 
 ---
 SourceFile@0..105
-  LocalAssignStmt@0..104
-    LocalKw@0..5 "local"
-    Whitespace@5..6 " "
-    MultiName@6..10
-      Name@6..10
-        Ident@6..10 "both"
-    Whitespace@10..11 " "
-    Eq@11..12 "="
-    Whitespace@12..13 " "
-    MultivalExpr@13..104
-      TableExpr@13..104
-        LBrace@13..14 "{"
-        Whitespace@14..17 "\n  "
-        TableContent@17..29
-          PositionalValue@17..29
-            Literal@17..29
-              Str@17..29 "\"positional\""
-        TableSep@29..30
-          Comma@29..30 ","
-        Whitespace@30..33 "\n  "
-        TableContent@33..54
-          KeyValue@33..54
-            TableKey@33..37
-              Index@33..37
-                LBracket@33..34 "["
-                Literal@34..36
-                  Number@34..36 "10"
-                RBracket@36..37 "]"
-            Whitespace@37..38 " "
-            Eq@38..39 "="
-            Whitespace@39..40 " "
-            Literal@40..54
-              Str@40..54 "\"what is thsi\""
-        TableSep@54..55
-          Comma@54..55 ","
-        Whitespace@55..58 "\n  "
-        TableContent@58..71
-          KeyValue@58..71
-            TableKey@58..63
-              Name@58..63
-                Ident@58..63 "hello"
-            Whitespace@63..64 " "
-            Eq@64..65 "="
-            Whitespace@65..66 " "
-            Literal@66..71
-              Str@66..71 "\"adf\""
-        TableSep@71..72
-          Comma@71..72 ","
-        Whitespace@72..75 "\n  "
-        TableContent@75..79
-          PositionalValue@75..79
-            Literal@75..79
-              Number@75..79 "1234"
-        TableSep@79..80
-          Comma@79..80 ","
-        Whitespace@80..83 "\n  "
-        TableContent@83..101
-          KeyValue@83..101
-            TableKey@83..94
-              Index@83..94
-                LBracket@83..84 "["
-                Literal@84..93
-                  Str@84..93 "\"another\""
-                RBracket@93..94 "]"
-            Whitespace@94..95 " "
-            Eq@95..96 "="
-            Whitespace@96..97 " "
-            Literal@97..101
-              Number@97..101 "1234"
-        TableSep@101..102
-          Comma@101..102 ","
-        Whitespace@102..103 "\n"
-        RBrace@103..104 "}"
-  Whitespace@104..105 "\n"
+  Block@0..105
+    LocalAssignStmt@0..104
+      LocalKw@0..5 "local"
+      Whitespace@5..6 " "
+      MultiName@6..10
+        Name@6..10
+          Ident@6..10 "both"
+      Whitespace@10..11 " "
+      Eq@11..12 "="
+      Whitespace@12..13 " "
+      MultivalExpr@13..104
+        TableExpr@13..104
+          LBrace@13..14 "{"
+          Whitespace@14..17 "\n  "
+          TableContent@17..29
+            PositionalValue@17..29
+              Literal@17..29
+                Str@17..29 "\"positional\""
+          TableSep@29..30
+            Comma@29..30 ","
+          Whitespace@30..33 "\n  "
+          TableContent@33..54
+            KeyValue@33..54
+              TableKey@33..37
+                Index@33..37
+                  LBracket@33..34 "["
+                  Literal@34..36
+                    Number@34..36 "10"
+                  RBracket@36..37 "]"
+              Whitespace@37..38 " "
+              Eq@38..39 "="
+              Whitespace@39..40 " "
+              Literal@40..54
+                Str@40..54 "\"what is thsi\""
+          TableSep@54..55
+            Comma@54..55 ","
+          Whitespace@55..58 "\n  "
+          TableContent@58..71
+            KeyValue@58..71
+              TableKey@58..63
+                Name@58..63
+                  Ident@58..63 "hello"
+              Whitespace@63..64 " "
+              Eq@64..65 "="
+              Whitespace@65..66 " "
+              Literal@66..71
+                Str@66..71 "\"adf\""
+          TableSep@71..72
+            Comma@71..72 ","
+          Whitespace@72..75 "\n  "
+          TableContent@75..79
+            PositionalValue@75..79
+              Literal@75..79
+                Number@75..79 "1234"
+          TableSep@79..80
+            Comma@79..80 ","
+          Whitespace@80..83 "\n  "
+          TableContent@83..101
+            KeyValue@83..101
+              TableKey@83..94
+                Index@83..94
+                  LBracket@83..84 "["
+                  Literal@84..93
+                    Str@84..93 "\"another\""
+                  RBracket@93..94 "]"
+              Whitespace@94..95 " "
+              Eq@95..96 "="
+              Whitespace@96..97 " "
+              Literal@97..101
+                Number@97..101 "1234"
+          TableSep@101..102
+            Comma@101..102 ","
+          Whitespace@102..103 "\n"
+          RBrace@103..104 "}"
+    Whitespace@104..105 "\n"
 
 =============================
 Errors:

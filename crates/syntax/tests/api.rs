@@ -1,10 +1,7 @@
-use syntax::{
-    ast::{self, AstNode},
-    match_ast, Parse,
-};
+use syntax::ast::{self, AstNode};
 
 fn stmt(program: ast::SourceFile) -> ast::Stmt {
-    program.stmts().next().unwrap()
+    program.body().unwrap().stmts().next().unwrap()
 }
 
 #[test]

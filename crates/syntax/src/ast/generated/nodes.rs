@@ -1,16 +1,51 @@
 //! Generated file, do not edit by hand, see `xtask/src/codegen`
 
 #![allow(dead_code)]
-use super::tokens::*;
 use crate::{
     ast::{support, AstChildren, AstNode},
     SyntaxKind, SyntaxNode, SyntaxToken, T,
 };
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Name {
+    pub(crate) syntax: SyntaxNode,
+}
+impl Name {
+    pub fn ident_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![ident])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct NameRef {
+    pub(crate) syntax: SyntaxNode,
+}
+impl NameRef {
+    pub fn ident_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![ident])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct MultiName {
+    pub(crate) syntax: SyntaxNode,
+}
+impl MultiName {
+    pub fn names(&self) -> AstChildren<Name> {
+        support::children(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SourceFile {
     pub(crate) syntax: SyntaxNode,
 }
 impl SourceFile {
+    pub fn body(&self) -> Option<Block> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Block {
+    pub(crate) syntax: SyntaxNode,
+}
+impl Block {
     pub fn stmts(&self) -> AstChildren<Stmt> {
         support::children(&self.syntax)
     }
@@ -187,6 +222,24 @@ impl BreakStmt {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct RepeatUntilStmt {
+    pub(crate) syntax: SyntaxNode,
+}
+impl RepeatUntilStmt {
+    pub fn repeat_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![repeat])
+    }
+    pub fn block(&self) -> Option<Block> {
+        support::child(&self.syntax)
+    }
+    pub fn until_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![until])
+    }
+    pub fn expr(&self) -> Option<Expr> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct LabelStmt {
     pub(crate) syntax: SyntaxNode,
 }
@@ -202,20 +255,170 @@ impl LabelStmt {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct RepeatUntilStmt {
+pub struct GotoStmt {
     pub(crate) syntax: SyntaxNode,
 }
-impl RepeatUntilStmt {
-    pub fn repeat_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![repeat])
+impl GotoStmt {
+    pub fn goto_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![goto])
+    }
+    pub fn name_ref(&self) -> Option<NameRef> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct LabelDelim {
+    pub(crate) syntax: SyntaxNode,
+}
+impl LabelDelim {
+    pub fn double_colon_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![::])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct DoStmt {
+    pub(crate) syntax: SyntaxNode,
+}
+impl DoStmt {
+    pub fn do_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![do])
+    }
+    pub fn body(&self) -> Option<Block> {
+        support::child(&self.syntax)
+    }
+    pub fn end_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![end])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ParamList {
+    pub(crate) syntax: SyntaxNode,
+}
+impl ParamList {
+    pub fn l_paren_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T!['('])
+    }
+    pub fn multi_name(&self) -> Option<MultiName> {
+        support::child(&self.syntax)
+    }
+    pub fn triple_dot_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![...])
+    }
+    pub fn r_paren_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![')'])
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FunctionMethod {
+    pub(crate) syntax: SyntaxNode,
+}
+impl FunctionMethod {
+    pub fn index_path(&self) -> Option<IndexPath> {
+        support::child(&self.syntax)
+    }
+    pub fn colon_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![:])
+    }
+    pub fn name(&self) -> Option<Name> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FunctionStatic {
+    pub(crate) syntax: SyntaxNode,
+}
+impl FunctionStatic {
+    pub fn index_path(&self) -> Option<IndexPath> {
+        support::child(&self.syntax)
+    }
+    pub fn dot_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![.])
+    }
+    pub fn name(&self) -> Option<Name> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct IndexPath {
+    pub(crate) syntax: SyntaxNode,
+}
+impl IndexPath {
+    pub fn name_refs(&self) -> AstChildren<NameRef> {
+        support::children(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct MultivalExpr {
+    pub(crate) syntax: SyntaxNode,
+}
+impl MultivalExpr {
+    pub fn exprs(&self) -> AstChildren<Expr> {
+        support::children(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ElseBranch {
+    pub(crate) syntax: SyntaxNode,
+}
+impl ElseBranch {
+    pub fn else_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![else])
     }
     pub fn block(&self) -> Option<Block> {
         support::child(&self.syntax)
     }
-    pub fn until_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![until])
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ElseIfBranch {
+    pub(crate) syntax: SyntaxNode,
+}
+impl ElseIfBranch {
+    pub fn elseif_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![elseif])
     }
-    pub fn expr(&self) -> Option<Expr> {
+    pub fn cond(&self) -> Option<Expr> {
+        support::child(&self.syntax)
+    }
+    pub fn then_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![then])
+    }
+    pub fn block(&self) -> Option<Block> {
+        support::child(&self.syntax)
+    }
+    pub fn else_if_branch(&self) -> Option<ElseIfBranch> {
+        support::child(&self.syntax)
+    }
+    pub fn else_branch(&self) -> Option<ElseBranch> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct NumericFor {
+    pub(crate) syntax: SyntaxNode,
+}
+impl NumericFor {
+    pub fn name(&self) -> Option<Name> {
+        support::child(&self.syntax)
+    }
+    pub fn eq_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![=])
+    }
+    pub fn expr(&self) -> Option<MultivalExpr> {
+        support::child(&self.syntax)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct GenericFor {
+    pub(crate) syntax: SyntaxNode,
+}
+impl GenericFor {
+    pub fn multi_name(&self) -> Option<MultiName> {
+        support::child(&self.syntax)
+    }
+    pub fn in_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, T![in])
+    }
+    pub fn expr(&self) -> Option<MultivalExpr> {
         support::child(&self.syntax)
     }
 }
@@ -342,15 +545,6 @@ impl MethodCallExpr {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct NameRef {
-    pub(crate) syntax: SyntaxNode,
-}
-impl NameRef {
-    pub fn ident_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![ident])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CallArgs {
     pub(crate) syntax: SyntaxNode,
 }
@@ -363,15 +557,6 @@ impl CallArgs {
     }
     pub fn str_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![str])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct MultivalExpr {
-    pub(crate) syntax: SyntaxNode,
-}
-impl MultivalExpr {
-    pub fn exprs(&self) -> AstChildren<Expr> {
-        support::children(&self.syntax)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -390,33 +575,6 @@ impl ArgList {
     }
     pub fn r_paren_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![')'])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ParamList {
-    pub(crate) syntax: SyntaxNode,
-}
-impl ParamList {
-    pub fn l_paren_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T!['('])
-    }
-    pub fn multi_name(&self) -> Option<MultiName> {
-        support::child(&self.syntax)
-    }
-    pub fn triple_dot_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![...])
-    }
-    pub fn r_paren_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![')'])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Block {
-    pub(crate) syntax: SyntaxNode,
-}
-impl Block {
-    pub fn stmts(&self) -> AstChildren<Stmt> {
-        support::children(&self.syntax)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -480,171 +638,12 @@ impl Index {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Name {
-    pub(crate) syntax: SyntaxNode,
-}
-impl Name {
-    pub fn ident_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![ident])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct IdentKey {
     pub(crate) syntax: SyntaxNode,
 }
 impl IdentKey {
     pub fn ident_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, T![ident])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct LabelDelim {
-    pub(crate) syntax: SyntaxNode,
-}
-impl LabelDelim {
-    pub fn double_colon_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![::])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct GotoStmt {
-    pub(crate) syntax: SyntaxNode,
-}
-impl GotoStmt {
-    pub fn goto_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![goto])
-    }
-    pub fn name_ref(&self) -> Option<NameRef> {
-        support::child(&self.syntax)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct DoStmt {
-    pub(crate) syntax: SyntaxNode,
-}
-impl DoStmt {
-    pub fn do_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![do])
-    }
-    pub fn body(&self) -> Option<Block> {
-        support::child(&self.syntax)
-    }
-    pub fn end_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![end])
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FunctionMethod {
-    pub(crate) syntax: SyntaxNode,
-}
-impl FunctionMethod {
-    pub fn index_path(&self) -> Option<IndexPath> {
-        support::child(&self.syntax)
-    }
-    pub fn colon_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![:])
-    }
-    pub fn name(&self) -> Option<Name> {
-        support::child(&self.syntax)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FunctionStatic {
-    pub(crate) syntax: SyntaxNode,
-}
-impl FunctionStatic {
-    pub fn index_path(&self) -> Option<IndexPath> {
-        support::child(&self.syntax)
-    }
-    pub fn dot_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![.])
-    }
-    pub fn name(&self) -> Option<Name> {
-        support::child(&self.syntax)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct IndexPath {
-    pub(crate) syntax: SyntaxNode,
-}
-impl IndexPath {
-    pub fn name_refs(&self) -> AstChildren<NameRef> {
-        support::children(&self.syntax)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct MultiName {
-    pub(crate) syntax: SyntaxNode,
-}
-impl MultiName {
-    pub fn names(&self) -> AstChildren<Name> {
-        support::children(&self.syntax)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ElseBranch {
-    pub(crate) syntax: SyntaxNode,
-}
-impl ElseBranch {
-    pub fn else_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![else])
-    }
-    pub fn block(&self) -> Option<Block> {
-        support::child(&self.syntax)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ElseIfBranch {
-    pub(crate) syntax: SyntaxNode,
-}
-impl ElseIfBranch {
-    pub fn elseif_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![elseif])
-    }
-    pub fn cond(&self) -> Option<Expr> {
-        support::child(&self.syntax)
-    }
-    pub fn then_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![then])
-    }
-    pub fn block(&self) -> Option<Block> {
-        support::child(&self.syntax)
-    }
-    pub fn else_if_branch(&self) -> Option<ElseIfBranch> {
-        support::child(&self.syntax)
-    }
-    pub fn else_branch(&self) -> Option<ElseBranch> {
-        support::child(&self.syntax)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct NumericFor {
-    pub(crate) syntax: SyntaxNode,
-}
-impl NumericFor {
-    pub fn name(&self) -> Option<Name> {
-        support::child(&self.syntax)
-    }
-    pub fn eq_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![=])
-    }
-    pub fn expr(&self) -> Option<MultivalExpr> {
-        support::child(&self.syntax)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct GenericFor {
-    pub(crate) syntax: SyntaxNode,
-}
-impl GenericFor {
-    pub fn multi_name(&self) -> Option<MultiName> {
-        support::child(&self.syntax)
-    }
-    pub fn in_token(&self) -> Option<SyntaxToken> {
-        support::token(&self.syntax, T![in])
-    }
-    pub fn expr(&self) -> Option<MultivalExpr> {
-        support::child(&self.syntax)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -659,14 +658,21 @@ pub enum Stmt {
     WhileStmt(WhileStmt),
     ExprStmt(ExprStmt),
     BreakStmt(BreakStmt),
-    LabelStmt(LabelStmt),
     RepeatUntilStmt(RepeatUntilStmt),
+    LabelStmt(LabelStmt),
+    GotoStmt(GotoStmt),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum StmtItem {
     LocalAssignStmt(LocalAssignStmt),
     LocalFunctionDefStmt(LocalFunctionDefStmt),
     FunctionDefStmt(FunctionDefStmt),
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum FunctionDefContent {
+    FunctionMethod(FunctionMethod),
+    FunctionStatic(FunctionStatic),
+    Name(Name),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Expr {
@@ -682,6 +688,11 @@ pub enum Expr {
     NameRef(NameRef),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ForContent {
+    NumericFor(NumericFor),
+    GenericFor(GenericFor),
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TableContent {
     KeyValue(KeyValue),
     PositionalValue(PositionalValue),
@@ -691,20 +702,69 @@ pub enum TableKey {
     Index(Index),
     Name(Name),
 }
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum FunctionDefContent {
-    FunctionMethod(FunctionMethod),
-    FunctionStatic(FunctionStatic),
-    Name(Name),
+impl AstNode for Name {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Name
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
 }
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum ForContent {
-    NumericFor(NumericFor),
-    GenericFor(GenericFor),
+impl AstNode for NameRef {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::NameRef
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for MultiName {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::MultiName
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
 }
 impl AstNode for SourceFile {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::SourceFile
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for Block {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Block
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -867,6 +927,21 @@ impl AstNode for BreakStmt {
         &self.syntax
     }
 }
+impl AstNode for RepeatUntilStmt {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::RepeatUntilStmt
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
 impl AstNode for LabelStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::LabelStmt
@@ -882,9 +957,174 @@ impl AstNode for LabelStmt {
         &self.syntax
     }
 }
-impl AstNode for RepeatUntilStmt {
+impl AstNode for GotoStmt {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::RepeatUntilStmt
+        kind == SyntaxKind::GotoStmt
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for LabelDelim {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::LabelDelim
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for DoStmt {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::DoStmt
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for ParamList {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ParamList
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for FunctionMethod {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::FunctionMethod
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for FunctionStatic {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::FunctionStatic
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for IndexPath {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::IndexPath
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for MultivalExpr {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::MultivalExpr
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for ElseBranch {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ElseBranch
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for ElseIfBranch {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ElseIfBranch
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for NumericFor {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::NumericFor
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+}
+impl AstNode for GenericFor {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::GenericFor
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1032,21 +1272,6 @@ impl AstNode for MethodCallExpr {
         &self.syntax
     }
 }
-impl AstNode for NameRef {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::NameRef
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
 impl AstNode for CallArgs {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CallArgs
@@ -1062,54 +1287,9 @@ impl AstNode for CallArgs {
         &self.syntax
     }
 }
-impl AstNode for MultivalExpr {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::MultivalExpr
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
 impl AstNode for ArgList {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ArgList
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for ParamList {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ParamList
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for Block {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Block
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1197,189 +1377,9 @@ impl AstNode for Index {
         &self.syntax
     }
 }
-impl AstNode for Name {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Name
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
 impl AstNode for IdentKey {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::IdentKey
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for LabelDelim {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::LabelDelim
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for GotoStmt {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::GotoStmt
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for DoStmt {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::DoStmt
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for FunctionMethod {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FunctionMethod
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for FunctionStatic {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FunctionStatic
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for IndexPath {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::IndexPath
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for MultiName {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::MultiName
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for ElseBranch {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ElseBranch
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for ElseIfBranch {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ElseIfBranch
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for NumericFor {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::NumericFor
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        if Self::can_cast(syntax.kind()) {
-            Some(Self { syntax })
-        } else {
-            None
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.syntax
-    }
-}
-impl AstNode for GenericFor {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::GenericFor
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
@@ -1442,14 +1442,19 @@ impl From<BreakStmt> for Stmt {
         Stmt::BreakStmt(node)
     }
 }
+impl From<RepeatUntilStmt> for Stmt {
+    fn from(node: RepeatUntilStmt) -> Stmt {
+        Stmt::RepeatUntilStmt(node)
+    }
+}
 impl From<LabelStmt> for Stmt {
     fn from(node: LabelStmt) -> Stmt {
         Stmt::LabelStmt(node)
     }
 }
-impl From<RepeatUntilStmt> for Stmt {
-    fn from(node: RepeatUntilStmt) -> Stmt {
-        Stmt::RepeatUntilStmt(node)
+impl From<GotoStmt> for Stmt {
+    fn from(node: GotoStmt) -> Stmt {
+        Stmt::GotoStmt(node)
     }
 }
 impl AstNode for Stmt {
@@ -1465,8 +1470,9 @@ impl AstNode for Stmt {
             | SyntaxKind::WhileStmt
             | SyntaxKind::ExprStmt
             | SyntaxKind::BreakStmt
+            | SyntaxKind::RepeatUntilStmt
             | SyntaxKind::LabelStmt
-            | SyntaxKind::RepeatUntilStmt => true,
+            | SyntaxKind::GotoStmt => true,
             _ => false,
         }
     }
@@ -1484,8 +1490,9 @@ impl AstNode for Stmt {
             SyntaxKind::WhileStmt => Stmt::WhileStmt(WhileStmt { syntax }),
             SyntaxKind::ExprStmt => Stmt::ExprStmt(ExprStmt { syntax }),
             SyntaxKind::BreakStmt => Stmt::BreakStmt(BreakStmt { syntax }),
-            SyntaxKind::LabelStmt => Stmt::LabelStmt(LabelStmt { syntax }),
             SyntaxKind::RepeatUntilStmt => Stmt::RepeatUntilStmt(RepeatUntilStmt { syntax }),
+            SyntaxKind::LabelStmt => Stmt::LabelStmt(LabelStmt { syntax }),
+            SyntaxKind::GotoStmt => Stmt::GotoStmt(GotoStmt { syntax }),
             _ => return None,
         };
         Some(res)
@@ -1502,8 +1509,9 @@ impl AstNode for Stmt {
             Stmt::WhileStmt(it) => &it.syntax,
             Stmt::ExprStmt(it) => &it.syntax,
             Stmt::BreakStmt(it) => &it.syntax,
-            Stmt::LabelStmt(it) => &it.syntax,
             Stmt::RepeatUntilStmt(it) => &it.syntax,
+            Stmt::LabelStmt(it) => &it.syntax,
+            Stmt::GotoStmt(it) => &it.syntax,
         }
     }
 }
@@ -1547,6 +1555,49 @@ impl AstNode for StmtItem {
             StmtItem::LocalAssignStmt(it) => &it.syntax,
             StmtItem::LocalFunctionDefStmt(it) => &it.syntax,
             StmtItem::FunctionDefStmt(it) => &it.syntax,
+        }
+    }
+}
+impl From<FunctionMethod> for FunctionDefContent {
+    fn from(node: FunctionMethod) -> FunctionDefContent {
+        FunctionDefContent::FunctionMethod(node)
+    }
+}
+impl From<FunctionStatic> for FunctionDefContent {
+    fn from(node: FunctionStatic) -> FunctionDefContent {
+        FunctionDefContent::FunctionStatic(node)
+    }
+}
+impl From<Name> for FunctionDefContent {
+    fn from(node: Name) -> FunctionDefContent {
+        FunctionDefContent::Name(node)
+    }
+}
+impl AstNode for FunctionDefContent {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        match kind {
+            SyntaxKind::FunctionMethod | SyntaxKind::FunctionStatic | SyntaxKind::Name => true,
+            _ => false,
+        }
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        let res = match syntax.kind() {
+            SyntaxKind::FunctionMethod => {
+                FunctionDefContent::FunctionMethod(FunctionMethod { syntax })
+            }
+            SyntaxKind::FunctionStatic => {
+                FunctionDefContent::FunctionStatic(FunctionStatic { syntax })
+            }
+            SyntaxKind::Name => FunctionDefContent::Name(Name { syntax }),
+            _ => return None,
+        };
+        Some(res)
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        match self {
+            FunctionDefContent::FunctionMethod(it) => &it.syntax,
+            FunctionDefContent::FunctionStatic(it) => &it.syntax,
+            FunctionDefContent::Name(it) => &it.syntax,
         }
     }
 }
@@ -1647,6 +1698,38 @@ impl AstNode for Expr {
         }
     }
 }
+impl From<NumericFor> for ForContent {
+    fn from(node: NumericFor) -> ForContent {
+        ForContent::NumericFor(node)
+    }
+}
+impl From<GenericFor> for ForContent {
+    fn from(node: GenericFor) -> ForContent {
+        ForContent::GenericFor(node)
+    }
+}
+impl AstNode for ForContent {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        match kind {
+            SyntaxKind::NumericFor | SyntaxKind::GenericFor => true,
+            _ => false,
+        }
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        let res = match syntax.kind() {
+            SyntaxKind::NumericFor => ForContent::NumericFor(NumericFor { syntax }),
+            SyntaxKind::GenericFor => ForContent::GenericFor(GenericFor { syntax }),
+            _ => return None,
+        };
+        Some(res)
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        match self {
+            ForContent::NumericFor(it) => &it.syntax,
+            ForContent::GenericFor(it) => &it.syntax,
+        }
+    }
+}
 impl From<KeyValue> for TableContent {
     fn from(node: KeyValue) -> TableContent {
         TableContent::KeyValue(node)
@@ -1713,81 +1796,6 @@ impl AstNode for TableKey {
         }
     }
 }
-impl From<FunctionMethod> for FunctionDefContent {
-    fn from(node: FunctionMethod) -> FunctionDefContent {
-        FunctionDefContent::FunctionMethod(node)
-    }
-}
-impl From<FunctionStatic> for FunctionDefContent {
-    fn from(node: FunctionStatic) -> FunctionDefContent {
-        FunctionDefContent::FunctionStatic(node)
-    }
-}
-impl From<Name> for FunctionDefContent {
-    fn from(node: Name) -> FunctionDefContent {
-        FunctionDefContent::Name(node)
-    }
-}
-impl AstNode for FunctionDefContent {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        match kind {
-            SyntaxKind::FunctionMethod | SyntaxKind::FunctionStatic | SyntaxKind::Name => true,
-            _ => false,
-        }
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        let res = match syntax.kind() {
-            SyntaxKind::FunctionMethod => {
-                FunctionDefContent::FunctionMethod(FunctionMethod { syntax })
-            }
-            SyntaxKind::FunctionStatic => {
-                FunctionDefContent::FunctionStatic(FunctionStatic { syntax })
-            }
-            SyntaxKind::Name => FunctionDefContent::Name(Name { syntax }),
-            _ => return None,
-        };
-        Some(res)
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        match self {
-            FunctionDefContent::FunctionMethod(it) => &it.syntax,
-            FunctionDefContent::FunctionStatic(it) => &it.syntax,
-            FunctionDefContent::Name(it) => &it.syntax,
-        }
-    }
-}
-impl From<NumericFor> for ForContent {
-    fn from(node: NumericFor) -> ForContent {
-        ForContent::NumericFor(node)
-    }
-}
-impl From<GenericFor> for ForContent {
-    fn from(node: GenericFor) -> ForContent {
-        ForContent::GenericFor(node)
-    }
-}
-impl AstNode for ForContent {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        match kind {
-            SyntaxKind::NumericFor | SyntaxKind::GenericFor => true,
-            _ => false,
-        }
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        let res = match syntax.kind() {
-            SyntaxKind::NumericFor => ForContent::NumericFor(NumericFor { syntax }),
-            SyntaxKind::GenericFor => ForContent::GenericFor(GenericFor { syntax }),
-            _ => return None,
-        };
-        Some(res)
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        match self {
-            ForContent::NumericFor(it) => &it.syntax,
-            ForContent::GenericFor(it) => &it.syntax,
-        }
-    }
-}
 impl std::fmt::Display for Stmt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
@@ -1798,7 +1806,17 @@ impl std::fmt::Display for StmtItem {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
+impl std::fmt::Display for FunctionDefContent {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
 impl std::fmt::Display for Expr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for ForContent {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
@@ -1813,17 +1831,27 @@ impl std::fmt::Display for TableKey {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for FunctionDefContent {
+impl std::fmt::Display for Name {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for ForContent {
+impl std::fmt::Display for NameRef {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for MultiName {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
 impl std::fmt::Display for SourceFile {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for Block {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
@@ -1878,12 +1906,72 @@ impl std::fmt::Display for BreakStmt {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
+impl std::fmt::Display for RepeatUntilStmt {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
 impl std::fmt::Display for LabelStmt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for RepeatUntilStmt {
+impl std::fmt::Display for GotoStmt {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for LabelDelim {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for DoStmt {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for ParamList {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for FunctionMethod {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for FunctionStatic {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for IndexPath {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for MultivalExpr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for ElseBranch {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for ElseIfBranch {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for NumericFor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
+impl std::fmt::Display for GenericFor {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
@@ -1933,32 +2021,12 @@ impl std::fmt::Display for MethodCallExpr {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for NameRef {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
 impl std::fmt::Display for CallArgs {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for MultivalExpr {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
 impl std::fmt::Display for ArgList {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for ParamList {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for Block {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }
@@ -1988,67 +2056,7 @@ impl std::fmt::Display for Index {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
-impl std::fmt::Display for Name {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
 impl std::fmt::Display for IdentKey {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for LabelDelim {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for GotoStmt {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for DoStmt {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for FunctionMethod {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for FunctionStatic {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for IndexPath {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for MultiName {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for ElseBranch {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for ElseIfBranch {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for NumericFor {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(self.syntax(), f)
-    }
-}
-impl std::fmt::Display for GenericFor {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
     }

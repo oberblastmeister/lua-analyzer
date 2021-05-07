@@ -7,8 +7,8 @@ NameRef =
 MultiName =
   Name (',' Name)*
 
-SourceFile = 
-  Stmt*
+SourceFile =
+  body:Block
 
 Stmt =
   AssignStmt

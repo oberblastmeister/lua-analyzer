@@ -5,54 +5,55 @@ input_file: crates/syntax/snapshots/parser/ok/simple_math.lua
 
 ---
 SourceFile@0..57
-  LocalAssignStmt@0..18
-    LocalKw@0..5 "local"
-    Whitespace@5..6 " "
-    MultiName@6..10
-      Name@6..10
-        Ident@6..10 "expr"
-    Whitespace@10..11 " "
-    Eq@11..12 "="
-    Whitespace@12..13 " "
-    MultivalExpr@13..18
-      InfixExpr@13..18
-        Literal@13..14
-          Number@13..14 "5"
-        Whitespace@14..15 " "
-        Plus@15..16 "+"
-        Whitespace@16..17 " "
-        Literal@17..18
-          Number@17..18 "6"
-  Whitespace@18..19 "\n"
-  LocalAssignStmt@19..56
-    LocalKw@19..24 "local"
-    Whitespace@24..25 " "
-    MultiName@25..41
-      Name@25..41
-        Ident@25..41 "complicated_expr"
-    Whitespace@41..42 " "
-    Eq@42..43 "="
-    Whitespace@43..44 " "
-    MultivalExpr@44..56
-      InfixExpr@44..56
-        Literal@44..45
-          Number@44..45 "5"
-        Whitespace@45..46 " "
-        Plus@46..47 "+"
-        Whitespace@47..48 " "
-        InfixExpr@48..56
-          InfixExpr@48..52
-            Literal@48..49
-              Number@48..49 "6"
-            Caret@49..50 "^"
-            Literal@50..52
-              Number@50..52 "11"
-          Whitespace@52..53 " "
-          Asterisk@53..54 "*"
-          Whitespace@54..55 " "
-          Literal@55..56
-            Number@55..56 "7"
-  Whitespace@56..57 "\n"
+  Block@0..57
+    LocalAssignStmt@0..18
+      LocalKw@0..5 "local"
+      Whitespace@5..6 " "
+      MultiName@6..10
+        Name@6..10
+          Ident@6..10 "expr"
+      Whitespace@10..11 " "
+      Eq@11..12 "="
+      Whitespace@12..13 " "
+      MultivalExpr@13..18
+        InfixExpr@13..18
+          Literal@13..14
+            Number@13..14 "5"
+          Whitespace@14..15 " "
+          Plus@15..16 "+"
+          Whitespace@16..17 " "
+          Literal@17..18
+            Number@17..18 "6"
+    Whitespace@18..19 "\n"
+    LocalAssignStmt@19..56
+      LocalKw@19..24 "local"
+      Whitespace@24..25 " "
+      MultiName@25..41
+        Name@25..41
+          Ident@25..41 "complicated_expr"
+      Whitespace@41..42 " "
+      Eq@42..43 "="
+      Whitespace@43..44 " "
+      MultivalExpr@44..56
+        InfixExpr@44..56
+          Literal@44..45
+            Number@44..45 "5"
+          Whitespace@45..46 " "
+          Plus@46..47 "+"
+          Whitespace@47..48 " "
+          InfixExpr@48..56
+            InfixExpr@48..52
+              Literal@48..49
+                Number@48..49 "6"
+              Caret@49..50 "^"
+              Literal@50..52
+                Number@50..52 "11"
+            Whitespace@52..53 " "
+            Asterisk@53..54 "*"
+            Whitespace@54..55 " "
+            Literal@55..56
+              Number@55..56 "7"
+    Whitespace@56..57 "\n"
 
 =============================
 Errors:

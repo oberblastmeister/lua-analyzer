@@ -45,6 +45,7 @@ impl Token {
     }
 }
 
+/// `Token` abstracts the cursor of `TokenSource` operates on.
 pub trait TokenSource {
     fn current(&self) -> Token;
 
@@ -60,6 +61,8 @@ pub trait TokenSource {
 
 /// `TreeSink` abstracts details of a particular syntax tree implementation.
 pub trait TreeSink {
+    type FinishResult;
+
     /// Adds new token to the current branch.
     fn token(&mut self);
 
@@ -75,9 +78,15 @@ pub trait TreeSink {
     fn finish_error_node(&mut self, e: ParseError);
 
     fn error(&mut self, error: ParseError);
+
+    fn finish(self) -> Self::FinishResult;
 }
 
-fn parse_from_tokens<F, TS>(token_source: &mut dyn TokenSource, tree_sink: &mut TS, f: F)
+fn parse_from_tokens<F, TS>(
+    token_source: &mut dyn TokenSource,
+    tree_sink: TS,
+    f: F,
+) -> TS::FinishResult
 where
     F: FnOnce(&mut parser::Parser),
     TS: TreeSink,
@@ -85,17 +94,20 @@ where
     let mut p = parser::Parser::new(token_source);
     f(&mut p);
     let events = p.finish();
-    event::process(tree_sink, events);
+    event::process(tree_sink, events)
 }
 
 /// Parse given tokens into the given sink as a rust file.
-pub fn parse<TS>(token_source: &mut dyn TokenSource, tree_sink: &mut TS)
+pub fn parse<TS>(token_source: &mut dyn TokenSource, tree_sink: TS) -> TS::FinishResult
 where
     TS: TreeSink,
 {
-    parse_from_tokens(token_source, tree_sink, grammar::root);
+    parse_from_tokens(token_source, tree_sink, grammar::root)
 }
 
+/// A parsing function for a block.
+/// Blocks can be from functions, do stmts, loops, etc.
+/// Anything that has an end.
 pub struct Reparser(fn(&mut Parser));
 
 impl Reparser {
@@ -103,7 +115,7 @@ impl Reparser {
         grammar::reparser(node).map(Reparser)
     }
 
-    pub fn parse<TS>(self, token_source: &mut dyn TokenSource, tree_sink: &mut TS)
+    pub fn parse<TS>(self, token_source: &mut dyn TokenSource, tree_sink: TS) -> TS::FinishResult
     where
         TS: TreeSink,
     {
@@ -111,6 +123,6 @@ impl Reparser {
         let mut p = Parser::new(token_source);
         r(&mut p);
         let events = p.finish();
-        event::process(tree_sink, events);
+        event::process(tree_sink, events)
     }
 }

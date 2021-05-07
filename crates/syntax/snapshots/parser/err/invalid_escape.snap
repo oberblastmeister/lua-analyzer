@@ -5,19 +5,20 @@ input_file: crates/syntax/snapshots/parser/err/invalid_escape.lua
 
 ---
 SourceFile@0..37
-  LocalAssignStmt@0..36
-    LocalKw@0..5 "local"
-    Whitespace@5..6 " "
-    MultiName@6..7
-      Name@6..7
-        Ident@6..7 "s"
-    Whitespace@7..8 " "
-    Eq@8..9 "="
-    Whitespace@9..10 " "
-    MultivalExpr@10..36
-      Literal@10..36
-        Str@10..36 "\"asdf\\w\\u\\oasd\\q\\z\\a  ..."
-  Whitespace@36..37 "\n"
+  Block@0..37
+    LocalAssignStmt@0..36
+      LocalKw@0..5 "local"
+      Whitespace@5..6 " "
+      MultiName@6..7
+        Name@6..7
+          Ident@6..7 "s"
+      Whitespace@7..8 " "
+      Eq@8..9 "="
+      Whitespace@9..10 " "
+      MultivalExpr@10..36
+        Literal@10..36
+          Str@10..36 "\"asdf\\w\\u\\oasd\\q\\z\\a  ..."
+    Whitespace@36..37 "\n"
 
 =============================
 Errors:

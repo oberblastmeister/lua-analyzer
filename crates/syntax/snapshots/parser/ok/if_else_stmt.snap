@@ -5,58 +5,59 @@ input_file: crates/syntax/snapshots/parser/ok/if_else_stmt.lua
 
 ---
 SourceFile@0..83
-  IfStmt@0..82
-    IfKw@0..2 "if"
-    Whitespace@2..3 " "
-    InfixExpr@3..16
-      CallExpr@3..8
-        NameRef@3..6
-          Ident@3..6 "yes"
-        CallArgs@6..8
-          ArgList@6..8
-            LParen@6..7 "("
-            RParen@7..8 ")"
-      Whitespace@8..9 " "
-      NotEq@9..11 "~="
-      Whitespace@11..12 " "
-      Literal@12..16
-        TrueKw@12..16 "true"
-    Whitespace@16..17 " "
-    ThenKw@17..21 "then"
-    Whitespace@21..24 "\n  "
-    Block@24..49
-      ExprStmt@24..49
-        MultivalExpr@24..49
-          CallExpr@24..49
-            NameRef@24..29
-              Ident@24..29 "print"
-            CallArgs@29..49
-              ArgList@29..49
-                LParen@29..30 "("
-                MultivalExpr@30..48
-                  Literal@30..48
-                    Str@30..48 "\"yes was not true\""
-                RParen@48..49 ")"
-    Whitespace@49..50 "\n"
-    ElseBranch@50..78
-      ElseKw@50..54 "else"
-      Whitespace@54..57 "\n  "
-      Block@57..78
-        ExprStmt@57..78
-          MultivalExpr@57..78
-            CallExpr@57..78
-              NameRef@57..62
-                Ident@57..62 "print"
-              CallArgs@62..78
-                ArgList@62..78
-                  LParen@62..63 "("
-                  MultivalExpr@63..77
-                    Literal@63..77
-                      Str@63..77 "\'yes was true\'"
-                  RParen@77..78 ")"
-    Whitespace@78..79 "\n"
-    EndKw@79..82 "end"
-  Whitespace@82..83 "\n"
+  Block@0..83
+    IfStmt@0..82
+      IfKw@0..2 "if"
+      Whitespace@2..3 " "
+      InfixExpr@3..16
+        CallExpr@3..8
+          NameRef@3..6
+            Ident@3..6 "yes"
+          CallArgs@6..8
+            ArgList@6..8
+              LParen@6..7 "("
+              RParen@7..8 ")"
+        Whitespace@8..9 " "
+        NotEq@9..11 "~="
+        Whitespace@11..12 " "
+        Literal@12..16
+          TrueKw@12..16 "true"
+      Whitespace@16..17 " "
+      ThenKw@17..21 "then"
+      Whitespace@21..24 "\n  "
+      Block@24..49
+        ExprStmt@24..49
+          MultivalExpr@24..49
+            CallExpr@24..49
+              NameRef@24..29
+                Ident@24..29 "print"
+              CallArgs@29..49
+                ArgList@29..49
+                  LParen@29..30 "("
+                  MultivalExpr@30..48
+                    Literal@30..48
+                      Str@30..48 "\"yes was not true\""
+                  RParen@48..49 ")"
+      Whitespace@49..50 "\n"
+      ElseBranch@50..78
+        ElseKw@50..54 "else"
+        Whitespace@54..57 "\n  "
+        Block@57..78
+          ExprStmt@57..78
+            MultivalExpr@57..78
+              CallExpr@57..78
+                NameRef@57..62
+                  Ident@57..62 "print"
+                CallArgs@62..78
+                  ArgList@62..78
+                    LParen@62..63 "("
+                    MultivalExpr@63..77
+                      Literal@63..77
+                        Str@63..77 "\'yes was true\'"
+                    RParen@77..78 ")"
+      Whitespace@78..79 "\n"
+      EndKw@79..82 "end"
+    Whitespace@82..83 "\n"
 
 =============================
 Errors:
