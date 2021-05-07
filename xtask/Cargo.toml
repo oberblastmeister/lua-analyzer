@@ -14,7 +14,7 @@ heck = "0.3.2"
 proc-macro2 = "1.0.24"
 quote = "1.0.9"
 serde = { version = "1.0.124", features = ["derive"] }
-syn = "1.0.63"
+syn = "1.0.72"
 toml = "0.5.8"
 ungrammar = "1.12.1"
 xflags = "0.2.1"
