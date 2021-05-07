@@ -1,16 +1,14 @@
 mod error;
+mod source;
 
 use std::iter;
-use std::str::Chars;
 
 use rowan::{TextRange, TextSize};
 
-use self::error::{LexResult, SyntaxResult};
+use self::{error::{LexResult, SyntaxResult}, source::CharSource};
 use crate::{SyntaxError, SyntaxKind, T};
 use accept::{not, or, seq, Accept, Acceptor, Advancer, Any, Lexable, Repeat, Until, While};
 use parser::Token;
-
-pub(crate) const EOF_CHAR: char = '\0';
 
 macro_rules! done {
     ($expr:expr) => {
@@ -103,75 +101,36 @@ fn first_lex_result(text: &str) -> WithLen<LexResult<SyntaxKind>> {
 }
 
 pub struct LuaLexer<'a> {
-    input_len: u32,
-    chars: Chars<'a>,
-}
-
-impl Advancer for LuaLexer<'_> {
-    type Item = char;
-
-    fn advance(&mut self) -> Option<char> {
-        self.chars.next()
-    }
-
-    fn nth(&self, n: u32) -> char {
-        self.chars().nth(n as usize).unwrap_or(EOF_CHAR)
-    }
-
-    fn is_eof(&self) -> bool {
-        self.nth_is_eof(0)
-    }
-
-    fn nth_is_eof(&self, n: u32) -> bool {
-        self.chars.clone().nth(n as usize).is_none()
-    }
+    source: CharSource<'a>,
 }
 
 impl<'a> LuaLexer<'a> {
     fn new(input: &'a str) -> LuaLexer<'a> {
-        LuaLexer { input_len: input.len() as u32, chars: input.chars() }
-    }
-
-    pub(crate) fn chars(&self) -> Chars<'a> {
-        self.chars.clone()
-    }
-
-    /// Peeks next char from stream without consuming it
-    fn current(&self) -> char {
-        self.nth(0)
-    }
-
-    fn chars_len(&self) -> u32 {
-        self.chars.as_str().len() as u32
-    }
-
-    /// Returns amount of already consumed chars.
-    fn pos(&self) -> u32 {
-        self.input_len - self.chars_len()
+        LuaLexer { source: CharSource::new(input) }
     }
 
     fn next_lex_result(mut self) -> WithLen<LexResult<SyntaxKind>> {
         let res = self.lex_main();
-        let pos = self.pos();
+        let pos = self.source.pos();
         WithLen::new(res, pos.into())
     }
 
     fn lex_main(&mut self) -> LexResult<SyntaxKind> {
-        let c = self.current();
+        let c = self.source.current();
 
         // return on special cases
         let kind = match c {
             // '\0' if self.is_eof() => done!(T![eof]),
-            '=' => match self.bump_then(Any) {
+            '=' => match self.source.bump_then(Any) {
                 '=' => {
-                    self.bump('=');
+                    self.source.bump('=');
                     done!(T![==])
                 }
                 _ => done!(T![=]),
             },
-            '~' => match self.bump_then(Any) {
+            '~' => match self.source.bump_then(Any) {
                 '=' => {
-                    self.bump('=');
+                    self.source.bump('=');
                     done!(T![~=]);
                 }
                 _ => done!(T![unknown]),
@@ -181,7 +140,7 @@ impl<'a> LuaLexer<'a> {
             ')' => T![')'],
             '{' => T!['{'],
             '}' => T!['}'],
-            '[' => match self.bump_then(Any) {
+            '[' => match self.source.bump_then(Any) {
                 '[' => return self.multiline_string(),
                 '=' => return self.multiline_string(),
                 _ => done!(T!['[']),
@@ -189,10 +148,10 @@ impl<'a> LuaLexer<'a> {
             ']' => T![']'],
 
             ',' => T![,],
-            '.' => match self.bump_then(Any) {
-                '.' => match self.bump_then(Any) {
+            '.' => match self.source.bump_then(Any) {
+                '.' => match self.source.bump_then(Any) {
                     '.' => {
-                        self.bump('.');
+                        self.source.bump('.');
                         done!(T![...])
                     }
                     _ => done!(T![..]),
@@ -200,9 +159,9 @@ impl<'a> LuaLexer<'a> {
                 _ => done!(T![.]),
             },
             ';' => T![;],
-            ':' => match self.bump_then(Any) {
+            ':' => match self.source.bump_then(Any) {
                 ':' => {
-                    self.bump(':');
+                    self.source.bump(':');
                     done!(T![::]);
                 }
                 _ => done!(T![:]),
@@ -215,18 +174,18 @@ impl<'a> LuaLexer<'a> {
             '%' => T![%],
             '^' => T![^],
 
-            '>' => match self.bump_then(Any) {
+            '>' => match self.source.bump_then(Any) {
                 '=' => {
-                    self.bump('=');
+                    self.source.bump('=');
                     done!(T![>=]);
                 }
                 _ => {
                     done!(T![>]);
                 }
             },
-            '<' => match self.bump_then(Any) {
+            '<' => match self.source.bump_then(Any) {
                 '=' => {
-                    self.bump('=');
+                    self.source.bump('=');
                     done!(T![<=]);
                 }
                 _ => {
@@ -236,7 +195,7 @@ impl<'a> LuaLexer<'a> {
 
             '!' => T![!],
 
-            '-' => match self.bump_then(Any) {
+            '-' => match self.source.bump_then(Any) {
                 '-' => return self.comment(),
                 _ => done!(T![-]),
             },
@@ -248,55 +207,55 @@ impl<'a> LuaLexer<'a> {
             _ if is_whitespace(c) => done!(self.whitespace()),
 
             _ => {
-                self.bump(Any);
+                self.source.bump(Any);
                 bail!(T![unknown], "Got an unknown token")
             }
         };
 
         // if we got here, that means that the token was only length 1
-        self.bump(Any);
+        self.source.bump(Any);
 
         LexResult::just(kind)
     }
 
     fn number(&mut self) -> LexResult<SyntaxKind> {
-        assert!(self.at(is_number));
+        assert!(self.source.at(is_number));
 
-        if self.accept(seq!('0', 'x')) {
-            self.accept(While(is_hex));
+        if self.source.accept(seq!('0', 'x')) {
+            self.source.accept(While(is_hex));
             return LexResult::just(T![number]);
         }
 
-        self.accept(While(is_number));
-        if self.accept('.') {
-            self.accept(While(is_number));
+        self.source.accept(While(is_number));
+        if self.source.accept('.') {
+            self.source.accept(While(is_number));
         }
-        if self.accept('e') || self.accept('E') {
-            self.accept('-');
-            self.accept(While(is_number));
+        if self.source.accept('e') || self.source.accept('E') {
+            self.source.accept('-');
+            self.source.accept(While(is_number));
         }
 
         done!(T![number]);
     }
 
     fn whitespace(&mut self) -> SyntaxKind {
-        assert!(self.at(is_whitespace));
+        assert!(self.source.at(is_whitespace));
 
-        self.accept(While(is_whitespace));
+        self.source.accept(While(is_whitespace));
 
         T![whitespace]
     }
 
     fn comment(&mut self) -> LexResult<SyntaxKind> {
-        self.bump('-');
+        self.source.bump('-');
 
-        if self.accept('[') {
-            if self.at('[') {
+        if self.source.accept('[') {
+            if self.source.at('[') {
                 self.bracket_enclosed();
             }
         }
 
-        self.accept(Until('\n'));
+        self.source.accept(Until('\n'));
 
         LexResult::just(T![comment])
     }
@@ -319,17 +278,17 @@ impl<'a> LuaLexer<'a> {
                 };
             }
 
-            expect!(l.accept('['));
+            expect!(l.source.accept('['));
 
             loop {
-                l.accept(While(or!(seq!('\\', ']'), not!(']'))));
+                l.source.accept(While(or!(seq!('\\', ']'), not!(']'))));
 
-                if !l.accept(']') {
+                if !l.source.accept(']') {
                     // we hit eof
                     bail!((), "Could not find bracket string close");
                 }
 
-                let close_count = l.accept_count(While('='));
+                let close_count = l.source.accept_count(While('='));
                 if count != close_count {
                     continue;
                 } else {
@@ -337,17 +296,17 @@ impl<'a> LuaLexer<'a> {
                 }
             }
 
-            expect!(l.accept(']'));
+            expect!(l.source.accept(']'));
 
             LexResult::unit(err)
         }
 
-        assert_matches!(self.current(), '[' | '=');
+        assert_matches!(self.source.current(), '[' | '=');
 
-        if self.at('[') {
+        if self.source.at('[') {
             close(self, 0)
-        } else if self.at('=') {
-            let count = self.accept_count(While('='));
+        } else if self.source.at('=') {
+            let count = self.source.accept_count(While('='));
             close(self, count)
         } else {
             LexResult::unit(None)
@@ -355,45 +314,45 @@ impl<'a> LuaLexer<'a> {
     }
 
     fn multiline_string(&mut self) -> LexResult<SyntaxKind> {
-        assert!(self.at(or!('[', '=')));
+        assert!(self.source.at(or!('[', '=')));
 
         self.bracket_enclosed().map(|_| T![str])
     }
 
     fn multiline_comment(&mut self) -> LexResult<SyntaxKind> {
-        assert!(self.at(or!('[', '=')));
+        assert!(self.source.at(or!('[', '=')));
 
         self.bracket_enclosed().map(|_| T![comment])
     }
 
     fn string(&mut self, delimit: char) -> LexResult<SyntaxKind> {
         assert_matches!(delimit, '\'' | '"');
-        self.bump(delimit);
+        self.source.bump(delimit);
 
         loop {
-            match self.current() {
+            match self.source.current() {
                 '\0' => bail!(T![str], "Could not find closing delimiter `{}`", delimit),
                 '\n' => bail!(T![str], "Unexpected newline in string"),
                 c if c == delimit => {
-                    self.bump(delimit);
+                    self.source.bump(delimit);
                     break;
                 }
                 _ => (),
             }
-            self.bump(or!(seq!('\\', delimit), Any));
+            self.source.bump(or!(seq!('\\', delimit), Any));
         }
 
         LexResult::just(T![str])
     }
 
     fn ident(&mut self) -> SyntaxKind {
-        let start = self.pos();
-        let text = self.chars.as_str();
+        let start = self.source.pos();
+        let text = self.source.rest();
 
-        self.bump(is_ident_start);
-        self.accept(While(is_ident_continue));
+        self.source.bump(is_ident_start);
+        self.source.accept(While(is_ident_continue));
 
-        let text = &text[0..(self.pos() - start) as usize];
+        let text = &text[0..(self.source.pos() - start) as usize];
         SyntaxKind::from_keyword(text).unwrap_or(T![ident])
     }
 }
@@ -430,55 +389,55 @@ mod tests {
     #[test]
     fn accept_tuple() {
         let mut lexer = LuaLexer::new("[=");
-        lexer.accept(seq!('[', '='));
-        assert!(lexer.is_eof());
+        lexer.source.accept(seq!('[', '='));
+        assert!(lexer.source.is_eof());
     }
 
     #[test]
     fn accept_tuple_fail() {
         let mut lexer = LuaLexer::new("[]");
-        lexer.accept(seq!('[', '='));
-        assert_eq!(lexer.pos(), 0);
-        assert_eq!(lexer.current(), '[');
-        lexer.bump_raw();
-        assert_eq!(lexer.current(), ']');
+        lexer.source.accept(seq!('[', '='));
+        assert_eq!(lexer.source.pos(), 0);
+        assert_eq!(lexer.source.current(), '[');
+        lexer.source.bump_raw();
+        assert_eq!(lexer.source.current(), ']');
     }
 
     #[test]
     fn accept_repeat() {
         let mut lexer = LuaLexer::new("===================");
-        lexer.accept(Repeat('=', 19));
-        assert!(lexer.is_eof());
+        lexer.source.accept(Repeat('=', 19));
+        assert!(lexer.source.is_eof());
     }
 
     #[test]
     fn accept_repeat_not_enough() {
         let mut lexer = LuaLexer::new("==");
-        lexer.accept(Repeat('=', 4));
-        assert_eq!(lexer.pos(), 0);
-        lexer.accept(Repeat('=', 2));
-        assert!(lexer.is_eof());
+        lexer.source.accept(Repeat('=', 4));
+        assert_eq!(lexer.source.pos(), 0);
+        lexer.source.accept(Repeat('=', 2));
+        assert!(lexer.source.is_eof());
     }
 
     #[test]
     fn accept_repeat_none() {
         let mut lexer = LuaLexer::new("not");
-        assert!(lexer.accept(Repeat('=', 0)));
-        assert_eq!(lexer.pos(), 0);
+        assert!(lexer.source.accept(Repeat('=', 0)));
+        assert_eq!(lexer.source.pos(), 0);
     }
 
     #[test]
     fn not() {
         let mut lexer = LuaLexer::new(r"\]");
-        assert!(!lexer.accept(not!(seq!('\\', ']'))));
-        assert_eq!(lexer.pos(), 0);
+        assert!(!lexer.source.accept(not!(seq!('\\', ']'))));
+        assert_eq!(lexer.source.pos(), 0);
     }
 
     #[test]
     fn combinations() {
         let mut lexer = LuaLexer::new(r"\]    \]  ]]");
-        lexer.accept(While(or!(seq!('\\', ']'), not!(']'))));
-        assert_eq!(lexer.pos(), 10);
+        lexer.source.accept(While(or!(seq!('\\', ']'), not!(']'))));
+        assert_eq!(lexer.source.pos(), 10);
     }
 
     #[test]

@@ -29,7 +29,7 @@ macro_rules! assert_matches {
 pub struct Token {
     /// The kind of token.
     pub kind: SyntaxKind,
-    /// The range of the token.
+    /// The length of the token.
     pub len: TextSize,
 }
 

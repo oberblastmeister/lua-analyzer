@@ -115,9 +115,8 @@ impl Ctx {
     fn lower_function(&mut self, func: &ast::FunctionDefStmt) -> Option<FileItemTreeId<Function>> {
         let (path, name, is_method) = self.lower_function_content(&func.function_def_content()?)?;
         let ast_id = self.ast_id_map.ast_id(func);
-        let params = self.lower_params(&func.param_list()?)?;
 
-        let res = Function { path, name, is_method, params, ast_id };
+        let res = Function { path, name, is_method, ast_id };
 
         Some(id(self.data().functions.alloc(res)))
     }

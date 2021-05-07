@@ -26,10 +26,16 @@ pub enum Expr {
     Table(Table),
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub struct ParamList {
     pub names: MultiName,
     pub vararg: bool,
+}
+
+impl ParamList {
+    pub fn shrink_to_fit(&mut self) {
+        self.names.shrink_to_fit()
+    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]

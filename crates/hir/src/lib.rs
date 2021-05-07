@@ -11,6 +11,7 @@ mod with_body;
 use std::sync::Arc;
 
 use base_db::{salsa, FileId, SourceDatabase, Upcast};
+use body::Body;
 use syntax::{ast::AstNode, SyntaxNode};
 
 use ast_id_map::AstIdMap;
@@ -19,6 +20,7 @@ use ids::{
 };
 use item_tree::ItemTree;
 pub use semantics::Semantics;
+use with_body::WithBodyId;
 
 #[salsa::query_group(InternDatabaseStorage)]
 pub trait InternDatabase: SourceDatabase {
@@ -58,6 +60,9 @@ pub trait DefDatabase:
 {
     #[salsa::invoke(ItemTree::file_item_tree_query)]
     fn file_item_tree(&self, file_id: FileId) -> Arc<ItemTree>;
+
+    #[salsa::invoke(Body::body_query)]
+    fn body(&self, thing: WithBodyId) -> Arc<Body>;
 }
 
 #[salsa::query_group(HirDatabaseStorage)]

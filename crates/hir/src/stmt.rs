@@ -1,4 +1,4 @@
-use la_arena::Idx;
+use la_arena::{Idx, RawIdx};
 use syntax::ast::{self, MultiName, MultivalExpr};
 
 use crate::{
@@ -6,6 +6,10 @@ use crate::{
     item_tree::AstId,
     name::Name,
 };
+
+pub(crate) fn dummy_id() -> StmtId {
+    StmtId::from_raw(RawIdx::from(!0))
+}
 
 pub type StmtId = Idx<Stmt>;
 
@@ -32,6 +36,7 @@ pub struct Block {
     stmts: Vec<StmtId>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct BlockLoc {
     ast_id: AstId<ast::Block>,
 }

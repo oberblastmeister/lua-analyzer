@@ -211,7 +211,6 @@ pub struct Function {
     pub path: IndexPath,
     pub name: Name,
     pub is_method: bool,
-    pub params: ParamList,
     pub ast_id: FileAstId<ast::FunctionDefStmt>,
 }
 

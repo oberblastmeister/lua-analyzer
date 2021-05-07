@@ -10,6 +10,10 @@ impl MultiName {
     pub fn new(names: Vec<Name>) -> Self {
         Self { names }
     }
+
+    pub fn shrink_to_fit(&mut self) {
+        self.names.shrink_to_fit()
+    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
