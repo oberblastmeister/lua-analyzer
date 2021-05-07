@@ -3,6 +3,8 @@ use std::ops::Range;
 pub trait Advancer {
     type Item;
 
+    // const EOF_PLACEHOLDER: Self::Item;
+
     fn advance(&mut self) -> Option<Self::Item>;
 
     fn bump_raw(&mut self) -> Self::Item {
@@ -13,9 +15,15 @@ pub trait Advancer {
         self.advance().expect(msg)
     }
 
-    fn lookahead_nth(&self, n: u32) -> Self::Item;
+    fn nth(&self, n: u32) -> Self::Item;
 
-    fn is_eof(&self) -> bool;
+    fn current(&self) -> Self::Item {
+        self.nth(0)
+    }
+
+    fn is_eof(&self) -> bool {
+        self.nth_is_eof(0)
+    }
 
     fn nth_is_eof(&self, n: u32) -> bool;
 }
@@ -42,7 +50,7 @@ pub trait Acceptor: Advancer + private::Sealed {
         Self: Sized,
     {
         t.bump(self);
-        self.lookahead_nth(0)
+        self.nth(0)
     }
 
     fn accept<T: Accept<Self>>(&mut self, t: T) -> bool
@@ -111,7 +119,7 @@ where
     A: Advancer<Item = char>,
 {
     fn nth(self, l: &A, n: u32) -> bool {
-        !l.is_eof() && l.lookahead_nth(n) == self
+        l.nth(n) == self
     }
 }
 impl<A> Accept<A> for char where A: Advancer<Item = char> {}
@@ -122,7 +130,7 @@ where
     F: Fn(T) -> bool,
 {
     fn nth(self, l: &A, n: u32) -> bool {
-        !l.is_eof() && self(l.lookahead_nth(n))
+        self(l.nth(n))
     }
 }
 impl<T, A, F> Accept<A> for F
@@ -137,7 +145,7 @@ where
     A: Advancer<Item = char>,
 {
     fn nth(self, l: &A, n: u32) -> bool {
-        !l.is_eof() && self.contains(&l.lookahead_nth(n))
+        self.contains(&l.nth(n))
     }
 }
 impl<A> Accept<A> for Range<char> where A: Advancer<Item = char> {}
@@ -340,11 +348,11 @@ where
     T: Copy + Lexable<A> + Accept<A>,
 {
     fn accept(self, l: &mut A) -> bool {
-        if !self.peek(l) {
+        if l.is_eof() && !self.peek(l) {
             return false;
         }
 
-        while self.0.accept(l) {}
+        while !l.is_eof() && self.0.accept(l) {}
 
         true
     }

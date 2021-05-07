@@ -1,4 +1,7 @@
 //! A bit-set of `SyntaxKind`s.
+// use accept::
+
+use accept::{Accept, Advancer, Lexable};
 
 use crate::SyntaxKind;
 
@@ -40,6 +43,17 @@ impl TokenSet {
         self.0 & mask(kind) != 0
     }
 }
+
+impl<A> Lexable<A> for TokenSet
+where
+    A: Advancer<Item = SyntaxKind>,
+{
+    fn nth(self, l: &A, n: u32) -> bool {
+        self.contains(l.nth(n))
+    }
+}
+
+impl<A> Accept<A> for TokenSet where A: Advancer<Item = SyntaxKind> {}
 
 const fn mask(kind: SyntaxKind) -> u128 {
     1u128 << (kind as usize)

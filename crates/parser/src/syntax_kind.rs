@@ -3,6 +3,8 @@ mod generated;
 
 pub use generated::SyntaxKind;
 
+use accept::{Accept, Advancer, Lexable};
+
 impl From<u16> for SyntaxKind {
     fn from(d: u16) -> SyntaxKind {
         assert!(d <= (SyntaxKind::__LAST as u16));
@@ -15,6 +17,17 @@ impl From<SyntaxKind> for u16 {
         k as u16
     }
 }
+
+impl<A> Lexable<A> for SyntaxKind
+where
+    A: Advancer<Item = SyntaxKind>,
+{
+    fn nth(self, p: &A, n: u32) -> bool {
+        p.nth(n) == self
+    }
+}
+
+impl<A> Accept<A> for SyntaxKind where A: Advancer<Item = SyntaxKind> {}
 
 /// for the bit-set to work
 #[test]

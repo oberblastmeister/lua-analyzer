@@ -1,3 +1,5 @@
+use accept::{Acceptor, Advancer, Any};
+
 use super::{
     block, expr_single,
     expressions::{expr, EXPR_FIRST, LITERAL_FIRST},
@@ -54,7 +56,7 @@ pub(super) fn stmt(p: &mut Parser) {
         T![;] => {
             p.err_and_bump("Semicolons can only be used after statements");
         }
-        _ if p.at_ts(LITERAL_FIRST) => {
+        _ if p.at(LITERAL_FIRST) => {
             p.err_and_bump("A literal cannot be the start of a statement");
         }
         T![end] => {
@@ -303,7 +305,7 @@ fn do_stmt(p: &mut Parser) -> MarkerComplete {
 fn return_stmt(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.bump(T![return]);
-    if p.at_ts(EXPR_FIRST) {
+    if p.at(EXPR_FIRST) {
         expr(p);
     }
     m.complete(p, ReturnStmt)

@@ -1,15 +1,33 @@
 use std::{fmt, marker::PhantomData};
 
+use accept::{Acceptor, Advancer, Any};
 use drop_bomb::DropBomb;
-// use accept::Advancor;
 
-use crate::{assert_matches, Event, ParseError, SyntaxKind, TokenSet, TokenSource, T, TS};
+use crate::{assert_matches, Event, ParseError, SyntaxKind, Token, TokenSet, TokenSource, T, TS};
 
 const RECOVERY: TokenSet = TS![end];
 
 pub struct Parser<'a> {
     token_source: &'a mut dyn TokenSource,
     events: Vec<Event>,
+}
+
+impl Advancer for Parser<'_> {
+    type Item = SyntaxKind;
+
+    fn advance(&mut self) -> Option<SyntaxKind> {
+        self.push_event(Event::Token);
+        self.token_source.bump().map(|Token { kind, .. }| kind)
+    }
+
+    fn nth(&self, n: u32) -> SyntaxKind {
+        let Token { kind, .. } = self.token_source.lookahead_nth(n as usize);
+        kind
+    }
+
+    fn nth_is_eof(&self, n: u32) -> bool {
+        self.nth(n) == T![eof]
+    }
 }
 
 impl<'a> Parser<'a> {
@@ -19,17 +37,6 @@ impl<'a> Parser<'a> {
 
     pub(crate) fn finish(self) -> Vec<Event> {
         self.events
-    }
-
-    pub(crate) fn nth(&self, n: usize) -> SyntaxKind {
-        self.token_source.lookahead_nth(n).kind
-    }
-
-    /// Returns the kind of the current token.
-    /// If parser has already reached the end of input,
-    /// the special `EOF` kind is returned.
-    pub(crate) fn current(&self) -> SyntaxKind {
-        self.nth(0)
     }
 
     fn events_len(&self) -> u32 {
@@ -59,17 +66,9 @@ impl<'a> Parser<'a> {
         self.push_event(Event::Error(ParseError::Message(message.to_string())))
     }
 
-    pub(crate) fn at_ts(&self, kinds: TokenSet) -> bool {
-        kinds.contains(self.current())
-    }
-
-    pub(crate) fn bump_any(&mut self) {
-        let kind = self.nth(0);
-        if kind == T![eof] {
-            return;
-        }
-        self.do_bump()
-    }
+    // pub(crate) fn at(&self, kinds: TokenSet) -> bool {
+    //     kinds.contains(self.current())
+    // }
 
     /// Create an error node and consume the next token.
     pub(crate) fn err_recover<S: fmt::Display>(&mut self, message: S, recovery: TokenSet) {
@@ -81,13 +80,13 @@ impl<'a> Parser<'a> {
             _ => (),
         }
 
-        if self.at_ts(recovery) {
+        if self.at(recovery) {
             self.error(message);
             return;
         }
 
         let m = self.start_error();
-        self.bump_any();
+        self.accept(Any);
         m.complete(self, ParseError::Message(message.to_string()));
     }
 
@@ -100,28 +99,14 @@ impl<'a> Parser<'a> {
 
         let m = self.start_error();
 
-        while !self.at_ts(recovery) && !self.at(T![eof]) {
-            self.bump_any()
+        while !self.at(recovery) && !self.at(T![eof]) {
+            self.bump(Any)
         }
 
         m.complete(self, ParseError::Message(message.to_string()));
     }
 
-    fn do_bump(&mut self) {
-        self.token_source.bump();
-
-        self.push_event(Event::Token);
-    }
-
-    fn nth_at(&self, n: usize, kind: SyntaxKind) -> bool {
-        self.token_source.lookahead_nth(n).kind == kind
-    }
-
     /// Checks if the current token is `kind`.
-    pub(crate) fn at(&self, kind: SyntaxKind) -> bool {
-        self.nth_at(0, kind)
-    }
-
     pub(crate) fn expect_at(&mut self, kind: SyntaxKind) -> bool {
         let current = self.current();
         if current != kind {
@@ -131,26 +116,11 @@ impl<'a> Parser<'a> {
         true
     }
 
-    pub(crate) fn accept(&mut self, kind: SyntaxKind) -> bool {
-        if !self.at(kind) {
-            return false;
-        }
-        self.do_bump();
-        true
-    }
-
-    pub(crate) fn bump(&mut self, kind: SyntaxKind) {
-        if !self.at(kind) {
-            panic!("Failed to bump {:?}, got {:?}", kind, self.current())
-        }
-        self.do_bump();
-    }
-
     pub(crate) fn bump_ts(&mut self, kinds: TokenSet) {
-        if !self.at_ts(kinds) {
+        if !self.at(kinds) {
             panic!("Failed to bump {:?}, got {:?}", kinds, self.current())
         }
-        self.do_bump();
+        self.bump(Any);
     }
 
     /// Consume the next token if it is `kind` or emit an error
@@ -158,7 +128,7 @@ impl<'a> Parser<'a> {
     pub(crate) fn expect(&mut self, kind: SyntaxKind) -> bool {
         let current = self.current();
         if current == kind {
-            self.bump_any();
+            self.bump(Any);
             return true;
         }
         self.push_event(Event::Error(ParseError::expected(kind, current)));

@@ -52,7 +52,7 @@ pub trait TokenSource {
     fn lookahead_nth(&self, n: usize) -> Token;
 
     /// bump cursor to next token
-    fn bump(&mut self);
+    fn bump(&mut self) -> Option<Token>;
 
     /// Is the current token a specified keyword?
     fn is_keyword(&self, kw: &str) -> bool;

@@ -6,8 +6,8 @@ use std::str::Chars;
 use rowan::{TextRange, TextSize};
 
 use self::error::{LexResult, SyntaxResult};
-use accept::{not, or, seq, Accept, Acceptor, Advancer, Any, Lexable, Repeat, Until, While};
 use crate::{SyntaxError, SyntaxKind, T};
+use accept::{not, or, seq, Accept, Acceptor, Advancer, Any, Lexable, Repeat, Until, While};
 use parser::Token;
 
 pub(crate) const EOF_CHAR: char = '\0';
@@ -114,8 +114,8 @@ impl Advancer for LuaLexer<'_> {
         self.chars.next()
     }
 
-    fn lookahead_nth(&self, n: u32) -> char {
-        self.nth(n)
+    fn nth(&self, n: u32) -> char {
+        self.chars().nth(n as usize).unwrap_or(EOF_CHAR)
     }
 
     fn is_eof(&self) -> bool {
@@ -134,14 +134,6 @@ impl<'a> LuaLexer<'a> {
 
     pub(crate) fn chars(&self) -> Chars<'a> {
         self.chars.clone()
-    }
-
-    /// Returns nth character relative to the current cursor position.
-    /// If requested position doesn't exist, `EOF_CHAR` is returned.
-    /// However, getting `EOF_CHAR` doesn't always mean actual end of file,
-    /// it should be checked with `is_eof` method.
-    pub(crate) fn nth(&self, n: u32) -> char {
-        self.chars().nth(n as usize).unwrap_or(EOF_CHAR)
     }
 
     /// Peeks next char from stream without consuming it
@@ -405,22 +397,28 @@ impl<'a> LuaLexer<'a> {
         SyntaxKind::from_keyword(text).unwrap_or(T![ident])
     }
 }
+
+#[inline]
 const fn is_number(c: char) -> bool {
     matches!(c, '0'..='9')
 }
 
+#[inline]
 const fn is_ident_start(c: char) -> bool {
     c.is_ascii_alphabetic() || c == '_'
 }
 
+#[inline]
 const fn is_ident_continue(c: char) -> bool {
     is_ident_start(c) || matches!(c, '0'..='9')
 }
 
+#[inline]
 const fn is_whitespace(c: char) -> bool {
     c.is_ascii_whitespace()
 }
 
+#[inline]
 const fn is_hex(c: char) -> bool {
     matches!(c, '0'..='9' | 'A'..='F' | 'a'..='f')
 }

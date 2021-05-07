@@ -60,13 +60,14 @@ impl<'t> TokenSource for TextTokenSource<'t> {
         mk_token(self.curr.1 + n, &self.token_offset_pairs, self.curr_range())
     }
 
-    fn bump(&mut self) {
+    fn bump(&mut self) -> Option<Token> {
         if self.curr.0.kind == T![eof] {
-            return;
+            return None;
         }
 
         let pos = self.curr.1 + 1;
         self.curr = (mk_token(pos, &self.token_offset_pairs, self.curr_range()), self.curr.1 + 1);
+        Some(self.curr.0)
     }
 
     fn is_keyword(&self, kw: &str) -> bool {

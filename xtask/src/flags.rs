@@ -11,6 +11,9 @@ xflags::xflags! {
         cmd fuzz-tests {
             /// run the lexer fuzz tests instead
             optional -l, --lexer
+
+            /// reset the corpus and artifacts
+            optional -r, --reset
         }
 
         /// Run the codegen
@@ -40,6 +43,7 @@ pub struct Help {
 #[derive(Debug)]
 pub struct FuzzTests {
     pub lexer: bool,
+    pub reset: bool,
 }
 
 #[derive(Debug)]

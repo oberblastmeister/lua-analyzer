@@ -1,8 +1,10 @@
 mod expressions;
 mod statements;
 
+use accept::{Acceptor, Advancer};
+
 use crate::{
-    parser::{MarkerComplete, MarkerRegular, Parser},
+    parser::{MarkerComplete, Parser},
     SyntaxKind, TokenSet, TS,
 };
 use expressions::expr_single;
@@ -102,7 +104,7 @@ pub(crate) fn block(p: &mut Parser) {
     const END: TokenSet = TS![eof, end, elseif, else, until];
 
     let m = p.start();
-    while !p.at_ts(END) {
+    while !p.at(END) {
         stmt(p);
     }
     m.complete(p, N![Block]);
@@ -116,7 +118,7 @@ fn param_list(p: &mut Parser) -> MarkerComplete {
     let m = p.start();
     p.expect(T!['(']);
 
-    if !p.at_ts(END) {
+    if !p.at(END) {
         multi_name_r(p, STMT_RECOVERY, true);
     }
 
