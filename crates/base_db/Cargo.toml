@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-salsa = "0.16.0"
+salsa = "0.16.1"
 
 vfs = { path = "../vfs", version = "0.0.0" }
 syntax = { path = "../syntax", version = "0.0.0" }
