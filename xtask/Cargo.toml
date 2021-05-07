@@ -16,6 +16,6 @@ quote = "1.0.9"
 serde = { version = "1.0.125", features = ["derive"] }
 syn = "1.0.72"
 toml = "0.5.8"
-ungrammar = "1.12.1"
+ungrammar = "1.13.0"
 xflags = "0.2.1"
 xshell = "0.1.11"
