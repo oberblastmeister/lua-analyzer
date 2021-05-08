@@ -5,7 +5,10 @@ use std::iter;
 
 use rowan::{TextRange, TextSize};
 
-use self::{error::{LexResult, SyntaxResult}, source::CharSource};
+use self::{
+    error::{LexResult, SyntaxResult},
+    source::CharSource,
+};
 use crate::{SyntaxError, SyntaxKind, T};
 use accept::{not, or, seq, Accept, Acceptor, Advancer, Any, Lexable, Repeat, Until, While};
 use parser::Token;

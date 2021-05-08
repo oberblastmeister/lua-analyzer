@@ -29,8 +29,7 @@ struct Collector<'db> {
 
 impl<'db> Collector<'db> {
     fn collect(mut self, params_list: Option<ast::ParamList>, body: Option<ast::Block>) -> Body {
-        if let Some(param_list) = params_list {
-        }
+        if let Some(param_list) = params_list {}
         todo!()
     }
 }
