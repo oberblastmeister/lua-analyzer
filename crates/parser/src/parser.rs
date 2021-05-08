@@ -1,6 +1,6 @@
 use std::{fmt, marker::PhantomData};
 
-use accept::{Acceptor, Advancer, Any};
+use accept::{Acceptor, source::Source, Any};
 use drop_bomb::DropBomb;
 
 use crate::{assert_matches, Event, ParseError, SyntaxKind, Token, TokenSet, TokenSource, T, TS};
@@ -12,7 +12,7 @@ pub struct Parser<'a> {
     events: Vec<Event>,
 }
 
-impl Advancer for Parser<'_> {
+impl Source for Parser<'_> {
     type Item = SyntaxKind;
 
     fn advance(&mut self) -> Option<SyntaxKind> {

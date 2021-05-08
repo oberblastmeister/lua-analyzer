@@ -1,7 +1,7 @@
 mod expressions;
 mod statements;
 
-use accept::{Acceptor, Advancer};
+use accept::Acceptor;
 
 use crate::{
     parser::{MarkerComplete, Parser},

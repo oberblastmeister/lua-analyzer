@@ -1,10 +1,10 @@
-use accept::{Acceptor, Advancer, Any};
+use accept::{Any, source::Source, Acceptor};
 use binding_powers::{precedences, Operator, LOWEST, NOT_AN_OP, NOT_AN_OP_INFIX, NOT_AN_OP_PREFIX};
 
-use super::{block, name_r, name_ref, name_unchecked, param_list, VARARG_ERROR_MSG};
+use super::{block, name_ref, name_unchecked, param_list};
 use crate::{
-    parser::{MarkerComplete, MarkerRegular, Parser},
-    ParseError, SyntaxKind, TokenSet, TS,
+    parser::{MarkerComplete, Parser},
+    SyntaxKind, TokenSet, TS,
 };
 
 pub(super) const EXPR_RECOVERY_SET: TokenSet = TS![local];

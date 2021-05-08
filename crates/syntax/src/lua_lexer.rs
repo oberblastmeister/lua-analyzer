@@ -1,14 +1,15 @@
-use std::iter;
-
 use rowan::{TextRange, TextSize};
 
 use crate::lexer::{
     error::{LexResult, SyntaxResult},
-    source::CharSource,
     Lexer,
 };
 use crate::{SyntaxError, SyntaxKind, T};
-use accept::{not, or, seq, Accept, Acceptor, Advancer, Any, Lexable, Repeat, Until, While};
+use accept::source::{CharSource, Source};
+use accept::{
+    combinators::{or, seq, Until, While, Not},
+    Accept, Acceptor, Any,
+};
 use parser::Token;
 
 macro_rules! done {
@@ -248,7 +249,7 @@ impl<'a> LuaLexer<'a> {
             expect!(l.source.accept('['));
 
             loop {
-                l.source.accept(While(or!(seq!('\\', ']'), not!(']'))));
+                l.source.accept(While(or!(seq!('\\', ']'), Not(']'))));
 
                 if !l.source.accept(']') {
                     // we hit eof
@@ -353,6 +354,7 @@ const fn is_hex(c: char) -> bool {
 mod tests {
     use super::*;
     use crate::lexer::tokenize;
+    use accept::combinators::{Repeat, Not};
 
     #[test]
     fn accept_tuple() {
@@ -397,14 +399,14 @@ mod tests {
     #[test]
     fn not() {
         let mut lexer = LuaLexer::new(r"\]");
-        assert!(!lexer.source.accept(not!(seq!('\\', ']'))));
+        assert!(!lexer.source.accept(Not(seq!('\\', ']'))));
         assert_eq!(lexer.source.pos(), 0);
     }
 
     #[test]
     fn combinations() {
         let mut lexer = LuaLexer::new(r"\]    \]  ]]");
-        lexer.source.accept(While(or!(seq!('\\', ']'), not!(']'))));
+        lexer.source.accept(While(or!(seq!('\\', ']'), Not(']'))));
         assert_eq!(lexer.source.pos(), 10);
     }
 

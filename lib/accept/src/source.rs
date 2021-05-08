@@ -1,10 +1,36 @@
 use std::convert::TryFrom;
 use std::str::Chars;
 
-use accept::Advancer;
+/// A trait that defines the source that a lexer or parser can operate on
+pub trait Source {
+    type Item;
+
+    fn advance(&mut self) -> Option<Self::Item>;
+
+    fn bump_raw(&mut self) -> Self::Item {
+        self.advance().unwrap()
+    }
+
+    fn bump_expect(&mut self, msg: &str) -> Self::Item {
+        self.advance().expect(msg)
+    }
+
+    fn nth(&self, n: u32) -> Self::Item;
+
+    fn current(&self) -> Self::Item {
+        self.nth(0)
+    }
+
+    fn is_eof(&self) -> bool {
+        self.nth_is_eof(0)
+    }
+
+    fn nth_is_eof(&self, n: u32) -> bool;
+}
 
 pub(crate) const EOF_CHAR: char = '\0';
 
+/// A simple source that works on chars
 pub struct CharSource<'a> {
     input_len: u32,
     chars: Chars<'a>,
@@ -34,7 +60,7 @@ impl<'a> CharSource<'a> {
     }
 }
 
-impl Advancer for CharSource<'_> {
+impl Source for CharSource<'_> {
     type Item = char;
 
     fn advance(&mut self) -> Option<char> {

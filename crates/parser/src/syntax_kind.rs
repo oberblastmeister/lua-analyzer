@@ -3,7 +3,7 @@ mod generated;
 
 pub use generated::SyntaxKind;
 
-use accept::{Accept, Advancer, Lexable};
+use accept::{Accept, source::Source, Lexable};
 
 impl From<u16> for SyntaxKind {
     fn from(d: u16) -> SyntaxKind {
@@ -20,14 +20,14 @@ impl From<SyntaxKind> for u16 {
 
 impl<A> Lexable<A> for SyntaxKind
 where
-    A: Advancer<Item = SyntaxKind>,
+    A: Source<Item = SyntaxKind>,
 {
     fn nth(self, p: &A, n: u32) -> bool {
         p.nth(n) == self
     }
 }
 
-impl<A> Accept<A> for SyntaxKind where A: Advancer<Item = SyntaxKind> {}
+impl<A> Accept<A> for SyntaxKind where A: Source<Item = SyntaxKind> {}
 
 /// for the bit-set to work
 #[test]
