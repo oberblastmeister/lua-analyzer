@@ -37,11 +37,17 @@ jobs:
           target
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-    - name: Build
-      run: cargo build
+    - name: Compile
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --no-run --locked
 
     - name: Test
-      run: cargo test --verbose
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: -- --nocapture
 
   rustfmt:
     name: rustfmt
