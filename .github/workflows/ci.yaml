@@ -38,13 +38,13 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
     - name: Compile
-    - uses: actions-rs/cargo@v1
+      uses: actions-rs/cargo@v1
       with:
         command: test
         args: --no-run --locked
 
     - name: Test
-    - uses: actions-rs/cargo@v1
+      uses: actions-rs/cargo@v1
       with:
         command: test
         args: -- --nocapture
@@ -66,5 +66,7 @@ jobs:
         components: rustfmt
 
     - name: Check formatting
-      run: |
-        cargo fmt --all -- --check
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --all -- --check
