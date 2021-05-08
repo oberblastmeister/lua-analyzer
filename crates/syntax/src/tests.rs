@@ -1,3 +1,5 @@
+use lua_lexer::LuaLexer;
+
 use super::lexer::{tokenize, tokenizer};
 use super::*;
 use std::{
@@ -26,14 +28,14 @@ fn parser() {
 #[test]
 fn lexer() {
     dir_tests(snapshots_dir(), &["lexer/ok"], |path, text| {
-        let (tokens, errors) = tokenize(text);
+        let (tokens, errors) = tokenize::<LuaLexer>(text);
         assert_errors_are_absent(&errors, path);
         assert_unknowns_are_absent(&tokens, path);
         format!("{:#?}", tokens)
     });
 
     dir_tests(snapshots_dir(), &["lexer/err"], |path, text| {
-        let (tokens, errors) = tokenize(text);
+        let (tokens, errors) = tokenize::<LuaLexer>(text);
         assert_errors_or_unknowns_are_present(&errors, &tokens, path);
         format!("{:#?}\n\n{:#?}", tokens, errors)
     })

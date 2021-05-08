@@ -2,6 +2,7 @@ pub mod ast;
 #[doc(hidden)]
 pub mod fuzz;
 mod lexer;
+mod lua_lexer;
 mod parsing;
 mod ptr;
 mod syntax_node;
@@ -10,7 +11,8 @@ mod tests;
 mod token_text;
 mod validation;
 
-pub use lexer::{lex_first_syntax_kind, tokenize, tokenizer};
+pub(crate) use lexer::{first_syntax_kind, first_token};
+pub use lexer::{tokenize, tokenizer};
 pub use parser::{SyntaxKind, Token, N, T};
 pub use ptr::{AstPtr, SyntaxNodePtr};
 pub use rowan::{TextRange, TextSize, WalkEvent};
@@ -23,7 +25,7 @@ use std::{marker::PhantomData, sync::Arc};
 
 use text_edit::Indel;
 
-use ast::{AstNode, ParamList};
+use ast::AstNode;
 use rowan::GreenNode;
 
 /// `Parse` is the result of the parsing: a syntax tree and a collection of

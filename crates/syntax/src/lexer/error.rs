@@ -57,12 +57,6 @@ impl<E> OkResult<(), E> {
     }
 }
 
-// impl<T, E> ResultInfo<T, E> {
-//     pub fn just(kind: T) -> ResultInfo<SyntaxKind, E> {
-//         ResultInfo(kind, None)
-//     }
-// }
-
 pub type LexResult<T> = OkResult<T, String>;
 
 pub type SyntaxResult<T> = OkResult<T, SyntaxError>;

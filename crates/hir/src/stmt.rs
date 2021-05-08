@@ -1,10 +1,10 @@
 use la_arena::{Idx, RawIdx};
-use syntax::ast::{self, MultiName, MultivalExpr};
+use syntax::ast;
 
 use crate::{
-    expr::{Call, ExprId},
+    expr::{Call, ExprId, MultivalExpr},
     item_tree::AstId,
-    name::Name,
+    name::{MultiName, Name},
 };
 
 pub(crate) fn dummy_id() -> StmtId {
@@ -13,7 +13,9 @@ pub(crate) fn dummy_id() -> StmtId {
 
 pub type StmtId = Idx<Stmt>;
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Stmt {
+    Missing,
     Assign { lhs: MultivalExpr, rhs: MultivalExpr },
     Do(Block),
     While { condition: ExprId, body: Block },
@@ -26,11 +28,13 @@ pub enum Stmt {
     Goto { name: Name },
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum ForContent {
     Numeric { name: Name, start: ExprId, end: ExprId, increment: Option<ExprId> },
     Generic { multi_name: MultiName, expr: ExprId },
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Block {
     block_loc: BlockLoc,
     stmts: Vec<StmtId>,

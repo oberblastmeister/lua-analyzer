@@ -10,7 +10,8 @@ use crate::{
     ast_id_map::AstIdMap,
     expr::{Expr, Label, ParamList},
     item_tree::HasSource,
-    stmt::{BlockLoc, StmtId},
+    name::Name,
+    stmt::{BlockLoc, Stmt, StmtId},
     with_body::WithBodyId,
     DefDatabase, Lookup,
 };
@@ -18,7 +19,9 @@ use crate::{
 #[derive(Debug, Eq, PartialEq)]
 pub struct Body {
     pub exprs: Arena<Expr>,
+    pub stmts: Arena<Stmt>,
     pub labels: Arena<Label>,
+    pub names: Arena<Name>,
     pub params: ParamList,
     pub body_stmt: StmtId,
     block_scopes: Vec<BlockLoc>,
@@ -31,42 +34,44 @@ impl Body {
         let (file_id, body) = match def {
             WithBodyId::ModuleId(file_id) => {
                 let src = db.parse(file_id).tree();
-                (file_id, src.body())
+                (file_id, src.body().map(ast::Stmt::from))
             }
             WithBodyId::FunctionId(f) => {
                 let f = f.lookup(db);
                 let src = f.source(db);
                 params = src.value.param_list();
-                (src.file_id, src.value.body())
+                (src.file_id, src.value.body().map(ast::Stmt::from))
             }
             WithBodyId::LocalFunctionId(f) => {
                 let f = f.lookup(db);
                 let src = f.source(db);
                 params = src.value.param_list();
-                (src.file_id, src.value.body())
+                (src.file_id, src.value.body().map(ast::Stmt::from))
             }
         };
 
-        let mut body = Body::new(db, params, body);
+        let mut body = Body::new(db, file_id, params, body);
         body.shrink_to_fit();
         Arc::new(body)
     }
 
     fn new(
         db: &dyn DefDatabase,
-        // expander: Expander,
+        file_id: FileId,
         params: Option<ast::ParamList>,
-        body: Option<ast::Block>,
+        body: Option<ast::Stmt>,
     ) -> Body {
-        lower::lower(db, params, body)
+        lower::lower(db, file_id, params, body)
     }
 
     fn shrink_to_fit(&mut self) {
-        let Self { exprs, labels, params, body_stmt: _, block_scopes } = self;
-        block_scopes.shrink_to_fit();
+        let Self { exprs, stmts, names, labels, params, body_stmt: _, block_scopes } = self;
         exprs.shrink_to_fit();
+        stmts.shrink_to_fit();
+        names.shrink_to_fit();
         labels.shrink_to_fit();
         params.shrink_to_fit();
+        block_scopes.shrink_to_fit();
     }
 }
 

@@ -648,6 +648,7 @@ impl IdentKey {
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Stmt {
+    Block(Block),
     AssignStmt(AssignStmt),
     LocalAssignStmt(LocalAssignStmt),
     LocalFunctionDefStmt(LocalFunctionDefStmt),
@@ -1392,6 +1393,11 @@ impl AstNode for IdentKey {
         &self.syntax
     }
 }
+impl From<Block> for Stmt {
+    fn from(node: Block) -> Stmt {
+        Stmt::Block(node)
+    }
+}
 impl From<AssignStmt> for Stmt {
     fn from(node: AssignStmt) -> Stmt {
         Stmt::AssignStmt(node)
@@ -1460,7 +1466,8 @@ impl From<GotoStmt> for Stmt {
 impl AstNode for Stmt {
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
-            SyntaxKind::AssignStmt
+            SyntaxKind::Block
+            | SyntaxKind::AssignStmt
             | SyntaxKind::LocalAssignStmt
             | SyntaxKind::LocalFunctionDefStmt
             | SyntaxKind::FunctionDefStmt
@@ -1478,6 +1485,7 @@ impl AstNode for Stmt {
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
+            SyntaxKind::Block => Stmt::Block(Block { syntax }),
             SyntaxKind::AssignStmt => Stmt::AssignStmt(AssignStmt { syntax }),
             SyntaxKind::LocalAssignStmt => Stmt::LocalAssignStmt(LocalAssignStmt { syntax }),
             SyntaxKind::LocalFunctionDefStmt => {
@@ -1499,6 +1507,7 @@ impl AstNode for Stmt {
     }
     fn syntax(&self) -> &SyntaxNode {
         match self {
+            Stmt::Block(it) => &it.syntax,
             Stmt::AssignStmt(it) => &it.syntax,
             Stmt::LocalAssignStmt(it) => &it.syntax,
             Stmt::LocalFunctionDefStmt(it) => &it.syntax,

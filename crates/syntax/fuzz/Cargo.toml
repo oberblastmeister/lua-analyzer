@@ -24,7 +24,7 @@ test = false
 doc = false
 
 [[bin]]
-name = "lexer"
-path = "fuzz_targets/lexer.rs"
+name = "lua_lexer"
+path = "fuzz_targets/lua_lexer.rs"
 test = false
 doc = false

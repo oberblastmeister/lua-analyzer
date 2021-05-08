@@ -11,7 +11,8 @@ SourceFile =
   body:Block
 
 Stmt =
-  AssignStmt
+  Block
+  | AssignStmt
   | LocalAssignStmt
   | LocalFunctionDefStmt
   | FunctionDefStmt

@@ -26,6 +26,9 @@ pub enum Expr {
     Table(Table),
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct MultivalExpr;
+
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub struct ParamList {
     pub names: MultiName,

@@ -1,12 +1,12 @@
 use parser::{Reparser, Token};
-use rowan::TextSize;
 use text_edit::Indel;
 
 use crate::{
-    lex_first_syntax_kind,
+    first_syntax_kind,
+    lua_lexer::LuaLexer,
     parsing::{text_token_source::TextTokenSource, text_tree_sink::TextTreeSink},
     syntax_node::{GreenToken, NodeOrToken},
-    tokenize, GreenNode, SyntaxElement, SyntaxError, SyntaxNode, TextRange, N, T,
+    tokenize, GreenNode, SyntaxElement, SyntaxError, SyntaxNode, TextRange, T,
 };
 
 pub(crate) fn incremental_reparse(
@@ -41,8 +41,8 @@ fn reparse_token(
                 }
             }
 
-            let mut new_text = get_text_after_edit(prev_token.clone().into(), &edit);
-            let (new_token_kind, new_err) = lex_first_syntax_kind(&new_text)?.inner();
+            let new_text = get_text_after_edit(prev_token.clone().into(), &edit);
+            let (new_token_kind, new_err) = first_syntax_kind::<LuaLexer>(&new_text)?.inner();
 
             if new_token_kind != prev_token_kind {
                 return None;
@@ -66,7 +66,7 @@ fn reparse_block(
     let (node, reparser) = find_reparsable_node(root, edit.delete)?;
     let text = get_text_after_edit(node.clone().into(), edit);
 
-    let (tokens, new_lexer_errors) = tokenize(&text);
+    let (tokens, new_lexer_errors) = tokenize::<LuaLexer>(&text);
     if !is_balanced(&tokens) {
         return None;
     }
