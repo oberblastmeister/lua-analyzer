@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["line_index",""]],"struct":[["LineIndexDatabaseGroupStorage__",""],["LineIndexDatabaseStorage","Representative struct for the query group."],["LineIndexQuery",""],["RootDatabase",""]],"trait":[["LineIndexDatabase",""]]});

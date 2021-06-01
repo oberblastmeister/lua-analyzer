@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Message","Message about an action taken by a [`Handle`]."]],"struct":[["Config",""],["Entry",""]],"trait":[["Handle",""]],"type":[["Sender","Type that will receive `Messages` from a [`Handle`]."]]});

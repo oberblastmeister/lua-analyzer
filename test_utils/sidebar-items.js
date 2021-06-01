@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["CURSOR_MARKER",""]],"fn":[["__diff",""],["extract_offset","Infallible version of `try_extract_offset()`."],["extract_range","Infallible version of `try_extract_range()`."],["format_diff",""]],"macro":[["assert_eq_text","Asserts that two strings are equal, otherwise displays a rich diff between them."]]});

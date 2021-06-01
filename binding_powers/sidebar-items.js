@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["LOWEST",""],["LOWEST_INFIX",""],["LOWEST_POSTFIX",""],["LOWEST_PREFIX",""],["NOT_AN_OP",""],["NOT_AN_OP_INFIX",""],["NOT_AN_OP_POSTFIX",""],["NOT_AN_OP_PREFIX",""]],"enum":[["Assoc",""],["PrecType",""]],"macro":[["precedences",""]],"struct":[["BindingPowers",""],["Precedences",""]],"trait":[["Operator",""]]});

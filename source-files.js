@@ -1,0 +1,17 @@
+var N = null;var sourcesIndex = {};
+sourcesIndex["accept"] = {"name":"","dirs":[{"name":"accept","files":["combinators.rs"]}],"files":["accept.rs","lib.rs","source.rs"]};
+sourcesIndex["base_db"] = {"name":"","files":["cancellation.rs","change.rs","lib.rs"]};
+sourcesIndex["binding_powers"] = {"name":"","files":["lib.rs"]};
+sourcesIndex["binding_powers_impl"] = {"name":"","files":["lib.rs"]};
+sourcesIndex["hir"] = {"name":"","dirs":[{"name":"body","files":["lower.rs"]},{"name":"item_tree","files":["lower.rs"]}],"files":["ast_id_map.rs","body.rs","expr.rs","ids.rs","item_tree.rs","lib.rs","name.rs","semantics.rs","stmt.rs","with_body.rs"]};
+sourcesIndex["ide"] = {"name":"","files":["diagnostics.rs","lib.rs"]};
+sourcesIndex["ide_db"] = {"name":"","files":["lib.rs","line_index.rs"]};
+sourcesIndex["lua_analyzer"] = {"name":"","files":["caps.rs","config.rs","diagnostics.rs","dispatch.rs","document.rs","from_proto.rs","global_state.rs","handlers.rs","lib.rs","lsp_utils.rs","main_loop.rs","reload.rs","thread_pool.rs","to_proto.rs"]};
+sourcesIndex["parser"] = {"name":"","dirs":[{"name":"grammar","files":["expressions.rs","statements.rs"]},{"name":"syntax_kind","files":["generated.rs"]}],"files":["event.rs","grammar.rs","lib.rs","parse_error.rs","parser.rs","syntax_kind.rs","token_set.rs"]};
+sourcesIndex["stdx"] = {"name":"","files":["lib.rs","paths.rs"]};
+sourcesIndex["syntax"] = {"name":"","dirs":[{"name":"ast","dirs":[{"name":"generated","files":["nodes.rs","tokens.rs"]}],"files":["expr_ext.rs","generated.rs","grammar_ext.rs","node_ext.rs","stmt_ext.rs"]},{"name":"lexer","files":["error.rs"]},{"name":"parsing","files":["reparsing.rs","text_token_source.rs","text_tree_sink.rs"]}],"files":["ast.rs","fuzz.rs","lexer.rs","lib.rs","lua_lexer.rs","parsing.rs","ptr.rs","syntax_node.rs","token_text.rs","validation.rs"]};
+sourcesIndex["test_utils"] = {"name":"","files":["lib.rs"]};
+sourcesIndex["text_edit"] = {"name":"","files":["lib.rs"]};
+sourcesIndex["vfs"] = {"name":"","files":["handle.rs","lib.rs","loader.rs","path_interner.rs"]};
+sourcesIndex["xtask"] = {"name":"","dirs":[{"name":"codegen","dirs":[{"name":"gen_syntax","files":["ast_src.rs","kinds_src.rs","mod.rs"]}]}],"files":["codegen.rs","dist.rs","flags.rs","fuzz_tests.rs","main.rs","utils.rs"]};
+createSourceSidebar();

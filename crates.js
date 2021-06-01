@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["accept","base_db","binding_powers","binding_powers_impl","hir","ide","ide_db","lua_analyzer","parser","stdx","syntax","test_utils","text_edit","vfs","xtask"];

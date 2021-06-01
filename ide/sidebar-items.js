@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Severity",""]],"struct":[["Analysis",""],["AnalysisHost",""],["Change","Encapsulate a bunch of raw `.set` calls on the database."],["FileId",""],["LineCol",""],["LineColUtf16",""],["LineIndex",""]],"trait":[["LineIndexDatabase",""]],"type":[["Cancelable",""]]});

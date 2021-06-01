@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["syntax"] = [{"text":"impl&lt;N:&nbsp;<a class=\"trait\" href=\"syntax/ast/trait.AstNode.html\" title=\"trait syntax::ast::AstNode\">AstNode</a>&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html\" title=\"trait core::iter::traits::iterator::Iterator\">Iterator</a> for <a class=\"struct\" href=\"syntax/ast/struct.AstChildren.html\" title=\"struct syntax::ast::AstChildren\">AstChildren</a>&lt;N&gt;","synthetic":false,"types":["syntax::ast::AstChildren"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

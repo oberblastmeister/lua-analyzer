@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["stdx"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html\" title=\"trait core::borrow::Borrow\">Borrow</a>&lt;<a class=\"struct\" href=\"stdx/paths/struct.AbsPath.html\" title=\"struct stdx::paths::AbsPath\">AbsPath</a>&gt; for <a class=\"struct\" href=\"stdx/paths/struct.AbsPathBuf.html\" title=\"struct stdx::paths::AbsPathBuf\">AbsPathBuf</a>","synthetic":false,"types":["stdx::paths::AbsPathBuf"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

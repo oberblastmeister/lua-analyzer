@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["CharSource","A simple source that works on chars."]],"trait":[["Source","A trait that defines the source that a lexer or parser can operate on."]]});

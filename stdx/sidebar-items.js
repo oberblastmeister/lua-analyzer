@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["partition_point","Returns `idx` such that:"]],"mod":[["paths","Thin wrappers around `std::path`, distinguishing between absolute and relative paths."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Cardinality",""],["Field",""]],"fn":[["label_is_manually_implemented",""],["lower",""],["lower_comma_list",""],["lower_enum",""],["lower_rule",""],["node_is_manually_implemented",""],["pluralize",""]],"struct":[["AstEnumSrc",""],["AstNodeSrc",""],["AstSrc",""]]});
