@@ -449,9 +449,9 @@ dependencies = [
 
 [[package]]
 name = "lsp-types"
-version = "0.89.0"
+version = "0.89.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "07731ecd4ee0654728359a5b95e2a254c857876c04b85225496a35d60345daa7"
+checksum = "48b8a871b0a450bcec0e26d74a59583c8173cb9fb7d7f98889e18abb84838e0f"
 dependencies = [
  "bitflags",
  "serde",
@@ -606,9 +606,9 @@ checksum = "d4fd5641d01c8f18a23da7b6fe29298ff4b55afcccdf78973b24cf3175fee32e"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.26"
+version = "1.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a152013215dca273577e18d2bf00fa862b89b24169fb78c4c95aeb07992c9cec"
+checksum = "f0d8caf72986c1a598726adc988bb5984792ef84f5ee5aa50209145ee8077038"
 dependencies = [
  "unicode-xid",
 ]
