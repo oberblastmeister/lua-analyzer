@@ -11,7 +11,7 @@ la-arena = "0.2.0"
 ordered-float = "2.2.0"
 rustc-hash = "1.1.0"
 smallvec = "1.6.1"
-smol_str = "0.1.17"
+smol_str = "0.2.1"
 
 base_db = { path = "../base_db", version = "0.0.0" }
 syntax = { path = "../syntax", version = "0.0.0" }
