@@ -11,7 +11,7 @@ repository = "https://github.com/oberblastmeister/lua-analyzer"
 doctest = false
 
 [dependencies]
-itertools = "0.10.0"
+itertools = "0.12.1"
 rowan = "0.12.6"
 thiserror = "1.0.24"
 
