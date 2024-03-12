@@ -8,7 +8,7 @@ edition = "2018"
 # debug = true
 
 [dependencies]
-anyhow = "1.0.40"
+anyhow = "1.0.81"
 crossbeam-channel = "0.5.1"
 directories-next = "2.0.0"
 log = "0.4.14"

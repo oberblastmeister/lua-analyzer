@@ -6,7 +6,7 @@ edition = "2018"
 publish = false
 
 [dependencies]
-anyhow = "1.0.40"
+anyhow = "1.0.81"
 flate2 = "1.0.20"
 heck = "0.3.2"
 proc-macro2 = "1.0.27"
