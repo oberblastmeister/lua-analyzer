@@ -69,7 +69,7 @@ SourceFile@0..166
                     LParen@80..81 "("
                     MultivalExpr@81..95
                       Literal@81..95
-                        Str@81..95 "\'yes was true\'"
+                        Str@81..95 "'yes was true'"
                     RParen@95..96 ")"
         Whitespace@96..97 "\n"
         ElseIfBranch@97..161
@@ -102,7 +102,7 @@ SourceFile@0..166
                       LParen@127..128 "("
                       MultivalExpr@128..139
                         Literal@128..139
-                          Str@128..139 "\'yes was 2\'"
+                          Str@128..139 "'yes was 2'"
                       RParen@139..140 ")"
           Whitespace@140..141 "\n"
           ElseBranch@141..161
@@ -119,7 +119,7 @@ SourceFile@0..166
                         LParen@153..154 "("
                         MultivalExpr@154..160
                           Literal@154..160
-                            Str@154..160 "\'else\'"
+                            Str@154..160 "'else'"
                         RParen@160..161 ")"
       Whitespace@161..162 "\n"
       EndKw@162..165 "end"

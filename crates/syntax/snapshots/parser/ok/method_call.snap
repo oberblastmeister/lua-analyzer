@@ -75,11 +75,11 @@ SourceFile@0..101
               LParen@84..85 "("
               MultivalExpr@85..99
                 Literal@85..91
-                  Str@85..91 "\'asdf\'"
+                  Str@85..91 "'asdf'"
                 Comma@91..92 ","
                 Whitespace@92..93 " "
                 Literal@93..99
-                  Str@93..99 "\'asdf\'"
+                  Str@93..99 "'asdf'"
               RParen@99..100 ")"
     Whitespace@100..101 "\n"
 

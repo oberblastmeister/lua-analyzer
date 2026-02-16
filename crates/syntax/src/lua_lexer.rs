@@ -14,7 +14,7 @@ use parser::Token;
 
 macro_rules! done {
     ($expr:expr) => {
-        return LexResult::new($expr, None);
+        return LexResult::new($expr, None)
     };
 }
 
