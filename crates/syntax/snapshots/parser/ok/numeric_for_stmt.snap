@@ -37,7 +37,7 @@ SourceFile@0..82
                   LParen@27..28 "("
                   MultivalExpr@28..41
                     Literal@28..41
-                      Str@28..41 "\'hello world\'"
+                      Str@28..41 "'hello world'"
                   RParen@41..42 ")"
       Whitespace@42..43 "\n"
       EndKw@43..46 "end"

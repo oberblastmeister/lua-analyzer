@@ -53,7 +53,7 @@ SourceFile@0..83
                     LParen@62..63 "("
                     MultivalExpr@63..77
                       Literal@63..77
-                        Str@63..77 "\'yes was true\'"
+                        Str@63..77 "'yes was true'"
                     RParen@77..78 ")"
       Whitespace@78..79 "\n"
       EndKw@79..82 "end"
