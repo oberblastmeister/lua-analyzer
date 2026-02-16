@@ -9,7 +9,7 @@ pub enum SyntaxKind {
     Tombstone,
     #[doc(hidden)]
     Eof,
-    #[doc(hiddent)]
+    #[doc(hidden)]
     Unknown,
     Bang,
     Hash,
