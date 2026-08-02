@@ -12,7 +12,7 @@ doctest = false
 [dependencies]
 drop_bomb = "0.1.5"
 itertools = "0.10.0"
-rowan = "0.12.6"
+rowan = "0.17.0"
 thiserror = "1.0.24"
 
 binding_powers = { path = "../../lib/binding_powers", version = "0.0.0" }
